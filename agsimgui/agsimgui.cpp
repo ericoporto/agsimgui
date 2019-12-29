@@ -12,6 +12,8 @@
 #include <windows.h>
 #endif
 
+#include "plugin/agsplugin.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -178,16 +180,6 @@ namespace agsimgui {
 		else return val;
 	}
 
-	void write_image_sprite_buffer(unsigned int** destlongbuffer, const Array2D<Color>& m) noexcept {
-		for (unsigned i = 0; i < (unsigned)m.height; i++) {
-			for (unsigned j = 0; j < (unsigned)m.width; j++) {
-				//int locale = xytolocale(j, i, m.width);
-				Color pixel = m.get(i, j);
-
-				destlongbuffer[i][j] = makeacol32(pixel.r, pixel.g, pixel.b, 255); //ags alpha 0 -> plugin alpha 255
-			}
-		}
-	}
 
 #if AGS_PLATFORM_OS_WINDOWS
 

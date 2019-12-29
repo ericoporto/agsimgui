@@ -160,9 +160,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="agsimgui.cpp" />
+    <ClCompile Include="imgui\examples\imgui_impl_softraster.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="agsimgui.h" />
+    <ClInclude Include="imgui\examples\imgui_impl_softraster.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\misc\softraster\softraster.h" />
+    <ClInclude Include="imgui\misc\softraster\texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
