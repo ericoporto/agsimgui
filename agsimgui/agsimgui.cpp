@@ -299,7 +299,7 @@ namespace agsimgui {
 " import static void          Text(String text); \r\n"
 "  \r\n"
 " /// shortcut for PushStyleColor(ImGuiCol_Text, col); Text(fmt, ...); PopStyleColor(); \r\n"
-" import static void          TextColored(ColorType color, String text); \r\n"
+" import static void          TextColored(int color, String text); \r\n"
 "  \r\n"
 " /// shortcut for PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor(); \r\n"
 " import static void          TextDisabled(String text); \r\n"
@@ -413,6 +413,92 @@ namespace agsimgui {
 #define STRINGIFY(s) STRINGIFY_X(s)
 #define STRINGIFY_X(s) #s
 
+void AgsImGui_NewFrame(){
+
+}
+
+void AgsImGui_EndFrame(){
+
+}
+
+void AgsImGui_Render(){
+
+}
+
+int AgsImGui_GetDrawData(){
+
+}
+
+const char* AgsImGui_GetVersion(){
+
+}
+
+bool AgsImGui_Begin(const char* name, int32 flags = 0){
+
+}
+
+void AgsImGui_End(){
+
+}
+
+bool AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
+
+}
+
+void AgsImGui_EndChild(){
+
+}
+
+void AgsImGui_Text(const char* text){
+
+}
+
+void AgsImGui_TextColored(int color, const char* text){
+
+}
+
+void AgsImGui_TextDisabled(const char* text){
+
+}
+
+void AgsImGui_TextWrapped(const char* text){
+
+}
+
+void AgsImGui_LabelText(const char* label, const char* text){
+
+}
+
+void AgsImGui_BulletText(const char* text){
+
+}
+
+bool AgsImGui_Button(const char* label, int width, int height){
+
+}
+
+bool AgsImGui_SmallButton(const char* label){
+
+}
+
+bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
+
+}
+
+bool AgsImGui_Checkbox(const char* label, bool v){
+
+}
+
+bool AgsImGui_RadioButton(const char* label, bool active){
+
+}
+
+void AgsImGui_Bullet(){
+
+}
+
+
+
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
 		engine = lpEngine;
@@ -423,7 +509,27 @@ namespace agsimgui {
 
 		//register functions
 
-		//engine->RegisterScriptFunction("agsimgui::Overlapping^7", (void*)AgsFastWFC_Overlapping);
+        engine->RegisterScriptFunction("agsimgui::NewFrame^0", (void*)AgsImGui_NewFrame);
+        engine->RegisterScriptFunction("agsimgui::EndFrame^0", (void*)AgsImGui_EndFrame);
+        engine->RegisterScriptFunction("agsimgui::Render^0", (void*)AgsImGui_Render);
+        engine->RegisterScriptFunction("agsimgui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
+        engine->RegisterScriptFunction("agsimgui::GetVersion^0", (void*)AgsImGui_GetVersion);
+        engine->RegisterScriptFunction("agsimgui::Begin^2", (void*)AgsImGui_Begin);
+        engine->RegisterScriptFunction("agsimgui::End^0", (void*)AgsImGui_End);
+        engine->RegisterScriptFunction("agsimgui::BeginChild^5", (void*)AgsImGui_BeginChild);
+        engine->RegisterScriptFunction("agsimgui::EndChild^0", (void*)AgsImGui_EndChild);
+        engine->RegisterScriptFunction("agsimgui::Text^1", (void*)AgsImGui_Text);
+        engine->RegisterScriptFunction("agsimgui::TextColored^2", (void*)AgsImGui_TextColored);
+        engine->RegisterScriptFunction("agsimgui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
+        engine->RegisterScriptFunction("agsimgui::TextWrapped^1", (void*)AgsImGui_TextWrapped);
+        engine->RegisterScriptFunction("agsimgui::LabelText^2", (void*)AgsImGui_LabelText);
+        engine->RegisterScriptFunction("agsimgui::BulletText^1", (void*)AgsImGui_BulletText);
+        engine->RegisterScriptFunction("agsimgui::Button^3", (void*)AgsImGui_Button);
+        engine->RegisterScriptFunction("agsimgui::SmallButton^1", (void*)AgsImGui_SmallButton);
+        engine->RegisterScriptFunction("agsimgui::ArrowButton^2", (void*)AgsImGui_ArrowButton);
+        engine->RegisterScriptFunction("agsimgui::Checkbox^2", (void*)AgsImGui_Checkbox);
+        engine->RegisterScriptFunction("agsimgui::RadioButton^2", (void*)AgsImGui_RadioButton);
+        engine->RegisterScriptFunction("agsimgui::Bullet^0", (void*)AgsImGui_Bullet);
 
 	}
 
