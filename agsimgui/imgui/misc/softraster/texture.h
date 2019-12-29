@@ -1,6 +1,7 @@
 #ifndef SOFTRASTER_TEXTURE_H
 #define SOFTRASTER_TEXTURE_H
 
+#include <cstdlib>
 #include "defines.h"
 #include "color.h"
 
