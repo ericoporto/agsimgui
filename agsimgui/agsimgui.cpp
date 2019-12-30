@@ -19,6 +19,7 @@
 #include <math.h>
 #include <iostream>
 #include "imgui/imgui.h" 
+#include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
 
 #if !defined(BUILTIN_PLUGINS)
