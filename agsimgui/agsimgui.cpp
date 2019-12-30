@@ -404,6 +404,7 @@ ImVec4 FromAgsColors(int color){
 #define STRINGIFY_X(s) #s
 
 texture_color32_t screen;
+texture_alpha8_t fontAtlas;
 ImGuiContext *context;
 
 void AgsImGui_NewFrame(){
@@ -507,6 +508,20 @@ void AgsImGui_Bullet(){
         context = ImGui::CreateContext();
         ImGui_ImplSoftraster_Init(&screen);
 
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.AntiAliasedLines = false;
+        style.AntiAliasedFill = false;
+        style.WindowRounding = 0.0f;
+
+        ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight | ImFontAtlasFlags_NoMouseCursors;
+
+        uint8_t* pixels;
+        int width, height;
+        io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
+        fontAtlas.init(width, height, (alpha8_t*)pixels);
+        io.Fonts->TexID = &fontAtlas;
+
         engine->RegisterScriptFunction("agsimgui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("agsimgui::EndFrame^0", (void*)AgsImGui_EndFrame);
         engine->RegisterScriptFunction("agsimgui::Render^0", (void*)AgsImGui_Render);
@@ -552,6 +567,9 @@ void AgsImGui_Bullet(){
                 int screenWidth, screenHeight, colDepth;
                 engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
                 printf("\nagsimgui 0.1.0\n");
+
+
+
                 ImGui_ImplSoftraster_InitializeScreenAgs(engine,screenWidth, screenHeight, colDepth);
                 screen.init(screenWidth, screenHeight);
                 do_only_once = true;
