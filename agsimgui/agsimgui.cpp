@@ -317,7 +317,7 @@ namespace agsimgui {
 
 	//------------------------------------------------------------------------------
 
-	LPCSTR AGS_GetPluginName()
+	const char * AGS_GetPluginName(void)
 	{
 		return ("agsimgui");
 	}
