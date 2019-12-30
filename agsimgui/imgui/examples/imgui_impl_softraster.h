@@ -4,6 +4,11 @@
 #include "../imgui.h"
 #include "../misc/softraster/texture.h"
 
+class IAGSEngine;
+
+void ImGui_ImplSoftraster_InitializeScreenAgs(IAGSEngine* engine, int screenWidth, int screenHeight, int colDepth);
+int ImGui_ImplSoftraster_GetSprite();
+
 IMGUI_IMPL_API bool     ImGui_ImplSoftraster_Init(texture_base_t* screen);
 IMGUI_IMPL_API void     ImGui_ImplSoftraster_Shutdown();
 IMGUI_IMPL_API void     ImGui_ImplSoftraster_NewFrame();

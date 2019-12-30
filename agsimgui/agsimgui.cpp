@@ -104,31 +104,7 @@ namespace agsimgui {
 
 #pragma endregion
 
-#pragma region Pixel32_Definition
 
-	struct Pixel32 {
-	public:
-		Pixel32();
-		~Pixel32() = default;
-		int GetColorAsInt();
-		int Red;
-		int Green;
-		int Blue;
-		int Alpha;
-	};
-
-	Pixel32::Pixel32() {
-		Red = 0;
-		Blue = 0;
-		Green = 0;
-		Alpha = 0;
-	}
-
-	int Pixel32::GetColorAsInt() {
-		return makeacol32(Red, Green, Blue, Alpha);
-	}
-
-#pragma endregion
 
 	/// <summary>
 	/// Gets the alpha value at coords x,y
@@ -416,6 +392,8 @@ ImVec4 FromAgsColors(int color){
            ((float) geta32(color))/255.0);
 }
 
+
+
 // Engine interface
 
 //------------------------------------------------------------------------------
@@ -437,10 +415,11 @@ void AgsImGui_EndFrame(){
 
 void AgsImGui_Render(){
     ImGui::Render();
+    ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
 }
 
 int AgsImGui_GetDrawData(){
-    ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
+    return ImGui_ImplSoftraster_GetSprite();
 }
 
 const char* AgsImGui_GetVersion(){
@@ -456,7 +435,7 @@ void AgsImGui_End(){
 }
 
 bool AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
-    ImGui::BeginChild(str_id,ImVec2((float) width,(float) height), border, flags);
+    return ImGui::BeginChild(str_id,ImVec2((float) width,(float) height), border, flags);
 }
 
 void AgsImGui_EndChild(){
@@ -488,23 +467,23 @@ void AgsImGui_BulletText(const char* text){
 }
 
 bool AgsImGui_Button(const char* label, int width, int height){
-    ImGui::Button(label, ImVec2((float) width, (float) height));
+    return ImGui::Button(label, ImVec2((float) width, (float) height));
 }
 
 bool AgsImGui_SmallButton(const char* label){
-    ImGui::SmallButton(label);
+    return ImGui::SmallButton(label);
 }
 
 bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
-    ImGui::ArrowButton(str_id, dir);
+    return ImGui::ArrowButton(str_id, dir);
 }
 
 bool AgsImGui_Checkbox(const char* label, bool v){
-    ImGui::Checkbox(label, &v);
+    return ImGui::Checkbox(label, &v);
 }
 
 bool AgsImGui_RadioButton(const char* label, bool active){
-    ImGui::RadioButton(label, active);
+    return ImGui::RadioButton(label, active);
 }
 
 void AgsImGui_Bullet(){
@@ -571,6 +550,7 @@ void AgsImGui_Bullet(){
                 int screenWidth, screenHeight, colDepth;
                 engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
                 printf("\nagsimgui 0.1.0\n");
+                ImGui_ImplSoftraster_InitializeScreenAgs(engine,screenWidth, screenHeight, colDepth);
                 screen.init(screenWidth, screenHeight);
                 do_only_once = true;
             }
