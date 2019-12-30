@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
+#include <agsimgui/imgui/imgui.h>
+#include <agsimgui/imgui/examples/imgui_impl_softraster.h>
 
 #if !defined(BUILTIN_PLUGINS)
 #define THIS_IS_THE_PLUGIN
@@ -406,6 +408,14 @@ namespace agsimgui {
 
 // ***** Run time *****
 
+ImVec4 FromAgsColors(int color){
+    return ImVec4(
+           ((float) getr32(color))/255.0,
+           ((float) getg32(color))/255.0,
+           ((float) getb32(color))/255.0,
+           ((float) geta32(color))/255.0);
+}
+
 // Engine interface
 
 //------------------------------------------------------------------------------
@@ -413,88 +423,92 @@ namespace agsimgui {
 #define STRINGIFY(s) STRINGIFY_X(s)
 #define STRINGIFY_X(s) #s
 
-void AgsImGui_NewFrame(){
+texture_color32_t screen;
+ImGuiContext *context;
 
+void AgsImGui_NewFrame(){
+    ImGui_ImplSoftraster_NewFrame();
+    ImGui::NewFrame();
 }
 
 void AgsImGui_EndFrame(){
-
+    ImGui::EndFrame();
 }
 
 void AgsImGui_Render(){
-
+    ImGui::Render();
 }
 
 int AgsImGui_GetDrawData(){
-
+    ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
 }
 
 const char* AgsImGui_GetVersion(){
-
+    ImGui::GetVersion();
 }
 
 bool AgsImGui_Begin(const char* name, int32 flags = 0){
-
+    ImGui::Begin(name, NULL, flags);
 }
 
 void AgsImGui_End(){
-
+    ImGui::End();
 }
 
 bool AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
-
+    ImGui::BeginChild(str_id,ImVec2((float) width,(float) height), border, flags);
 }
 
 void AgsImGui_EndChild(){
-
+    ImGui::EndChild();
 }
 
 void AgsImGui_Text(const char* text){
-
+    ImGui::Text(text);
 }
 
 void AgsImGui_TextColored(int color, const char* text){
-
+    ImGui::TextColored(FromAgsColors(color), text);
 }
 
 void AgsImGui_TextDisabled(const char* text){
-
+    ImGui::TextDisabled(text);
 }
 
 void AgsImGui_TextWrapped(const char* text){
-
+    ImGui::TextWrapped(text);
 }
 
 void AgsImGui_LabelText(const char* label, const char* text){
-
+    ImGui::LabelText(label, text);
 }
 
 void AgsImGui_BulletText(const char* text){
-
+    ImGui::BulletText(text);
 }
 
 bool AgsImGui_Button(const char* label, int width, int height){
-
+    ImGui::Button(label, ImVec2((float) width, (float) height));
 }
 
 bool AgsImGui_SmallButton(const char* label){
-
+    ImGui::SmallButton(label);
 }
 
 bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
-
+    ImGui::ArrowButton(str_id, dir);
 }
 
 bool AgsImGui_Checkbox(const char* label, bool v){
-
+    ImGui::Checkbox(label, &v);
 }
 
 bool AgsImGui_RadioButton(const char* label, bool active){
-
+    ImGui::RadioButton(label, active);
 }
 
 void AgsImGui_Bullet(){
-
+    ImGui::Bullet();
 }
 
 
@@ -508,6 +522,9 @@ void AgsImGui_Bullet(){
 			engine->AbortGame("Plugin needs engine version " STRINGIFY(MIN_ENGINE_VERSION) " or newer.");
 
 		//register functions
+
+        context = ImGui::CreateContext();
+        ImGui_ImplSoftraster_Init(&screen);
 
         engine->RegisterScriptFunction("agsimgui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("agsimgui::EndFrame^0", (void*)AgsImGui_EndFrame);
@@ -531,6 +548,7 @@ void AgsImGui_Bullet(){
         engine->RegisterScriptFunction("agsimgui::RadioButton^2", (void*)AgsImGui_RadioButton);
         engine->RegisterScriptFunction("agsimgui::Bullet^0", (void*)AgsImGui_Bullet);
 
+
 	}
 
 	//------------------------------------------------------------------------------
@@ -544,8 +562,20 @@ void AgsImGui_Bullet(){
 
 	//------------------------------------------------------------------------------
 
-	int AGS_EngineOnEvent(int event, int data)                    //*** optional ***
-	{
+    bool do_only_once = false;
+    int AGS_EngineOnEvent(int event, int data)                    //*** optional ***
+    {
+        if(event==AGSE_PRESCREENDRAW){
+            //initialize debug
+            if(!do_only_once) {
+                int screenWidth, screenHeight, colDepth;
+                engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
+                printf("\nagsimgui 0.1.0\n");
+                screen.init(screenWidth, screenHeight);
+                do_only_once = true;
+            }
+        }
+
 		switch (event)
 		{
 			/*
