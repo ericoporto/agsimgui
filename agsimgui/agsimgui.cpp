@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
-#include <agsimgui/imgui/imgui.h>
-#include <agsimgui/imgui/examples/imgui_impl_softraster.h>
+#include "imgui/imgui.h" 
+#include "imgui/examples/imgui_impl_softraster.h"
 
 #if !defined(BUILTIN_PLUGINS)
 #define THIS_IS_THE_PLUGIN
@@ -250,7 +250,7 @@ namespace agsimgui {
 "  \r\n"
 " // Demo, Debug, Information \r\n"
 "  \r\n"
-" /// get the compiled version string e.g. "1.23" (essentially the compiled value for IMGUI_VERSION) \r\n"
+" /// get the compiled version string e.g. \"1.23\" (essentially the compiled value for IMGUI_VERSION) \r\n"
 " import static String GetVersion(); \r\n"
 "  \r\n"
 "  \r\n"
@@ -307,11 +307,12 @@ namespace agsimgui {
 "  \r\n"
 " import static bool Checkbox(String label, bool v); \r\n"
 "  \r\n"
-" /// use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; } \r\n"
+" /// use with e.g. if (RadioButton(\"one\", my_value==1)) { my_value = 1; } \r\n"
 " import static bool RadioButton(String label, bool active); \r\n"
 "  \r\n"
 " /// draw a small circle and keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses \r\n"
 " import static  void Bullet(); \r\n"
+" }; \r\n";
 
 
 	//------------------------------------------------------------------------------
@@ -423,11 +424,11 @@ int AgsImGui_GetDrawData(){
 }
 
 const char* AgsImGui_GetVersion(){
-    ImGui::GetVersion();
+    return ImGui::GetVersion();
 }
 
 bool AgsImGui_Begin(const char* name, int32 flags = 0){
-    ImGui::Begin(name, NULL, flags);
+    return ImGui::Begin(name, NULL, flags);
 }
 
 void AgsImGui_End(){
