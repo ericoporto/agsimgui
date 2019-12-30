@@ -544,7 +544,7 @@ void AgsImGui_Bullet(){
         engine->RegisterScriptFunction("agsimgui::RadioButton^2", (void*)AgsImGui_RadioButton);
         engine->RegisterScriptFunction("agsimgui::Bullet^0", (void*)AgsImGui_Bullet);
 
-
+		engine->RequestEventHook(AGSE_PRESCREENDRAW);
 	}
 
 	//------------------------------------------------------------------------------
@@ -567,9 +567,6 @@ void AgsImGui_Bullet(){
                 int screenWidth, screenHeight, colDepth;
                 engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
                 printf("\nagsimgui 0.1.0\n");
-
-
-
                 ImGui_ImplSoftraster_InitializeScreenAgs(engine,screenWidth, screenHeight, colDepth);
                 screen.init(screenWidth, screenHeight);
                 do_only_once = true;
