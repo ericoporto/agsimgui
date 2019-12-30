@@ -12,6 +12,10 @@
 #include <windows.h>
 #endif
 
+#if !defined(BUILTIN_PLUGINS)
+#define THIS_IS_THE_PLUGIN
+#endif
+
 #include "plugin/agsplugin.h"
 
 #include <stdlib.h>
@@ -21,10 +25,6 @@
 #include "imgui/imgui.h" 
 #include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
-
-#if !defined(BUILTIN_PLUGINS)
-#define THIS_IS_THE_PLUGIN
-#endif
 
 #include "agsimgui.h"
 
@@ -317,10 +317,10 @@ namespace agsimgui {
 
 
 	//------------------------------------------------------------------------------
-
-	const char * AGS_GetPluginName(void)
+	LPCSTR AGS_GetPluginName(void)
 	{
-		return ("agsimgui");
+		// Return the plugin description
+		return "agsimgui";
 	}
 
 	//------------------------------------------------------------------------------
