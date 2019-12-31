@@ -339,7 +339,8 @@ namespace agsimgui {
 "  \r\n"
 " // Widgets: Selectables \r\n"
 " // - A selectable highlights when hovered, and can display another color when selected. \r\n"
-" /// \"bool selected\" carry the selection state (read-only). Selectable() is clicked is returns true so you can modify your selection state. size.x==0.0: use remaining width, size.x>0.0: specify width. size.y==0.0: use label height, size.y>0.0: specify height \r\n"
+"  \r\n"
+" /// bool selected carry the selection state (read-only). When Selectable() is clicked it returns true so you can modify your selection state. \r\n"
 " import static bool Selectable(String label, bool selected = false, ImGuiSelectableFlags flags = 0, int width = 0, int height = 0); \r\n"
 "  \r\n"
 " // Widgets: Combobox commands \r\n"
@@ -577,8 +578,8 @@ void AgsImGui_EndListBox(){
         ImGui_ImplSoftraster_Init(&screen);
 
         ImGuiStyle& style = ImGui::GetStyle();
-        //style.AntiAliasedLines = false;
-        //style.AntiAliasedFill = false;
+        style.AntiAliasedLines = false;
+        style.AntiAliasedFill = false;
         style.WindowRounding = 0.0f;
         style.Alpha = 1.0f;
 
