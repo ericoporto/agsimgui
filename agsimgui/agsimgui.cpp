@@ -291,7 +291,7 @@ namespace agsimgui {
 " // Windows \r\n"
 "  \r\n"
 " /// Push window to the stack. Always call a matching End() for each Begin() call. Return value indicates if it's collapsed or if clicked to close. \r\n"
-" import static ImGuiBeginWindow BeginWindow(String name, bool close_button = 0, ImGuiWindowFlags flags = 0); \r\n"
+" import static ImGuiBeginWindow BeginWindow(String name, bool has_close_button = 0, ImGuiWindowFlags flags = 0); \r\n"
 "  \r\n"
 " /// pop window from the stack. \r\n"
 " import static void EndWindow(); \r\n"
@@ -509,9 +509,9 @@ const char* AgsImGui_GetVersion(){
     return engine->CreateScriptString(ImGui::GetVersion());
 }
 
-int AgsImGui_BeginWindow(const char* name, int close, int32 flags = 0){
-    bool p_open = close != 0;
-    bool not_collapsed = ImGui::Begin(name, &p_open, flags);
+int AgsImGui_BeginWindow(const char* name, int has_close_button, int32 flags = 0){
+    bool p_open = false;
+    bool not_collapsed = ImGui::Begin(name, (has_close_button != 0 ? &p_open : NULL), flags);
 
     if(p_open && !not_collapsed) return 4;
     else if(p_open && not_collapsed) return 3;

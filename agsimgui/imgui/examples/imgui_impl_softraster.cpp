@@ -126,16 +126,9 @@ int ImGui_ImplSoftraster_GetSprite() {
 void ImGui_ImplSoftraster_GetSurface() {
     if (_Engine == nullptr) return;
     if (_SpriteId <= 0) {
-        // The code below looks like a hack
-        // _Engine->CreateDynamicSprite() could work, but it's dynamic sprite is created with alpha flag false
-        // That's why I had to use DynamicSprite_Create
-        // Unfortunately, if nobody holds pointers to the dynamic sprite, it gets garbage collected
-        // That's why we increase it's managed object ref count
-
-        void* dyn_spr = DynamicSprite_Create(_ScreenWidth, _ScreenHeight, 1);
-        _SpriteId = DynamicSprite_GetGraphic(dyn_spr);
-        _Engine->IncrementManagedObjectRefCount((const char *)dyn_spr);
-        printf("\nDynamicSprite_Create\n");
+        _SpriteId = _Engine->CreateDynamicSprite(32,_ScreenWidth,_ScreenHeight);
+        _Engine->SetSpriteAlphaBlended(_SpriteId, 1);
+        printf("\nCreateDynamicSprite\n");
     }
 
     BITMAP *engineSprite = _Engine->GetSpriteGraphic(_SpriteId);
