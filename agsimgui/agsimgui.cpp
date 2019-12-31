@@ -173,6 +173,15 @@ namespace agsimgui {
 	const char *ourScriptHeader =
 " // ags imgui module header \r\n"
 "  \r\n"
+" enum ImGuiFocusedFlags \r\n"
+" { \r\n"
+"   ImGuiFocusedFlags_None = 0, \r\n"
+"   ImGuiFocusedFlags_ChildWindows = 1,   // IsWindowFocused(): Return true if any children of the window is focused \r\n"
+"   ImGuiFocusedFlags_RootWindow = 2,   // IsWindowFocused(): Test from root window (top most parent of the current hierarchy) \r\n"
+"   ImGuiFocusedFlags_AnyWindow = 4,   // IsWindowFocused(): Return true if any window is focused.  \r\n"
+"   ImGuiFocusedFlags_RootAndChildWindows  = 3 \r\n"
+" }; \r\n"
+"  \r\n"
 " enum ImGuiBeginWindow \r\n"
 " { \r\n"
 "    eImGuiBeginWindow_Fail = 0, \r\n"
@@ -303,6 +312,15 @@ namespace agsimgui {
 "  \r\n"
 " /// pop child window from the stack. \r\n"
 " import static void EndChild(); \r\n"
+"  \r\n"
+" /// return true when window is collapsed. Use this between Begin and End of a window. \r\n"
+" import static bool IsWindowCollapsed(); \r\n"
+"  \r\n"
+" /// is current window focused? or its root/child, depending on flags. see flags for options. Use this between Begin and End of a window. \r\n"
+" import static bool IsWindowFocused(ImGuiFocusedFlags flags=0); \r\n"
+"  \r\n"
+" /// is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.\r\n"
+" import static bool IsWindowHovered(ImGuiFocusedFlags flags=0); \r\n"
 "  \r\n"
 "  \r\n"
 " // Widgets: Text \r\n"
@@ -564,6 +582,18 @@ void AgsImGui_EndChild(){
     ImGui::EndChild();
 }
 
+bool AgsImGui_IsWindowCollapsed(){
+    return ImGui::IsWindowCollapsed();
+}
+
+bool AgsImGui_IsWindowFocused(int flags){
+    return ImGui::IsWindowFocused(flags);
+}
+
+bool AgsImGui_IsWindowHovered(int flags){
+    return ImGui::IsWindowHovered(flags);
+}
+
 void AgsImGui_Text(const char* text){
     ImGui::Text(text);
 }
@@ -763,6 +793,9 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
         engine->RegisterScriptFunction("AgsImGui::BeginChild^5", (void*)AgsImGui_BeginChild);
         engine->RegisterScriptFunction("AgsImGui::EndChild^0", (void*)AgsImGui_EndChild);
+        engine->RegisterScriptFunction("AgsImGui::IsWindowCollapsed^0", (void*)AgsImGui_IsWindowCollapsed);
+        engine->RegisterScriptFunction("AgsImGui::IsWindowFocused^1", (void*)AgsImGui_IsWindowFocused);
+        engine->RegisterScriptFunction("AgsImGui::IsWindowHovered^1", (void*)AgsImGui_IsWindowHovered);
         engine->RegisterScriptFunction("AgsImGui::Text^1", (void*)AgsImGui_Text);
         engine->RegisterScriptFunction("AgsImGui::TextColored^2", (void*)AgsImGui_TextColored);
         engine->RegisterScriptFunction("AgsImGui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
