@@ -390,6 +390,17 @@ namespace agsimgui {
 " /// return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment! \r\n"
 " import static bool MenuItem(String label, String shortcut, bool selected = false, bool enabled = true); \r\n"
 "  \r\n"
+" // Widgets: Value \r\n"
+"  \r\n"
+" /// Shortcut to a label followed by a boolean value. \r\n"
+" import static void ValueBool(bool value, String prefix = 0); \r\n"
+"  \r\n"
+" /// Shortcut to a label followed by a int value. \r\n"
+" import static void ValueInt(int value, String prefix = 0); \r\n"
+"  \r\n"
+" /// Shortcut to a label followed by a float value. \r\n"
+" import static void ValueFloat(float value, String prefix = 0); \r\n"
+" // io stuff \r\n"
 " /// Override capture or not capture mouse by ImGui for next frame. Mouse will still be captured by AGS. \r\n"
 " import static void DoCaptureMouse(bool want_capture_mouse = true); \r\n"
 "  \r\n"
@@ -481,6 +492,22 @@ ImVec4 FromAgsColors(int color){
 // Engine interface
 
 //------------------------------------------------------------------------------
+
+union
+{
+    float f;
+    uint32_t ui32;
+} AgsNumber;
+
+uint32_t ToAgsFloat(float f) {
+    AgsNumber.f = f;
+    return AgsNumber.ui32;
+}
+
+float ToNormalFloat(uint32_t ui32) {
+    AgsNumber.ui32 = ui32;
+    return AgsNumber.f;
+}
 
 #define STRINGIFY(s) STRINGIFY_X(s)
 #define STRINGIFY_X(s) #s
@@ -643,6 +670,31 @@ void AgsImGui_DoCaptureKeyboard(int want_capture_keyboard){
 }
 
 
+void AgsImGui_ValueBool(int value, const char* prefix){
+    if(prefix == nullptr)  {
+        std::string empty = "";
+        prefix = empty.c_str();
+    }
+    ImGui::Value(prefix,value != 0);
+}
+
+void AgsImGui_ValueInt(int value, const char* prefix){
+    if(prefix == nullptr)  {
+        std::string empty = "";
+        prefix = empty.c_str();
+    }
+    ImGui::Value(prefix,value);
+}
+
+void AgsImGui_ValueFloat(uint32_t value, const char* prefix){
+    if(prefix == nullptr) {
+        std::string empty = "";
+        prefix = empty.c_str();
+    }
+    ImGui::Value(prefix,ToNormalFloat(value));
+}
+
+
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
 		engine = lpEngine;
@@ -737,6 +789,9 @@ void AgsImGui_DoCaptureKeyboard(int want_capture_keyboard){
         engine->RegisterScriptFunction("AgsImGui::MenuItem^4", (void*)AgsImGui_MenuItem);
         engine->RegisterScriptFunction("AgsImGui::DoCaptureMouse^1", (void*)AgsImGui_DoCaptureMouse);
         engine->RegisterScriptFunction("AgsImGui::DoCaptureKeyboard^1", (void*)AgsImGui_DoCaptureKeyboard);
+        engine->RegisterScriptFunction("AgsImGui::ValueBool^2", (void*)AgsImGui_ValueBool);
+        engine->RegisterScriptFunction("AgsImGui::ValueInt^2", (void*)AgsImGui_ValueInt);
+        engine->RegisterScriptFunction("AgsImGui::ValueFloat^2", (void*)AgsImGui_ValueFloat);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
