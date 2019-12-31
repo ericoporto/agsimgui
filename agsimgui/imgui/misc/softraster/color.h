@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <utility>
 
-#define C16RMASK 0xF800
-#define C16GMASK 0x07E0
-#define C16BMASK 0x001F
+#define C16RMASK 0xF800u
+#define C16GMASK 0x07E0u
+#define C16BMASK 0x001Fu
 
 #define C16R(C) ((C) & C16RMASK)
 #define C16G(C) ((C) & C16GMASK)
@@ -122,7 +122,7 @@ inline color32_t        operator%(const value8_t  &lhs,       color32_t  rhs);
 
 inline color16_t        operator%(      color16_t  lhs, const alpha8_t  &rhs);
 inline value8_t         operator%(const color16_t &lhs,       value8_t   rhs);
-inline color16_t        operator%(const color16_t &lhs,       color16_t  rhs);
+inline color16_t        operator%(const color16_t &lhs,       const color16_t&  rhs);
 inline color24_t        operator%(const color16_t &lhs,       color24_t  rhs);
 inline color32_t        operator%(const color16_t &lhs,       color32_t  rhs);
 
@@ -329,7 +329,7 @@ struct color32_t
     inline uint8_t V() const { return (R() + G() + B()) / 3; }
     inline uint16_t RGB16() const { return (((r * 0x1FU) / 0xFFU) << 0x0BU) | (((g * 0x3FU) / 0xFFU) << 0x05U) | ((b * 0x1FU) / 0xFFU); }
     inline uint32_t RGBA32() const { return (r << 24U) | (g << 16U) | (b << 8U) | (a); }
-    inline uint32_t ARGB32() const { return ((r << 16) | (g << 8) | (b) | ((255-a) << 24)); }
+    inline uint32_t ARGB32() const { return ((r << 16) | (g << 8) | (b) | ((0xFFU^a) << 24)); }
 };
 
 // color add
@@ -385,13 +385,13 @@ inline color32_t        operator+(color32_t         lhs, const color32_t        
 
 inline alpha8_t         operator*(alpha8_t          lhs, const float rhs)
 {
-    lhs.a *= rhs;
+    lhs.a =(uint8_t) (((const float)lhs.a) *rhs);
     return lhs;
 }
 
 inline value8_t         operator*(value8_t          lhs, const float rhs)
 {
-    lhs.v *= rhs;
+    lhs.v =(uint8_t) (((const float)lhs.v) *rhs);
     return lhs;
 }
 
@@ -422,10 +422,10 @@ inline color24_t        operator*(color24_t         lhs, const float rhs)
 
 inline color32_t        operator*(color32_t         lhs, const float rhs)
 {
-    lhs.r *= rhs;
-    lhs.g *= rhs;
-    lhs.b *= rhs;
-    lhs.a *= rhs;
+    lhs.r =(uint8_t) (((const float)lhs.r) *rhs);
+    lhs.g =(uint8_t) (((const float)lhs.g) *rhs);
+    lhs.b =(uint8_t) (((const float)lhs.b) *rhs);
+    lhs.a =(uint8_t) (((const float)lhs.a) *rhs);
     return lhs;
 }
 
@@ -468,10 +468,10 @@ inline color24_t        operator*(const float lhs, color24_t         rhs)
 
 inline color32_t        operator*(const float lhs, color32_t         rhs)
 {
-    rhs.r *= lhs;
-    rhs.g *= lhs;
-    rhs.b *= lhs;
-    rhs.a *= lhs;
+    rhs.r =(uint8_t) (((const float)rhs.r) *lhs);
+    rhs.g =(uint8_t) (((const float)rhs.g) *lhs);
+    rhs.b =(uint8_t) (((const float)rhs.b) *lhs);
+    rhs.a =(uint8_t) (((const float)rhs.a) *lhs);
     return rhs;
 }
 
@@ -872,7 +872,7 @@ inline value8_t         operator%(const color16_t &lhs,       value8_t   rhs)
     return rhs;
 }
 
-inline color16_t        operator%(const color16_t &lhs,       color16_t  rhs)
+inline color16_t        operator%(const color16_t &lhs,       const color16_t&  rhs)
 {
     return rhs;
 }
@@ -882,7 +882,7 @@ inline color24_t        operator%(const color16_t &lhs,       color24_t  rhs)
     return rhs;
 }
 
-inline color32_t        operator%(const color16_t &lhs,       color32_t  rhs)
+inline color32_t        operator%(const color16_t &lhs,       color32_t rhs)
 {
     if (rhs.a == 0xFFU)
     {
@@ -978,17 +978,17 @@ inline color32_t        operator%(      color32_t  lhs, const alpha8_t  &rhs)
     return lhs;
 }
 
-inline value8_t         operator%(const color32_t &lhs,       value8_t   rhs)
+inline value8_t         operator%(const color32_t &lhs,      const value8_t   rhs)
 {
     return rhs;
 }
 
-inline color16_t        operator%(const color32_t &lhs,       color16_t  rhs)
+inline color16_t        operator%(const color32_t &lhs,      const color16_t  rhs)
 {
     return rhs;
 }
 
-inline color24_t        operator%(const color32_t &lhs,       color24_t  rhs)
+inline color24_t        operator%(const color32_t &lhs,     const color24_t  rhs)
 {
     return rhs;
 }

@@ -455,10 +455,10 @@ namespace agsimgui {
 
 ImVec4 FromAgsColors(int color){
     return ImVec4(
-           ((float) getr32(color))/255.0,
-           ((float) getg32(color))/255.0,
-           ((float) getb32(color))/255.0,
-           ((float) geta32(color))/255.0);
+            (float)((getr32(color))/255.0),
+            (float)((getg32(color))/255.0),
+            (float)((getb32(color))/255.0),
+            (float)((geta32(color))/255.0));
 }
 
 
@@ -760,24 +760,12 @@ enum MouseButton {
             else {
                 engine->GetMousePosition(&ags_mouse_x, &ags_mouse_y);
 
-                io.MousePos = ImVec2(ags_mouse_x, ags_mouse_y);
+                io.MousePos = ImVec2((float) ags_mouse_x, (float) ags_mouse_y);
             }
 
-
-            if(Mouse_IsButtonDown(eMouseLeft))
-                io.MouseDown[ImGuiMouseButton_Left] = true;
-            else
-                io.MouseDown[ImGuiMouseButton_Left] = false;
-
-            if(Mouse_IsButtonDown(eMouseRight))
-                io.MouseDown[ImGuiMouseButton_Right] = true;
-            else
-                io.MouseDown[ImGuiMouseButton_Right] = false;
-
-            if(Mouse_IsButtonDown(eMouseMiddle))
-                io.MouseDown[ImGuiMouseButton_Middle] = true;
-            else
-                io.MouseDown[ImGuiMouseButton_Middle] = false;
+            io.MouseDown[ImGuiMouseButton_Left] = Mouse_IsButtonDown(eMouseLeft) != 0;
+            io.MouseDown[ImGuiMouseButton_Right] = Mouse_IsButtonDown(eMouseRight) != 0;
+            io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
 
             //initialize debug
             if(!do_only_once) {
@@ -799,31 +787,31 @@ enum MouseButton {
             //io.MouseDow
         }
 
-		switch (event)
-		{
-			/*
-				case AGSE_KEYPRESS:
-				case AGSE_MOUSECLICK:
-				case AGSE_POSTSCREENDRAW:
-				case AGSE_PRESCREENDRAW:
-				case AGSE_SAVEGAME:
-				case AGSE_RESTOREGAME:
-				case AGSE_PREGUIDRAW:
-				case AGSE_LEAVEROOM:
-				case AGSE_ENTERROOM:
-				case AGSE_TRANSITIONIN:
-				case AGSE_TRANSITIONOUT:
-				case AGSE_FINALSCREENDRAW:
-				case AGSE_TRANSLATETEXT:
-				case AGSE_SCRIPTDEBUG:
-				case AGSE_SPRITELOAD:
-				case AGSE_PRERENDER:
-				case AGSE_PRESAVEGAME:
-				case AGSE_POSTRESTOREGAME:
-			 */
-		default:
-			break;
-		}
+        /*
+        switch (event)
+        {
+                case AGSE_KEYPRESS:
+                case AGSE_MOUSECLICK:
+                case AGSE_POSTSCREENDRAW:
+                case AGSE_PRESCREENDRAW:
+                case AGSE_SAVEGAME:
+                case AGSE_RESTOREGAME:
+                case AGSE_PREGUIDRAW:
+                case AGSE_LEAVEROOM:
+                case AGSE_ENTERROOM:
+                case AGSE_TRANSITIONIN:
+                case AGSE_TRANSITIONOUT:
+                case AGSE_FINALSCREENDRAW:
+                case AGSE_TRANSLATETEXT:
+                case AGSE_SCRIPTDEBUG:
+                case AGSE_SPRITELOAD:
+                case AGSE_PRERENDER:
+                case AGSE_PRESAVEGAME:
+                case AGSE_POSTRESTOREGAME:
+        default:
+            break;
+        }
+         */
 
 		// Return 1 to stop event from processing further (when needed)
 		return (0);
