@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
+#include <vector>
 #include "imgui/imgui.h" 
 #include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
@@ -644,6 +645,7 @@ bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = 
         fontAtlas.init(width, height, (alpha8_t*)pixels);
         io.Fonts->TexID = &fontAtlas;
         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;       // We can honor GetMouseCursor() values (optional)
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
         io.KeyMap[ImGuiKey_Tab] = eAGSKeyCodeTab;
         io.KeyMap[ImGuiKey_LeftArrow] = eAGSKeyCodeLeftArrow;
@@ -730,18 +732,37 @@ enum MouseButton {
     eMouseWheelNorth = 8,
     eMouseWheelSouth = 9
 };
-
+    std::vector<int> pressed_keys;
     int32 ags_mouse_x = 0;
     int32 ags_mouse_y = 0;
     bool do_only_once = false;
+    int unstuck_counter = 0;
     int AGS_EngineOnEvent(int event, int data)                    //*** optional ***
     {
+        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
         ImGuiIO& io = ImGui::GetIO();
 
         if(event==AGSE_PRESCREENDRAW){
-            engine->GetMousePosition(&ags_mouse_x, &ags_mouse_y);
+            if(!pressed_keys.empty()) {
+                unstuck_counter++;
 
-            io.MousePos = ImVec2(ags_mouse_x, ags_mouse_y);
+                if(unstuck_counter>5) {
+                    unstuck_counter = 0;
+                    while (!pressed_keys.empty()) {
+                        int key_pressed = pressed_keys.back();
+                        io.KeysDown[key_pressed] = false;
+                        pressed_keys.pop_back();
+                    }
+                }
+            }
+            else {
+                engine->GetMousePosition(&ags_mouse_x, &ags_mouse_y);
+
+                io.MousePos = ImVec2(ags_mouse_x, ags_mouse_y);
+            }
+
 
             if(Mouse_IsButtonDown(eMouseLeft))
                 io.MouseDown[ImGuiMouseButton_Left] = true;
@@ -771,6 +792,7 @@ enum MouseButton {
 
         if(event==AGSE_KEYPRESS){
             io.KeysDown[data] = true;
+            pressed_keys.push_back(data);
         }
 
         if(event==AGSE_MOUSECLICK){
