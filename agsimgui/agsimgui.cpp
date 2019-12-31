@@ -393,13 +393,13 @@ namespace agsimgui {
 " // Widgets: Value \r\n"
 "  \r\n"
 " /// Shortcut to a label followed by a boolean value. \r\n"
-" import static void ValueBool(bool value, String prefix = 0); \r\n"
+" import static void ValueBool(String prefix = 0, bool value); \r\n"
 "  \r\n"
 " /// Shortcut to a label followed by a int value. \r\n"
-" import static void ValueInt(int value, String prefix = 0); \r\n"
+" import static void ValueInt(String prefix = 0, int value); \r\n"
 "  \r\n"
 " /// Shortcut to a label followed by a float value. \r\n"
-" import static void ValueFloat(float value, String prefix = 0); \r\n"
+" import static void ValueFloat(String prefix = 0, float value); \r\n"
 " // io stuff \r\n"
 " /// Override capture or not capture mouse by ImGui for next frame. Mouse will still be captured by AGS. \r\n"
 " import static void DoCaptureMouse(bool want_capture_mouse = true); \r\n"
@@ -670,7 +670,7 @@ void AgsImGui_DoCaptureKeyboard(int want_capture_keyboard){
 }
 
 
-void AgsImGui_ValueBool(int value, const char* prefix){
+void AgsImGui_ValueBool(const char* prefix, int value){
     if(prefix == nullptr)  {
         std::string empty = "";
         prefix = empty.c_str();
@@ -678,7 +678,7 @@ void AgsImGui_ValueBool(int value, const char* prefix){
     ImGui::Value(prefix,value != 0);
 }
 
-void AgsImGui_ValueInt(int value, const char* prefix){
+void AgsImGui_ValueInt(const char* prefix, int value){
     if(prefix == nullptr)  {
         std::string empty = "";
         prefix = empty.c_str();
@@ -686,7 +686,7 @@ void AgsImGui_ValueInt(int value, const char* prefix){
     ImGui::Value(prefix,value);
 }
 
-void AgsImGui_ValueFloat(uint32_t value, const char* prefix){
+void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
     if(prefix == nullptr) {
         std::string empty = "";
         prefix = empty.c_str();
