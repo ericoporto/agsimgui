@@ -664,7 +664,7 @@
               <Height>42</Height>
               <Width>960</Width>
               <Left>0</Left>
-              <Top>0</Top>
+              <Top>558</Top>
               <Clickable>True</Clickable>
               <Visible>True</Visible>
               <PopupStyle>Normal</PopupStyle>
@@ -739,8 +739,8 @@
               <Left>0</Left>
               <Top>0</Top>
               <Clickable>True</Clickable>
-              <Visible>True</Visible>
-              <PopupStyle>MouseYPos</PopupStyle>
+              <Visible>False</Visible>
+              <PopupStyle>Normal</PopupStyle>
               <PopupYPos>13</PopupYPos>
               <ZOrder>1</ZOrder>
               <BorderColor>32089</BorderColor>
