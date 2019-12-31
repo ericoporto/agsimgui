@@ -349,6 +349,14 @@ namespace agsimgui {
 "  \r\n"
 " /// Only call EndCombo() if BeginCombo() returns true! \r\n"
 " import static void EndCombo(); \r\n"
+"  \r\n"
+" // Widgets: List Boxes \r\n"
+"  \r\n"
+" /// If the function return true, you can output elements then call EndListBox() afterwards. \r\n"
+" import static bool BeginListBox(String label, int items_count, int height_in_items = -1); \r\n"
+"  \r\n"
+" /// Only call EndListBox() if BeginListBox() returns true! \r\n"
+" import static void EndListBox(); \r\n"
 " }; \r\n";
 
 
@@ -545,6 +553,14 @@ void AgsImGui_EndCombo(){
     ImGui::EndCombo();
 }
 
+bool AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
+    return ImGui::ListBoxHeader(name,items_count,height_in_items);
+}
+
+void AgsImGui_EndListBox(){
+    ImGui::ListBoxFooter();
+}
+
 
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
@@ -628,6 +644,8 @@ void AgsImGui_EndCombo(){
         engine->RegisterScriptFunction("agsimgui::Selectable^5", (void*)AgsImGui_Selectable);
         engine->RegisterScriptFunction("agsimgui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
         engine->RegisterScriptFunction("agsimgui::EndCombo^0", (void*)AgsImGui_EndCombo);
+        engine->RegisterScriptFunction("agsimgui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
+        engine->RegisterScriptFunction("agsimgui::EndListBox^0", (void*)AgsImGui_EndListBox);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
