@@ -172,13 +172,35 @@ namespace agsimgui {
 	const char *ourScriptHeader =
 " // ags imgui module header \r\n"
 "  \r\n"
+" enum ImGuiSelectableFlags \r\n"
+" { \r\n"
+"    eImGuiSelectableFlags_None               = 0, \r\n"
+"    eImGuiSelectableFlags_DontClosePopups    = 1,  // Clicking this don't close parent popup window \r\n"
+"    eImGuiSelectableFlags_SpanAllColumns     = 2,  // Selectable frame can span all columns (text will still fit in current column) \r\n"
+"    eImGuiSelectableFlags_AllowDoubleClick   = 4,  // Generate press events on double clicks too \r\n"
+"    eImGuiSelectableFlags_Disabled           = 8,  // Cannot be selected, display grayed out text \r\n"
+"    eImGuiSelectableFlags_AllowItemOverlap   = 16  // (WIP) Hit testing to allow subsequent widgets to overlap this one \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiComboFlags \r\n"
+" { \r\n"
+"   eImGuiComboFlags_None = 0, \r\n"
+"   eImGuiComboFlags_PopupAlignLeft = 1,  // Align the popup toward the left by default \r\n"
+"   eImGuiComboFlags_HeightSmall    = 2,  // Max ~4 items visible.  \r\n"
+"   eImGuiComboFlags_HeightRegular  = 4,  // Max ~8 items visible (default) \r\n"
+"   eImGuiComboFlags_HeightLarge    = 8,  // Max ~20 items visible \r\n"
+"   eImGuiComboFlags_HeightLargest  = 16, // As many fitting items as possible \r\n"
+"   eImGuiComboFlags_NoArrowButton  = 32, // Display on the preview box without the square arrow button \r\n"
+"   eImGuiComboFlags_NoPreview      = 64, // Display only a square arrow button \r\n"
+"   eImGuiComboFlags_HeightMask_    = 30, \r\n"
+" }; \r\n"
 " enum ImGuiDir \r\n"
 " { \r\n"
-" eImGuiDir_None    = -1, \r\n"
-" eImGuiDir_Left    = 0, \r\n"
-" eImGuiDir_Right   = 1, \r\n"
-" eImGuiDir_Up      = 2, \r\n"
-" eImGuiDir_Down    = 3, \r\n"
+" eImGuiDir_None = -1, \r\n"
+" eImGuiDir_Left = 0, \r\n"
+" eImGuiDir_Right = 1, \r\n"
+" eImGuiDir_Up = 2, \r\n"
+" eImGuiDir_Down = 3, \r\n"
 " eImGuiDir_COUNT \r\n"
 " }; \r\n"
 "  \r\n"
@@ -299,7 +321,7 @@ namespace agsimgui {
 " // - You may also use one of the many IsItemXXX functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state. \r\n"
 "  \r\n"
 " /// button \r\n"
-" import static bool Button(String label, int width, int height); \r\n"
+" import static bool Button(String label, int width = 0, int height = 0); \r\n"
 "  \r\n"
 " /// button with FramePadding=(0,0) to easily embed within text \r\n"
 " import static bool SmallButton(String label); \r\n"
@@ -314,6 +336,19 @@ namespace agsimgui {
 "  \r\n"
 " /// draw a small circle and keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses \r\n"
 " import static  void Bullet(); \r\n"
+"  \r\n"
+" // Widgets: Selectables \r\n"
+" // - A selectable highlights when hovered, and can display another color when selected. \r\n"
+" /// "bool selected" carry the selection state (read-only). Selectable() is clicked is returns true so you can modify your selection state. size.x==0.0: use remaining width, size.x>0.0: specify width. size.y==0.0: use label height, size.y>0.0: specify height \r\n"
+" import static bool Selectable(String label, bool selected = false, ImGuiSelectableFlags flags = 0, int width = 0, int height = 0); \r\n"
+"  \r\n"
+" // Widgets: Combobox commands \r\n"
+"  \r\n"
+" /// The BeginCombo()/EndCombo() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. \r\n"
+" import static bool BeginCombo(String label, String preview_value, ImGuiComboFlags flags = 0); \r\n"
+"  \r\n"
+" /// Only call EndCombo() if BeginCombo() returns true! \r\n"
+" import static void EndCombo(); \r\n"
 " }; \r\n";
 
 
@@ -431,7 +466,7 @@ int AgsImGui_GetDrawData(){
 }
 
 const char* AgsImGui_GetVersion(){
-    return ImGui::GetVersion();
+    return engine->CreateScriptString(ImGui::GetVersion());
 }
 
 bool AgsImGui_Begin(const char* name, int32 flags = 0){
@@ -498,6 +533,17 @@ void AgsImGui_Bullet(){
     ImGui::Bullet();
 }
 
+bool AgsImGui_Selectable(const char* label, int selected, int flags, int width, int height){
+    return ImGui::Selectable(label, selected != 0, flags, ImVec2((float) width, (float) height));
+}
+
+bool AgsImGui_BeginCombo(const char* name, const char* preview_value, int32 flags = 0){
+    return ImGui::BeginCombo(name, preview_value, flags);
+}
+
+void AgsImGui_EndCombo(){
+    ImGui::EndCombo();
+}
 
 
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
@@ -579,6 +625,9 @@ void AgsImGui_Bullet(){
         engine->RegisterScriptFunction("agsimgui::Checkbox^2", (void*)AgsImGui_Checkbox);
         engine->RegisterScriptFunction("agsimgui::RadioButton^2", (void*)AgsImGui_RadioButton);
         engine->RegisterScriptFunction("agsimgui::Bullet^0", (void*)AgsImGui_Bullet);
+        engine->RegisterScriptFunction("agsimgui::Selectable^5", (void*)AgsImGui_Selectable);
+        engine->RegisterScriptFunction("agsimgui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
+        engine->RegisterScriptFunction("agsimgui::EndCombo^0", (void*)AgsImGui_EndCombo);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
