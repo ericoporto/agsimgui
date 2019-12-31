@@ -173,6 +173,15 @@ namespace agsimgui {
 	const char *ourScriptHeader =
 " // ags imgui module header \r\n"
 "  \r\n"
+" enum ImGuiBeginWindow \r\n"
+" { \r\n"
+"    eImGuiBeginWindow_Fail = 0, \r\n"
+"    eImGuiBeginWindow_OK = 1, \r\n"
+"    eImGuiBeginWindow_Collapsed = 2, \r\n"
+"    eImGuiBeginWindow_OK_Closed = 3, \r\n"
+"    eImGuiBeginWindow_Collapsed_Closed = 4, \r\n"
+" }; \r\n"
+"  \r\n"
 " enum ImGuiSelectableFlags \r\n"
 " { \r\n"
 "    eImGuiSelectableFlags_None               = 0, \r\n"
@@ -281,11 +290,11 @@ namespace agsimgui {
 "  \r\n"
 " // Windows \r\n"
 "  \r\n"
-" /// Push window to the stack. Always call a matching End() for each Begin() call. Return false to indicate the window is collapsed or fully clipped \r\n"
-" import static bool Begin(String name, ImGuiWindowFlags flags = 0); \r\n"
+" /// Push window to the stack. Always call a matching End() for each Begin() call. Return value indicates if it's collapsed or if clicked to close. \r\n"
+" import static ImGuiBeginWindow BeginWindow(String name, bool close_button = 0, ImGuiWindowFlags flags = 0); \r\n"
 "  \r\n"
 " /// pop window from the stack. \r\n"
-" import static void End(); \r\n"
+" import static void EndWindow(); \r\n"
 "  \r\n"
 " // Child Windows \r\n"
 "  \r\n"
@@ -500,11 +509,17 @@ const char* AgsImGui_GetVersion(){
     return engine->CreateScriptString(ImGui::GetVersion());
 }
 
-bool AgsImGui_Begin(const char* name, int32 flags = 0){
-    return ImGui::Begin(name, NULL, flags);
+int AgsImGui_BeginWindow(const char* name, int close, int32 flags = 0){
+    bool p_open = close != 0;
+    bool not_collapsed = ImGui::Begin(name, &p_open, flags);
+
+    if(p_open && !not_collapsed) return 4;
+    else if(p_open && not_collapsed) return 3;
+    else if(!p_open && !not_collapsed) return 2;
+    return 1;
 }
 
-void AgsImGui_End(){
+void AgsImGui_EndWindow(){
     ImGui::End();
 }
 
@@ -678,8 +693,8 @@ bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = 
         engine->RegisterScriptFunction("agsimgui::Render^0", (void*)AgsImGui_Render);
         engine->RegisterScriptFunction("agsimgui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
         engine->RegisterScriptFunction("agsimgui::GetVersion^0", (void*)AgsImGui_GetVersion);
-        engine->RegisterScriptFunction("agsimgui::Begin^2", (void*)AgsImGui_Begin);
-        engine->RegisterScriptFunction("agsimgui::End^0", (void*)AgsImGui_End);
+        engine->RegisterScriptFunction("agsimgui::BeginWindow^3", (void*)AgsImGui_BeginWindow);
+        engine->RegisterScriptFunction("agsimgui::EndWindow^0", (void*)AgsImGui_EndWindow);
         engine->RegisterScriptFunction("agsimgui::BeginChild^5", (void*)AgsImGui_BeginChild);
         engine->RegisterScriptFunction("agsimgui::EndChild^0", (void*)AgsImGui_EndChild);
         engine->RegisterScriptFunction("agsimgui::Text^1", (void*)AgsImGui_Text);
