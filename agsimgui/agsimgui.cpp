@@ -389,6 +389,12 @@ namespace agsimgui {
 "  \r\n"
 " /// return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment! \r\n"
 " import static bool MenuItem(String label, String shortcut, bool selected = false, bool enabled = true); \r\n"
+"  \r\n"
+" /// Override capture or not capture mouse by ImGui for next frame. Mouse will still be captured by AGS. \r\n"
+" import static void DoCaptureMouse(bool want_capture_mouse = true); \r\n"
+"  \r\n"
+" /// Override capture or not capture keyboard by ImGui for next frame. Keyboard will still be captured by AGS. \r\n"
+" import static void DoCaptureKeyboard(bool want_capture_keyboard = true); \r\n"
 " }; \r\n";
 
 
@@ -628,6 +634,14 @@ bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = 
     return  ImGui::MenuItem(label, shortcut, &selected, enabled);
 }
 
+void AgsImGui_DoCaptureMouse(int want_capture_mouse){
+    ImGui::CaptureMouseFromApp(want_capture_mouse != 0);
+}
+
+void AgsImGui_DoCaptureKeyboard(int want_capture_keyboard){
+    ImGui::CaptureKeyboardFromApp(want_capture_keyboard != 0);
+}
+
 
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
@@ -721,6 +735,8 @@ bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = 
         engine->RegisterScriptFunction("AgsImGui::BeginMenu^2", (void*)AgsImGui_BeginMenu);
         engine->RegisterScriptFunction("AgsImGui::EndMenu^0", (void*)AgsImGui_EndMenu);
         engine->RegisterScriptFunction("AgsImGui::MenuItem^4", (void*)AgsImGui_MenuItem);
+        engine->RegisterScriptFunction("AgsImGui::DoCaptureMouse^1", (void*)AgsImGui_DoCaptureMouse);
+        engine->RegisterScriptFunction("AgsImGui::DoCaptureKeyboard^1", (void*)AgsImGui_DoCaptureKeyboard);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
