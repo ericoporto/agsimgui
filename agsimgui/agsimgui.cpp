@@ -266,7 +266,7 @@ namespace agsimgui {
 " eImGuiInputTextFlags_CallbackResize      = 262144,  // Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. \r\n"
 " }; \r\n"
 "  \r\n"
-" struct agsimgui{ \r\n"
+" struct AgsImGui{ \r\n"
 " // Main \r\n"
 "  \r\n"
 " /// start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame(). \r\n"
@@ -688,39 +688,39 @@ bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = 
 
         Mouse_IsButtonDown = (SCAPI_MOUSE_ISBUTTONDOWN) engine->GetScriptFunctionAddress("Mouse::IsButtonDown^1");
 
-        engine->RegisterScriptFunction("agsimgui::NewFrame^0", (void*)AgsImGui_NewFrame);
-        engine->RegisterScriptFunction("agsimgui::EndFrame^0", (void*)AgsImGui_EndFrame);
-        engine->RegisterScriptFunction("agsimgui::Render^0", (void*)AgsImGui_Render);
-        engine->RegisterScriptFunction("agsimgui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
-        engine->RegisterScriptFunction("agsimgui::GetVersion^0", (void*)AgsImGui_GetVersion);
-        engine->RegisterScriptFunction("agsimgui::BeginWindow^3", (void*)AgsImGui_BeginWindow);
-        engine->RegisterScriptFunction("agsimgui::EndWindow^0", (void*)AgsImGui_EndWindow);
-        engine->RegisterScriptFunction("agsimgui::BeginChild^5", (void*)AgsImGui_BeginChild);
-        engine->RegisterScriptFunction("agsimgui::EndChild^0", (void*)AgsImGui_EndChild);
-        engine->RegisterScriptFunction("agsimgui::Text^1", (void*)AgsImGui_Text);
-        engine->RegisterScriptFunction("agsimgui::TextColored^2", (void*)AgsImGui_TextColored);
-        engine->RegisterScriptFunction("agsimgui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
-        engine->RegisterScriptFunction("agsimgui::TextWrapped^1", (void*)AgsImGui_TextWrapped);
-        engine->RegisterScriptFunction("agsimgui::LabelText^2", (void*)AgsImGui_LabelText);
-        engine->RegisterScriptFunction("agsimgui::BulletText^1", (void*)AgsImGui_BulletText);
-        engine->RegisterScriptFunction("agsimgui::Button^3", (void*)AgsImGui_Button);
-        engine->RegisterScriptFunction("agsimgui::SmallButton^1", (void*)AgsImGui_SmallButton);
-        engine->RegisterScriptFunction("agsimgui::ArrowButton^2", (void*)AgsImGui_ArrowButton);
-        engine->RegisterScriptFunction("agsimgui::Checkbox^2", (void*)AgsImGui_Checkbox);
-        engine->RegisterScriptFunction("agsimgui::RadioButton^2", (void*)AgsImGui_RadioButton);
-        engine->RegisterScriptFunction("agsimgui::Bullet^0", (void*)AgsImGui_Bullet);
-        engine->RegisterScriptFunction("agsimgui::Selectable^5", (void*)AgsImGui_Selectable);
-        engine->RegisterScriptFunction("agsimgui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
-        engine->RegisterScriptFunction("agsimgui::EndCombo^0", (void*)AgsImGui_EndCombo);
-        engine->RegisterScriptFunction("agsimgui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
-        engine->RegisterScriptFunction("agsimgui::EndListBox^0", (void*)AgsImGui_EndListBox);
-        engine->RegisterScriptFunction("agsimgui::BeginMenuBar^0", (void*)AgsImGui_BeginMenuBar);
-        engine->RegisterScriptFunction("agsimgui::EndMenuBar^0", (void*)AgsImGui_EndMenuBar);
-        engine->RegisterScriptFunction("agsimgui::BeginMainMenuBar^0", (void*)AgsImGui_BeginMainMenuBar);
-        engine->RegisterScriptFunction("agsimgui::EndMainMenuBar^0", (void*)AgsImGui_EndMainMenuBar);
-        engine->RegisterScriptFunction("agsimgui::BeginMenu^2", (void*)AgsImGui_BeginMenu);
-        engine->RegisterScriptFunction("agsimgui::EndMenu^0", (void*)AgsImGui_EndMenu);
-        engine->RegisterScriptFunction("agsimgui::MenuItem^4", (void*)AgsImGui_MenuItem);
+        engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
+        engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
+        engine->RegisterScriptFunction("AgsImGui::Render^0", (void*)AgsImGui_Render);
+        engine->RegisterScriptFunction("AgsImGui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
+        engine->RegisterScriptFunction("AgsImGui::GetVersion^0", (void*)AgsImGui_GetVersion);
+        engine->RegisterScriptFunction("AgsImGui::BeginWindow^3", (void*)AgsImGui_BeginWindow);
+        engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
+        engine->RegisterScriptFunction("AgsImGui::BeginChild^5", (void*)AgsImGui_BeginChild);
+        engine->RegisterScriptFunction("AgsImGui::EndChild^0", (void*)AgsImGui_EndChild);
+        engine->RegisterScriptFunction("AgsImGui::Text^1", (void*)AgsImGui_Text);
+        engine->RegisterScriptFunction("AgsImGui::TextColored^2", (void*)AgsImGui_TextColored);
+        engine->RegisterScriptFunction("AgsImGui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
+        engine->RegisterScriptFunction("AgsImGui::TextWrapped^1", (void*)AgsImGui_TextWrapped);
+        engine->RegisterScriptFunction("AgsImGui::LabelText^2", (void*)AgsImGui_LabelText);
+        engine->RegisterScriptFunction("AgsImGui::BulletText^1", (void*)AgsImGui_BulletText);
+        engine->RegisterScriptFunction("AgsImGui::Button^3", (void*)AgsImGui_Button);
+        engine->RegisterScriptFunction("AgsImGui::SmallButton^1", (void*)AgsImGui_SmallButton);
+        engine->RegisterScriptFunction("AgsImGui::ArrowButton^2", (void*)AgsImGui_ArrowButton);
+        engine->RegisterScriptFunction("AgsImGui::Checkbox^2", (void*)AgsImGui_Checkbox);
+        engine->RegisterScriptFunction("AgsImGui::RadioButton^2", (void*)AgsImGui_RadioButton);
+        engine->RegisterScriptFunction("AgsImGui::Bullet^0", (void*)AgsImGui_Bullet);
+        engine->RegisterScriptFunction("AgsImGui::Selectable^5", (void*)AgsImGui_Selectable);
+        engine->RegisterScriptFunction("AgsImGui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
+        engine->RegisterScriptFunction("AgsImGui::EndCombo^0", (void*)AgsImGui_EndCombo);
+        engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
+        engine->RegisterScriptFunction("AgsImGui::EndListBox^0", (void*)AgsImGui_EndListBox);
+        engine->RegisterScriptFunction("AgsImGui::BeginMenuBar^0", (void*)AgsImGui_BeginMenuBar);
+        engine->RegisterScriptFunction("AgsImGui::EndMenuBar^0", (void*)AgsImGui_EndMenuBar);
+        engine->RegisterScriptFunction("AgsImGui::BeginMainMenuBar^0", (void*)AgsImGui_BeginMainMenuBar);
+        engine->RegisterScriptFunction("AgsImGui::EndMainMenuBar^0", (void*)AgsImGui_EndMainMenuBar);
+        engine->RegisterScriptFunction("AgsImGui::BeginMenu^2", (void*)AgsImGui_BeginMenu);
+        engine->RegisterScriptFunction("AgsImGui::EndMenu^0", (void*)AgsImGui_EndMenu);
+        engine->RegisterScriptFunction("AgsImGui::MenuItem^4", (void*)AgsImGui_MenuItem);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
