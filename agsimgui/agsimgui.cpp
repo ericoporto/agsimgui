@@ -357,7 +357,28 @@ namespace agsimgui {
 " import static bool BeginListBox(String label, int items_count, int height_in_items = -1); \r\n"
 "  \r\n"
 " /// Only call EndListBox() if BeginListBox() returns true! \r\n"
-" import static void EndListBox(); \r\n"
+" import static void EndListBox(); \r\n"\
+"  \r\n"
+" /// append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window). \r\n"
+" import static bool BeginMenuBar(); \r\n"
+"  \r\n"
+" /// Only call EndMenuBar() if BeginMenuBar() returns true! \r\n"
+" import static void EndMenuBar(); \r\n"
+"  \r\n"
+" /// Create and append to a full screen menu-bar. \r\n"
+" import static bool BeginMainMenuBar(); \r\n"
+"  \r\n"
+" /// Only call EndMainMenuBar() if BeginMainMenuBar() returns true! \r\n"
+" import static void EndMainMenuBar(); \r\n"
+"  \r\n"
+" /// Create a sub-menu entry. Only call EndMenu() if this returns true! \r\n"
+" import static bool BeginMenu(String label, bool enabled = true); \r\n"
+"  \r\n"
+" /// Only call EndMenu() if BeginMenu() returns true! \r\n"
+" import static void EndMenu(); \r\n"
+"  \r\n"
+" /// return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment! \r\n"
+" import static bool MenuItem(String label, String shortcut, bool selected = false, bool enabled = true); \r\n"
 " }; \r\n";
 
 
@@ -562,6 +583,35 @@ void AgsImGui_EndListBox(){
     ImGui::ListBoxFooter();
 }
 
+bool AgsImGui_BeginMenuBar(){
+    return ImGui::BeginMenuBar();
+}
+
+void AgsImGui_EndMenuBar(){
+    ImGui::EndMenuBar();
+}
+
+
+bool AgsImGui_BeginMainMenuBar(){
+    return ImGui::BeginMainMenuBar();
+}
+
+void AgsImGui_EndMainMenuBar(){
+    ImGui::EndMainMenuBar();
+}
+
+bool AgsImGui_BeginMenu(const char* name, int enabled){
+    return ImGui::BeginMenu(name,enabled != 0);
+}
+
+void AgsImGui_EndMenu(){
+    ImGui::EndMenu();
+}
+
+bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = false, bool enabled = true){
+    return  ImGui::MenuItem(label, shortcut, &selected, enabled);
+}
+
 
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
@@ -647,6 +697,13 @@ void AgsImGui_EndListBox(){
         engine->RegisterScriptFunction("agsimgui::EndCombo^0", (void*)AgsImGui_EndCombo);
         engine->RegisterScriptFunction("agsimgui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
         engine->RegisterScriptFunction("agsimgui::EndListBox^0", (void*)AgsImGui_EndListBox);
+        engine->RegisterScriptFunction("agsimgui::BeginMenuBar^0", (void*)AgsImGui_BeginMenuBar);
+        engine->RegisterScriptFunction("agsimgui::EndMenuBar^0", (void*)AgsImGui_EndMenuBar);
+        engine->RegisterScriptFunction("agsimgui::BeginMainMenuBar^0", (void*)AgsImGui_BeginMainMenuBar);
+        engine->RegisterScriptFunction("agsimgui::EndMainMenuBar^0", (void*)AgsImGui_EndMainMenuBar);
+        engine->RegisterScriptFunction("agsimgui::BeginMenu^2", (void*)AgsImGui_BeginMenu);
+        engine->RegisterScriptFunction("agsimgui::EndMenu^0", (void*)AgsImGui_EndMenu);
+        engine->RegisterScriptFunction("agsimgui::MenuItem^4", (void*)AgsImGui_MenuItem);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
