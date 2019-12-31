@@ -5,7 +5,7 @@ LIBDIR =
 CC = gcc
 CXX = g++
 CFLAGS = -fPIC -fvisibility=hidden -O2 -g -Wall -std=c++11
-LIBS = -lm -lstdc++
+LIBS = -lstdc++
 
 ifeq ($(UNAME), Darwin)
 TARGET = libagsimgui.dylib

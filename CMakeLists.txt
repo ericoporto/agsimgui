@@ -3,6 +3,8 @@ project(agsimgui VERSION 0.1.0 DESCRIPTION "Dear ImGui plugin for Adventure Game
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -O2 -g -Wall -std=c++11")
+
 include_directories(../ags/Engine/)
 include_directories(../ags/Common/)
 
@@ -20,3 +22,5 @@ add_library(agsimgui SHARED
         agsimgui/imgui/examples/imgui_impl_softraster.h
         agsimgui/agsimgui.h
         agsimgui/agsimgui.cpp)
+
+target_link_libraries(agsimgui m)
