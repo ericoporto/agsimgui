@@ -2,6 +2,7 @@
 #define SOFTRASTER_TEXTURE_H
 
 #include <cstdlib>
+#include <algorithm>
 #include "defines.h"
 #include "color.h"
 
@@ -63,8 +64,9 @@ struct texture_base_t
 
     inline void clear()
     {
-        if (pixels != nullptr)
+        if (pixels != nullptr) {
             memset(pixels, 0, w * h * size);
+        }
     }
 
     inline void empty()

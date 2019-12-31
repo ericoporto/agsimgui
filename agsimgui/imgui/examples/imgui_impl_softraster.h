@@ -6,7 +6,9 @@
 
 class IAGSEngine;
 
-void ImGui_ImplSoftraster_InitializeScreenAgs(IAGSEngine* engine, int screenWidth, int screenHeight, int colDepth);
+void ImGui_ImplSoftraster_InitializeEngine(IAGSEngine* engine);
+void ImGui_ImplSoftraster_InitializeScreenAgs(int screenWidth, int screenHeight, int colDepth);
+
 int ImGui_ImplSoftraster_GetSprite();
 
 IMGUI_IMPL_API bool     ImGui_ImplSoftraster_Init(texture_base_t* screen);

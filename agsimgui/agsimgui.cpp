@@ -16,6 +16,7 @@
 #define THIS_IS_THE_PLUGIN
 #endif
 
+#include "ac/keycode.h"
 #include "plugin/agsplugin.h"
 
 #include <stdlib.h>
@@ -407,6 +408,10 @@ texture_color32_t screen;
 texture_alpha8_t fontAtlas;
 ImGuiContext *context;
 
+typedef int (*SCAPI_MOUSE_ISBUTTONDOWN) (int button);
+SCAPI_MOUSE_ISBUTTONDOWN Mouse_IsButtonDown = NULL;
+
+
 void AgsImGui_NewFrame(){
     ImGui_ImplSoftraster_NewFrame();
     ImGui::NewFrame();
@@ -505,13 +510,17 @@ void AgsImGui_Bullet(){
 
 		//register functions
 
+        ImGui_ImplSoftraster_InitializeEngine(engine);
         context = ImGui::CreateContext();
         ImGui_ImplSoftraster_Init(&screen);
 
         ImGuiStyle& style = ImGui::GetStyle();
-        style.AntiAliasedLines = false;
-        style.AntiAliasedFill = false;
+        //style.AntiAliasedLines = false;
+        //style.AntiAliasedFill = false;
         style.WindowRounding = 0.0f;
+        style.Alpha = 1.0f;
+
+        ImGui::StyleColorsDark();
 
         ImGuiIO& io = ImGui::GetIO();
         io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight | ImFontAtlasFlags_NoMouseCursors;
@@ -521,6 +530,33 @@ void AgsImGui_Bullet(){
         io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
         fontAtlas.init(width, height, (alpha8_t*)pixels);
         io.Fonts->TexID = &fontAtlas;
+        io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;       // We can honor GetMouseCursor() values (optional)
+
+        io.KeyMap[ImGuiKey_Tab] = eAGSKeyCodeTab;
+        io.KeyMap[ImGuiKey_LeftArrow] = eAGSKeyCodeLeftArrow;
+        io.KeyMap[ImGuiKey_RightArrow] = eAGSKeyCodeRightArrow;
+        io.KeyMap[ImGuiKey_UpArrow] = eAGSKeyCodeUpArrow;
+        io.KeyMap[ImGuiKey_DownArrow] = eAGSKeyCodeDownArrow;
+        io.KeyMap[ImGuiKey_PageUp] = eAGSKeyCodePageUp;
+        io.KeyMap[ImGuiKey_PageDown] = eAGSKeyCodePageDown;
+        io.KeyMap[ImGuiKey_Home] = eAGSKeyCodeHome;
+        io.KeyMap[ImGuiKey_End] = eAGSKeyCodeEnd;
+        io.KeyMap[ImGuiKey_Insert] = eAGSKeyCodeInsert;
+        io.KeyMap[ImGuiKey_Delete] = eAGSKeyCodeDelete;
+        io.KeyMap[ImGuiKey_Backspace] = eAGSKeyCodeBackspace;
+        io.KeyMap[ImGuiKey_Space] = eAGSKeyCodeSpace;
+        io.KeyMap[ImGuiKey_Enter] = eAGSKeyCodeReturn;
+        io.KeyMap[ImGuiKey_Escape] = eAGSKeyCodeEscape;
+        io.KeyMap[ImGuiKey_KeyPadEnter] = eAGSKeyCodeReturn;
+        io.KeyMap[ImGuiKey_A] = eAGSKeyCodeA;
+        io.KeyMap[ImGuiKey_C] = eAGSKeyCodeC;
+        io.KeyMap[ImGuiKey_V] = eAGSKeyCodeV;
+        io.KeyMap[ImGuiKey_X] = eAGSKeyCodeX;
+        io.KeyMap[ImGuiKey_Y] = eAGSKeyCodeY;
+        io.KeyMap[ImGuiKey_Z] = eAGSKeyCodeZ;
+        io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+
+        Mouse_IsButtonDown = (SCAPI_MOUSE_ISBUTTONDOWN) engine->GetScriptFunctionAddress("Mouse::IsButtonDown^1");
 
         engine->RegisterScriptFunction("agsimgui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("agsimgui::EndFrame^0", (void*)AgsImGui_EndFrame);
@@ -544,7 +580,8 @@ void AgsImGui_Bullet(){
         engine->RegisterScriptFunction("agsimgui::RadioButton^2", (void*)AgsImGui_RadioButton);
         engine->RegisterScriptFunction("agsimgui::Bullet^0", (void*)AgsImGui_Bullet);
 
-		engine->RequestEventHook(AGSE_PRESCREENDRAW);
+        engine->RequestEventHook(AGSE_PRESCREENDRAW);
+        engine->RequestEventHook(AGSE_KEYPRESS);
 	}
 
 	//------------------------------------------------------------------------------
@@ -558,19 +595,61 @@ void AgsImGui_Bullet(){
 
 	//------------------------------------------------------------------------------
 
+enum MouseButton {
+    eMouseLeft = 1,
+    eMouseRight = 2,
+    eMouseMiddle = 3,
+    eMouseLeftInv = 5,
+    eMouseRightInv = 6,
+    eMouseMiddleInv = 7,
+    eMouseWheelNorth = 8,
+    eMouseWheelSouth = 9
+};
+
+    int32 ags_mouse_x = 0;
+    int32 ags_mouse_y = 0;
     bool do_only_once = false;
     int AGS_EngineOnEvent(int event, int data)                    //*** optional ***
     {
+        ImGuiIO& io = ImGui::GetIO();
+
         if(event==AGSE_PRESCREENDRAW){
+            engine->GetMousePosition(&ags_mouse_x, &ags_mouse_y);
+
+            io.MousePos = ImVec2(ags_mouse_x, ags_mouse_y);
+
+            if(Mouse_IsButtonDown(eMouseLeft))
+                io.MouseDown[ImGuiMouseButton_Left] = true;
+            else
+                io.MouseDown[ImGuiMouseButton_Left] = false;
+
+            if(Mouse_IsButtonDown(eMouseRight))
+                io.MouseDown[ImGuiMouseButton_Right] = true;
+            else
+                io.MouseDown[ImGuiMouseButton_Right] = false;
+
+            if(Mouse_IsButtonDown(eMouseMiddle))
+                io.MouseDown[ImGuiMouseButton_Middle] = true;
+            else
+                io.MouseDown[ImGuiMouseButton_Middle] = false;
+
             //initialize debug
             if(!do_only_once) {
                 int screenWidth, screenHeight, colDepth;
                 engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
                 printf("\nagsimgui 0.1.0\n");
-                ImGui_ImplSoftraster_InitializeScreenAgs(engine,screenWidth, screenHeight, colDepth);
+                ImGui_ImplSoftraster_InitializeScreenAgs(screenWidth, screenHeight, colDepth);
                 screen.init(screenWidth, screenHeight);
                 do_only_once = true;
             }
+        }
+
+        if(event==AGSE_KEYPRESS){
+            io.KeysDown[data] = true;
+        }
+
+        if(event==AGSE_MOUSECLICK){
+            //io.MouseDow
         }
 
 		switch (event)

@@ -328,7 +328,8 @@ struct color32_t
     inline uint8_t A() const { return a; }
     inline uint8_t V() const { return (R() + G() + B()) / 3; }
     inline uint16_t RGB16() const { return (((r * 0x1FU) / 0xFFU) << 0x0BU) | (((g * 0x3FU) / 0xFFU) << 0x05U) | ((b * 0x1FU) / 0xFFU); }
-    inline uint32_t RGBA32() const { return (r << 24U) | (g << 16U) | (b << 8U) | a; }
+    inline uint32_t RGBA32() const { return (r << 24U) | (g << 16U) | (b << 8U) | (a); }
+    inline uint32_t ARGB32() const { return ((r << 16) | (g << 8) | (b) | ((255-a) << 24)); }
 };
 
 // color add

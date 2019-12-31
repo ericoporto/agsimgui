@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "imgui_impl_softraster.h"
 #include "../misc/softraster/softraster.h"
 #include "plugin/agsplugin.h"
@@ -76,6 +77,12 @@ uint32_t Pixel32::GetColorAsInt() {
 
 #pragma endregion
 
+typedef void* (*SCAPI_DYNAMICSPRITE_CREATE) (int width, int height, int alphaChannel);
+typedef int (*SCAPI_DYNAMICSPRITE_GETGRAPHIC) (void*);
+SCAPI_DYNAMICSPRITE_CREATE DynamicSprite_Create = NULL;
+SCAPI_DYNAMICSPRITE_GETGRAPHIC DynamicSprite_GetGraphic = NULL;
+
+
 texture_base_t* Screen = nullptr;
 IAGSEngine* _Engine;
 int _ScreenWidth;
@@ -92,16 +99,19 @@ void _DrawPixel(uint32_t **longbufferBitmap, int x, int y, int agsColor, int wid
 void CopyScreenToSprite(texture_base_t* screen, uint32_t **longbufferBitmap, int width, int height){
     for(int ix=0; ix<width; ix++) {
         for (int iy = 0; iy < height; iy++) {
-            _DrawPixel(longbufferBitmap, ix, iy,
-                    (reinterpret_cast<texture_color32_t*>(Screen))->at(ix,iy).RGBA32(),
-                    width, height);
+            longbufferBitmap[iy][ix] = (uint32_t) (reinterpret_cast<texture_color32_t*>(screen))->at(ix,iy).ARGB32();
         }
     }
 }
 
 
-void ImGui_ImplSoftraster_InitializeScreenAgs(IAGSEngine* engine, int screenWidth, int screenHeight, int colDepth) {
+void ImGui_ImplSoftraster_InitializeEngine(IAGSEngine* engine) {
     _Engine = engine;
+    DynamicSprite_Create = (SCAPI_DYNAMICSPRITE_CREATE) engine->GetScriptFunctionAddress("DynamicSprite::Create^3");
+    DynamicSprite_GetGraphic = (SCAPI_DYNAMICSPRITE_GETGRAPHIC) engine->GetScriptFunctionAddress("DynamicSprite::get_Graphic");
+}
+
+void ImGui_ImplSoftraster_InitializeScreenAgs(int screenWidth, int screenHeight, int colDepth) {
     _ScreenWidth = screenWidth;
     _ScreenHeight = screenHeight;
 }
@@ -115,7 +125,18 @@ int ImGui_ImplSoftraster_GetSprite() {
 
 void ImGui_ImplSoftraster_GetSurface() {
     if (_Engine == nullptr) return;
-    if (_SpriteId <= 0)  _SpriteId = _Engine->CreateDynamicSprite(32, _ScreenWidth, _ScreenHeight);
+    if (_SpriteId <= 0) {
+        // The code below looks like a hack
+        // _Engine->CreateDynamicSprite() could work, but it's dynamic sprite is created with alpha flag false
+        // That's why I had to use DynamicSprite_Create
+        // Unfortunately, if nobody holds pointers to the dynamic sprite, it gets garbage collected
+        // That's why we increase it's managed object ref count
+
+        void* dyn_spr = DynamicSprite_Create(_ScreenWidth, _ScreenHeight, 1);
+        _SpriteId = DynamicSprite_GetGraphic(dyn_spr);
+        _Engine->IncrementManagedObjectRefCount((const char *)dyn_spr);
+        printf("\nDynamicSprite_Create\n");
+    }
 
     BITMAP *engineSprite = _Engine->GetSpriteGraphic(_SpriteId);
     unsigned char **charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
