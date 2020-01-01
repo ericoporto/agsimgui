@@ -932,6 +932,8 @@ enum MouseButton {
                         int key_pressed = pressed_keys.back();
                         io.KeysDown[key_pressed] = false;
                         pressed_keys.pop_back();
+
+                        // probably is better to keep traversing this and remove only things that have the button lift off, but this is enough for now.
                     }
                 }
             }
@@ -959,6 +961,7 @@ enum MouseButton {
         if(event==AGSE_KEYPRESS){
             io.KeysDown[data] = true;
             pressed_keys.push_back(data);
+            io.AddInputCharacter(data);
         }
 
         if(event==AGSE_MOUSECLICK){
