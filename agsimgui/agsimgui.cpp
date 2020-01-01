@@ -354,6 +354,8 @@ namespace agsimgui {
 " /// button with FramePadding=(0,0) to easily embed within text \r\n"
 " import static bool SmallButton(String label); \r\n"
 "  \r\n"
+" /// create an image with passed sprite ID. \r\n"
+" import static void Image(int sprite_id); \r\n"
 " /// square button with an arrow shape \r\n"
 " import static bool ArrowButton(String str_id, ImGuiDir dir); \r\n"
 "  \r\n"
@@ -363,7 +365,7 @@ namespace agsimgui {
 " import static bool RadioButton(String label, bool active); \r\n"
 "  \r\n"
 " /// draw a small circle and keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses \r\n"
-" import static  void Bullet(); \r\n"
+" import static void Bullet(); \r\n"
 "  \r\n"
 " // Widgets: Selectables \r\n"
 " // - A selectable highlights when hovered, and can display another color when selected. \r\n"
@@ -530,6 +532,8 @@ float ToNormalFloat(uint32_t ui32) {
 #define STRINGIFY(s) STRINGIFY_X(s)
 #define STRINGIFY_X(s) #s
 
+std::vector<texture_color32_t* > image_texture_stack;
+
 texture_color32_t screen;
 texture_alpha8_t fontAtlas;
 ImGuiContext *context;
@@ -624,6 +628,35 @@ bool AgsImGui_Button(const char* label, int width, int height){
 
 bool AgsImGui_SmallButton(const char* label){
     return ImGui::SmallButton(label);
+}
+
+void AgsImGui_Image(int sprite_id){
+    texture_color32_t* image_texture = new texture_color32_t();
+
+    BITMAP *engineSprite = engine->GetSpriteGraphic(sprite_id);
+    int sprite_width = engine->GetSpriteWidth(sprite_id);
+    int sprite_height = engine->GetSpriteHeight(sprite_id);
+
+    image_texture->init(sprite_width,sprite_height);
+
+    unsigned char **charbuffer = engine->GetRawBitmapSurface(engineSprite);
+    uint32_t **longbuffer = (uint32_t**)charbuffer;
+
+    for(int ix=0; ix<sprite_width; ix++) {
+        for (int iy = 0; iy < sprite_height; iy++) {
+
+            image_texture->at(ix,iy).r = getr32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).g = getg32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).b = getb32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).a = geta32(longbuffer[iy][ix]);
+
+        }
+    }
+
+    image_texture_stack.push_back(image_texture);
+    engine->ReleaseBitmapSurface(engineSprite);
+
+    ImGui::Image(image_texture,ImVec2((float)sprite_width,(float)sprite_height));
 }
 
 bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
@@ -804,6 +837,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::BulletText^1", (void*)AgsImGui_BulletText);
         engine->RegisterScriptFunction("AgsImGui::Button^3", (void*)AgsImGui_Button);
         engine->RegisterScriptFunction("AgsImGui::SmallButton^1", (void*)AgsImGui_SmallButton);
+        engine->RegisterScriptFunction("AgsImGui::Image^1", (void*)AgsImGui_Image);
         engine->RegisterScriptFunction("AgsImGui::ArrowButton^2", (void*)AgsImGui_ArrowButton);
         engine->RegisterScriptFunction("AgsImGui::Checkbox^2", (void*)AgsImGui_Checkbox);
         engine->RegisterScriptFunction("AgsImGui::RadioButton^2", (void*)AgsImGui_RadioButton);
@@ -828,6 +862,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
+        engine->RequestEventHook(AGSE_POSTSCREENDRAW);
 	}
 
 	//------------------------------------------------------------------------------
@@ -904,6 +939,15 @@ enum MouseButton {
 
         if(event==AGSE_MOUSECLICK){
             //io.MouseDow
+        }
+
+        if(event==AGSE_POSTSCREENDRAW){
+            while (!image_texture_stack.empty()) {
+                texture_color32_t* image_texture = image_texture_stack.back();
+                image_texture->empty();
+                delete image_texture;
+                image_texture_stack.pop_back();
+            }
         }
 
         /*
