@@ -356,6 +356,10 @@ namespace agsimgui {
 "  \r\n"
 " /// create an image with passed sprite ID. \r\n"
 " import static void Image(int sprite_id); \r\n"
+"  \r\n"
+" /// create a button with an image with passed sprite ID. Returns true while clicked. \r\n"
+" import static bool ImageButton(int sprite_id); \r\n"
+"  \r\n"
 " /// square button with an arrow shape \r\n"
 " import static bool ArrowButton(String str_id, ImGuiDir dir); \r\n"
 "  \r\n"
@@ -532,7 +536,6 @@ float ToNormalFloat(uint32_t ui32) {
 #define STRINGIFY(s) STRINGIFY_X(s)
 #define STRINGIFY_X(s) #s
 
-std::vector<texture_color32_t* > image_texture_stack;
 
 texture_color32_t screen;
 texture_alpha8_t fontAtlas;
@@ -631,32 +634,15 @@ bool AgsImGui_SmallButton(const char* label){
 }
 
 void AgsImGui_Image(int sprite_id){
-    texture_color32_t* image_texture = new texture_color32_t();
-
-    BITMAP *engineSprite = engine->GetSpriteGraphic(sprite_id);
     int sprite_width = engine->GetSpriteWidth(sprite_id);
     int sprite_height = engine->GetSpriteHeight(sprite_id);
+    ImGui::Image(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),ImVec2((float)sprite_width,(float)sprite_height));
+}
 
-    image_texture->init(sprite_width,sprite_height);
-
-    unsigned char **charbuffer = engine->GetRawBitmapSurface(engineSprite);
-    uint32_t **longbuffer = (uint32_t**)charbuffer;
-
-    for(int ix=0; ix<sprite_width; ix++) {
-        for (int iy = 0; iy < sprite_height; iy++) {
-
-            image_texture->at(ix,iy).r = getr32(longbuffer[iy][ix]);
-            image_texture->at(ix,iy).g = getg32(longbuffer[iy][ix]);
-            image_texture->at(ix,iy).b = getb32(longbuffer[iy][ix]);
-            image_texture->at(ix,iy).a = geta32(longbuffer[iy][ix]);
-
-        }
-    }
-
-    image_texture_stack.push_back(image_texture);
-    engine->ReleaseBitmapSurface(engineSprite);
-
-    ImGui::Image(image_texture,ImVec2((float)sprite_width,(float)sprite_height));
+bool AgsImGui_ImageButton(int sprite_id){
+    int sprite_width = engine->GetSpriteWidth(sprite_id);
+    int sprite_height = engine->GetSpriteHeight(sprite_id);
+    return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),ImVec2((float)sprite_width,(float)sprite_height));
 }
 
 bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
@@ -838,6 +824,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::Button^3", (void*)AgsImGui_Button);
         engine->RegisterScriptFunction("AgsImGui::SmallButton^1", (void*)AgsImGui_SmallButton);
         engine->RegisterScriptFunction("AgsImGui::Image^1", (void*)AgsImGui_Image);
+        engine->RegisterScriptFunction("AgsImGui::ImageButton^1", (void*)AgsImGui_ImageButton);
         engine->RegisterScriptFunction("AgsImGui::ArrowButton^2", (void*)AgsImGui_ArrowButton);
         engine->RegisterScriptFunction("AgsImGui::Checkbox^2", (void*)AgsImGui_Checkbox);
         engine->RegisterScriptFunction("AgsImGui::RadioButton^2", (void*)AgsImGui_RadioButton);
@@ -862,7 +849,6 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
-        engine->RequestEventHook(AGSE_POSTSCREENDRAW);
 	}
 
 	//------------------------------------------------------------------------------
@@ -939,15 +925,6 @@ enum MouseButton {
 
         if(event==AGSE_MOUSECLICK){
             //io.MouseDow
-        }
-
-        if(event==AGSE_POSTSCREENDRAW){
-            while (!image_texture_stack.empty()) {
-                texture_color32_t* image_texture = image_texture_stack.back();
-                image_texture->empty();
-                delete image_texture;
-                image_texture_stack.pop_back();
-            }
         }
 
         /*

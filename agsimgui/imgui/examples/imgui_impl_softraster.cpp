@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <vector>
 #include "imgui_impl_softraster.h"
 #include "../misc/softraster/softraster.h"
 #include "plugin/agsplugin.h"
@@ -81,6 +82,7 @@ typedef void* (*SCAPI_DYNAMICSPRITE_CREATE) (int width, int height, int alphaCha
 typedef int (*SCAPI_DYNAMICSPRITE_GETGRAPHIC) (void*);
 SCAPI_DYNAMICSPRITE_CREATE DynamicSprite_Create = NULL;
 SCAPI_DYNAMICSPRITE_GETGRAPHIC DynamicSprite_GetGraphic = NULL;
+std::vector<texture_color32_t* > image_texture_stack;
 
 
 texture_base_t* Screen = nullptr;
@@ -104,6 +106,33 @@ void CopyScreenToSprite(texture_base_t* screen, uint32_t **longbufferBitmap, int
     }
 }
 
+texture_color32_t* ImGui_ImplSoftraster_SpriteIDToTexture(int sprite_id){
+    texture_color32_t* image_texture = new texture_color32_t();
+
+    BITMAP *engineSprite = _Engine->GetSpriteGraphic(sprite_id);
+    int sprite_width = _Engine->GetSpriteWidth(sprite_id);
+    int sprite_height = _Engine->GetSpriteHeight(sprite_id);
+
+    image_texture->init(sprite_width,sprite_height);
+
+    unsigned char **charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
+    uint32_t **longbuffer = (uint32_t**)charbuffer;
+
+    for(int ix=0; ix<sprite_width; ix++) {
+        for (int iy = 0; iy < sprite_height; iy++) {
+
+            image_texture->at(ix,iy).r = getr32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).g = getg32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).b = getb32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).a = geta32(longbuffer[iy][ix]);
+
+        }
+    }
+
+    image_texture_stack.push_back(image_texture);
+    _Engine->ReleaseBitmapSurface(engineSprite);
+    return image_texture;
+}
 
 void ImGui_ImplSoftraster_InitializeEngine(IAGSEngine* engine) {
     _Engine = engine;
@@ -230,4 +259,11 @@ void ImGui_ImplSoftraster_RenderDrawData(ImDrawData* draw_data)
     ImGui_ImplSoftraster_GetSurface();
     CopyScreenToSprite(Screen,_Longbuffer,Screen->w,Screen->h);
     ImGui_ImplSoftraster_ReleaseSurface();
+
+    while (!image_texture_stack.empty()) {
+        texture_color32_t* image_texture = image_texture_stack.back();
+        image_texture->empty();
+        delete image_texture;
+        image_texture_stack.pop_back();
+    }
 }
