@@ -385,6 +385,14 @@ namespace agsimgui {
 " /// CTRL+Click on any drag box to turn them into an input box. Manually input values aren't clamped and can go off-bounds. \r\n"
 " import static int DragInt(String label, int value, int min_value = 0, int max_value = 0, float speed = 0, String format = 0); \r\n"
 "  \r\n"
+" // Widgets: Slider \r\n"
+"  \r\n"
+" /// CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped and can go off-bounds. \r\n"
+" import static float SliderFloat(String label, float value, float min_value = 0, float max_value = 0, String format = 0); \r\n"
+"  \r\n"
+" /// CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped and can go off-bounds. \r\n"
+" import static int SliderInt(String label, int value, int min_value = 0, int max_value = 0, String format = 0); \r\n"
+"  \r\n"
 " // Widgets: Combobox commands \r\n"
 "  \r\n"
 " /// The BeginCombo()/EndCombo() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. \r\n"
@@ -709,6 +717,30 @@ int AgsImgui_DragInt(const char* label, int value, int v_min, int v_max, uint32_
     return ret_value;
 }
 
+uint32_t AgsImGui_SliderFloat(const char* label, uint32_t value, uint32_t v_min, uint32_t v_max, const char* format){
+    std::string format_string =  "%.3f";
+    std::string empty_string =  "";
+    float f_value = ToNormalFloat(value);
+    float f_v_min = ToNormalFloat(v_min);
+    float f_v_max = ToNormalFloat(v_max);
+    if(format == nullptr) format = format_string.c_str();
+    if(label == nullptr) label = empty_string.c_str();
+
+    ImGui::SliderFloat(label, &f_value, f_v_min, f_v_max, format);
+    return ToAgsFloat(f_value);
+}
+
+int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const char* format){
+    std::string format_string =  "%d";
+    std::string empty_string =  "";
+    if(format == nullptr) format = format_string.c_str();
+    if(label == nullptr) label = empty_string.c_str();
+
+    int ret_value = value;
+    ImGui::SliderInt(label, &ret_value, v_min, v_max, format);
+    return ret_value;
+}
+
 bool AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
     return ImGui::ListBoxHeader(name,items_count,height_in_items);
 }
@@ -868,6 +900,8 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::Selectable^5", (void*)AgsImGui_Selectable);
         engine->RegisterScriptFunction("AgsImGui::DragFloat^6", (void*)AgsImGui_DragFloat);
         engine->RegisterScriptFunction("AgsImGui::DragInt^6", (void*)AgsImgui_DragInt);
+        engine->RegisterScriptFunction("AgsImGui::SliderFloat^5", (void*)AgsImGui_SliderFloat);
+        engine->RegisterScriptFunction("AgsImGui::SliderInt^5", (void*)AgsImgui_SliderInt);
         engine->RegisterScriptFunction("AgsImGui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
         engine->RegisterScriptFunction("AgsImGui::EndCombo^0", (void*)AgsImGui_EndCombo);
         engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
