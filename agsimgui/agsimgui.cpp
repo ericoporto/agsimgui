@@ -183,6 +183,20 @@ namespace agsimgui {
 "   ImGuiFocusedFlags_RootAndChildWindows  = 3 \r\n"
 " }; \r\n"
 "  \r\n"
+" enum ImGuiHoveredFlags \r\n"
+" { \r\n"
+"   eImGuiHoveredFlags_None                          = 0,  // Return true if directly over the item/window, not obstructed by another window, not obstructed by an active popup or modal blocking inputs under them. \r\n"
+"   eImGuiHoveredFlags_ChildWindows                  = 1,  // IsWindowHovered() only: Return true if any children of the window is hovered \r\n"
+"   eImGuiHoveredFlags_RootWindow                    = 2,  // IsWindowHovered() only: Test from root window (top most parent of the current hierarchy) \r\n"
+"   eImGuiHoveredFlags_AnyWindow                     = 4,  // IsWindowHovered() only: Return true if any window is hovered \r\n"
+"   eImGuiHoveredFlags_AllowWhenBlockedByPopup       = 8,  // Return true even if a popup window is normally blocking access to this item/window \r\n"
+"   eImGuiHoveredFlags_AllowWhenBlockedByActiveItem  = 32, // Return true even if an active item is blocking access to this item/window. Useful for Drag and Drop patterns. \r\n"
+"   eImGuiHoveredFlags_AllowWhenOverlapped           = 64, // Return true even if the position is obstructed or overlapped by another window \r\n"
+"   eImGuiHoveredFlags_AllowWhenDisabled             = 128, // Return true even if the item is disabled \r\n"
+"   eImGuiHoveredFlags_RectOnly                      = 104, \r\n"
+"   eImGuiHoveredFlags_RootAndChildWindows           = 3 \r\n"
+" }; \r\n"
+"  \r\n"
 " enum ImGuiBeginWindow \r\n"
 " { \r\n"
 "    eImGuiBeginWindow_Fail = 0, \r\n"
@@ -313,6 +327,49 @@ namespace agsimgui {
 "  \r\n"
 " /// pop child window from the stack. \r\n"
 " import static void EndChild(); \r\n"
+"  \r\n"
+" // Item/Widgets Utilities \r\n"
+" // - Most of the functions are referring to the last/previous item we submitted. \r\n"
+"  \r\n"
+" /// is the last item hovered? (and usable, aka not blocked by a popup, etc.). See ImGuiHoveredFlags for more options. \r\n"
+" import static bool IsItemHovered(ImGuiHoveredFlags flags = 0);  \r\n"
+"  \r\n"
+" /// is the last item active? (e.g. button being held, text field being edited. This will continuously return true while holding mouse button on an item.) \r\n"
+" import static bool IsItemActive();  \r\n"
+"  \r\n"
+" /// is the last item focused for keyboard/gamepad navigation? \r\n"
+" import static bool IsItemFocused(); \r\n"
+"  \r\n"
+" /// is the last item visible? (items may be out of sight because of clipping/scrolling) \r\n"
+" import static bool IsItemVisible(); \r\n"
+"  \r\n"
+" /// did the last item modify its underlying value this frame? or was pressed? This is generally the same as the "bool" return value of many widgets. \r\n"
+" import static bool IsItemEdited(); \r\n"
+"  \r\n"
+" /// was the last item just made active (item was previously inactive). \r\n"
+" import static bool IsItemActivated(); \r\n"
+"  \r\n"
+" /// was the last item just made inactive (item was previously active). Useful for Undo/Redo patterns with widgets that requires continuous editing. \r\n"
+" import static bool IsItemDeactivated(); \r\n"
+"  \r\n"
+" /// was the last item just made inactive and made a value change when it was active? (e.g. Slider/Drag moved). Useful for Undo/Redo patterns with widgets that requires continuous editing. \r\n"
+" import static bool IsItemDeactivatedAfterEdit(); \r\n"
+"  \r\n"
+" /// was the last item open state toggled? set by TreeNode(). \r\n"
+" import static bool IsItemToggledOpen(); \r\n"
+"  \r\n"
+" /// is any item hovered? \r\n"
+" import static bool IsAnyItemHovered();  \r\n"
+"  \r\n"
+" /// is any item active? \r\n"
+" import static bool IsAnyItemActive(); \r\n"
+"  \r\n"
+" /// is any item focused? \r\n"
+" import static bool IsAnyItemFocused();  \r\n"
+"  \r\n"
+" // Windows Utilities \r\n"
+" // - 'current window' = the window we are appending into while inside a Begin()/End() block.  \r\n"
+" import static bool IsWindowAppearing(); \r\n"
 "  \r\n"
 " /// return true when window is collapsed. Use this between Begin and End of a window. \r\n"
 " import static bool IsWindowCollapsed(); \r\n"
@@ -614,6 +671,10 @@ void AgsImGui_EndChild(){
     ImGui::EndChild();
 }
 
+bool AgsImGui_IsWindowAppearing(){
+    return ImGui::IsWindowAppearing();
+}
+
 bool AgsImGui_IsWindowCollapsed(){
     return ImGui::IsWindowCollapsed();
 }
@@ -624,6 +685,54 @@ bool AgsImGui_IsWindowFocused(int flags){
 
 bool AgsImGui_IsWindowHovered(int flags){
     return ImGui::IsWindowHovered(flags);
+}
+
+bool AgsImGui_IsItemHovered(int flags){
+    return ImGui::IsItemHovered(flags);
+}
+
+bool AgsImGui_IsItemActive(){
+    return ImGui::IsItemActive();
+}
+
+bool AgsImGui_IsItemFocused(){
+    return ImGui::IsItemFocused();
+}
+
+bool AgsImGui_IsItemVisible(){
+    return ImGui::IsItemVisible();
+}
+
+bool AgsImGui_IsItemEdited(){
+    return ImGui::IsItemEdited();
+}
+
+bool AgsImGui_IsItemActivated(){
+    return ImGui::IsItemActivated();
+}
+
+bool AgsImGui_IsItemDeactivated(){
+    return ImGui::IsItemDeactivated();
+}
+
+bool AgsImGui_IsItemDeactivatedAfterEdit(){
+    return ImGui::IsItemDeactivatedAfterEdit();
+}
+
+bool AgsImGui_IsItemToggledOpen(){
+    return ImGui::IsItemToggledOpen();
+}
+
+bool AgsImGui_IsAnyItemHovered(){
+    return ImGui::IsAnyItemHovered();
+}
+
+bool AgsImGui_IsAnyItemActive(){
+    return ImGui::IsAnyItemActive();
+}
+
+bool AgsImGui_IsAnyItemFocused(){
+    return ImGui::IsAnyItemFocused();
 }
 
 void AgsImGui_Text(const char* text){
@@ -925,9 +1034,22 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
         engine->RegisterScriptFunction("AgsImGui::BeginChild^5", (void*)AgsImGui_BeginChild);
         engine->RegisterScriptFunction("AgsImGui::EndChild^0", (void*)AgsImGui_EndChild);
+        engine->RegisterScriptFunction("AgsImGui::IsWindowAppearing^0", (void*)AgsImGui_IsWindowAppearing);
         engine->RegisterScriptFunction("AgsImGui::IsWindowCollapsed^0", (void*)AgsImGui_IsWindowCollapsed);
         engine->RegisterScriptFunction("AgsImGui::IsWindowFocused^1", (void*)AgsImGui_IsWindowFocused);
         engine->RegisterScriptFunction("AgsImGui::IsWindowHovered^1", (void*)AgsImGui_IsWindowHovered);
+        engine->RegisterScriptFunction("AgsImGui::IsItemHovered^1", (void*)AgsImGui_IsItemHovered);
+        engine->RegisterScriptFunction("AgsImGui::IsItemActive^0", (void*)AgsImGui_IsItemActive);
+        engine->RegisterScriptFunction("AgsImGui::IsItemFocused^0", (void*)AgsImGui_IsItemFocused);
+        engine->RegisterScriptFunction("AgsImGui::IsItemVisible^0", (void*)AgsImGui_IsItemVisible);
+        engine->RegisterScriptFunction("AgsImGui::IsItemEdited^0", (void*)AgsImGui_IsItemEdited);
+        engine->RegisterScriptFunction("AgsImGui::IsItemActivated^0", (void*)AgsImGui_IsItemActivated);
+        engine->RegisterScriptFunction("AgsImGui::IsItemDeactivated^0", (void*)AgsImGui_IsItemDeactivated);
+        engine->RegisterScriptFunction("AgsImGui::IsItemDeactivatedAfterEdit^0", (void*)AgsImGui_IsItemDeactivatedAfterEdit);
+        engine->RegisterScriptFunction("AgsImGui::IsItemToggledOpen^0", (void*)AgsImGui_IsItemToggledOpen);
+        engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
+        engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
+        engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::Text^1", (void*)AgsImGui_Text);
         engine->RegisterScriptFunction("AgsImGui::TextColored^2", (void*)AgsImGui_TextColored);
         engine->RegisterScriptFunction("AgsImGui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
