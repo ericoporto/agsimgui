@@ -393,6 +393,14 @@ namespace agsimgui {
 " /// CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped and can go off-bounds. \r\n"
 " import static int SliderInt(String label, int value, int min_value = 0, int max_value = 0, String format = 0); \r\n"
 "  \r\n"
+" // Widgets: Input with Keyboard \r\n"
+"  \r\n"
+" import static bool InputText(String label, String text_buffer, int size_limit, ImGuiInputTextFlags flags =0); \r\n"
+"  \r\n"
+" import static bool InputTextMultiline(String label, String text_buffer, int size_limit, int width=0, int height=0, ImGuiInputTextFlags flags = 0); \r\n"
+"  \r\n"
+" import static bool InputTextWithHint(String label, String hint, String text_buffer, int size_limit, ImGuiInputTextFlags flags = 0); \r\n"
+"  \r\n"
 " // Widgets: Combobox commands \r\n"
 "  \r\n"
 " /// The BeginCombo()/EndCombo() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. \r\n"
@@ -741,6 +749,25 @@ int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const
     return ret_value;
 }
 
+bool AgsImgui_InputText(const char* label, char* buf, int size_limit, int flags) {
+    if(buf == nullptr) buf = const_cast<char *>(engine->CreateScriptString(""));
+
+    return ImGui::InputText(label,buf,size_limit,flags);
+}
+
+bool AgsImgui_InputTextMultiline(const char* label, char* buf, int size_limit, int width, int height, int flags) {
+    if(buf == nullptr) buf = const_cast<char *>(engine->CreateScriptString(""));
+
+    return ImGui::InputTextMultiline(label,buf,size_limit, ImVec2((float) width, (float) height), flags);
+}
+
+
+bool AgsImgui_InputTextWithHint(const char* label, const char* hint, char* buf, int size_limit, int flags) {
+    if(buf == nullptr) buf = const_cast<char *>(engine->CreateScriptString(""));
+
+    return ImGui::InputTextWithHint(label, hint, buf,size_limit,flags);
+}
+
 bool AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
     return ImGui::ListBoxHeader(name,items_count,height_in_items);
 }
@@ -902,6 +929,9 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::DragInt^6", (void*)AgsImgui_DragInt);
         engine->RegisterScriptFunction("AgsImGui::SliderFloat^5", (void*)AgsImGui_SliderFloat);
         engine->RegisterScriptFunction("AgsImGui::SliderInt^5", (void*)AgsImgui_SliderInt);
+        engine->RegisterScriptFunction("AgsImGui::InputText^4", (void*)AgsImgui_InputText);
+        engine->RegisterScriptFunction("AgsImGui::InputTextMultiline^6", (void*)AgsImgui_InputTextMultiline);
+        engine->RegisterScriptFunction("AgsImGui::InputTextWithHint^5", (void*)AgsImgui_InputTextWithHint);
         engine->RegisterScriptFunction("AgsImGui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
         engine->RegisterScriptFunction("AgsImGui::EndCombo^0", (void*)AgsImGui_EndCombo);
         engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
@@ -995,7 +1025,7 @@ enum MouseButton {
         if(event==AGSE_KEYPRESS){
             io.KeysDown[data] = true;
             pressed_keys.push_back(data);
-            io.AddInputCharacter(data);
+            if(data!=0) io.AddInputCharacter(data);
         }
 
         if(event==AGSE_MOUSECLICK){
