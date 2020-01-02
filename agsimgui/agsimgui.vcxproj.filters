@@ -30,7 +30,6 @@
     <ClCompile Include="imgui\examples\imgui_impl_softraster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    </ClCompile>
     <ClCompile Include="imgui\misc\cpp\imgui_stdlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
