@@ -343,7 +343,7 @@ namespace agsimgui {
 " /// is the last item visible? (items may be out of sight because of clipping/scrolling) \r\n"
 " import static bool IsItemVisible(); \r\n"
 "  \r\n"
-" /// did the last item modify its underlying value this frame? or was pressed? This is generally the same as the "bool" return value of many widgets. \r\n"
+" /// did the last item modify its underlying value this frame? or was pressed? This is generally the same as the bool return value of many widgets. \r\n"
 " import static bool IsItemEdited(); \r\n"
 "  \r\n"
 " /// was the last item just made active (item was previously inactive). \r\n"
