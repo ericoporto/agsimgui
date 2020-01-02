@@ -164,6 +164,7 @@
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClInclude Include="imgui\misc\cpp\imgui_stdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="agsimgui.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\misc\softraster\softraster.h" />
     <ClInclude Include="imgui\misc\softraster\texture.h" />
+    <ClInclude Include="imgui\misc\cpp\imgui_stdlib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
