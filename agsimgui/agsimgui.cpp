@@ -475,6 +475,18 @@ namespace agsimgui {
 " /// Only call EndListBox() if BeginListBox() returns true! \r\n"
 " import static void EndListBox(); \r\n"\
 "  \r\n"
+" // Tooltips \r\n"
+" // - Tooltip are windows following the mouse which do not take focus away. \r\n"
+"  \r\n"
+" /// begin/append a tooltip window. to create full-featured tooltip (with any kind of items).  \r\n"
+" import static void BeginTooltip(); \r\n"
+"  \r\n"
+" /// always call after a BeginTooltip block \r\n"
+" import static void EndTooltip(); \r\n"
+"  \r\n"
+" /// set a text-only tooltip, typically use with ImGui::IsItemHovered(). override any previous call to SetTooltip(). \r\n"
+" import static void SetTooltip(String text)  \r\n"
+"  \r\n"
 " /// append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window). \r\n"
 " import static bool BeginMenuBar(); \r\n"
 "  \r\n"
@@ -903,6 +915,19 @@ void AgsImGui_EndListBox(){
     ImGui::ListBoxFooter();
 }
 
+void AgsImGui_BeginTooltip(){
+    ImGui::BeginTooltip();
+}
+
+void AgsImGui_EndTooltip(){
+    ImGui::EndTooltip();
+}
+
+void AgsImGui_SetTooltip(const char * text){
+    ImGui::SetTooltip(text);
+}
+
+
 bool AgsImGui_BeginMenuBar(){
     return ImGui::BeginMenuBar();
 }
@@ -1076,6 +1101,9 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::EndCombo^0", (void*)AgsImGui_EndCombo);
         engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
         engine->RegisterScriptFunction("AgsImGui::EndListBox^0", (void*)AgsImGui_EndListBox);
+        engine->RegisterScriptFunction("AgsImGui::BeginTooltip^0", (void*)AgsImGui_BeginTooltip);
+        engine->RegisterScriptFunction("AgsImGui::EndTooltip^0", (void*)AgsImGui_EndTooltip);
+        engine->RegisterScriptFunction("AgsImGui::SetTooltip^1", (void*)AgsImGui_SetTooltip);
         engine->RegisterScriptFunction("AgsImGui::BeginMenuBar^0", (void*)AgsImGui_BeginMenuBar);
         engine->RegisterScriptFunction("AgsImGui::EndMenuBar^0", (void*)AgsImGui_EndMenuBar);
         engine->RegisterScriptFunction("AgsImGui::BeginMainMenuBar^0", (void*)AgsImGui_BeginMainMenuBar);
