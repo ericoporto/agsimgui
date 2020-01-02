@@ -16,6 +16,8 @@ add_library(agsimgui SHARED
         agsimgui/imgui/imgui.cpp
         agsimgui/imgui/imgui_draw.cpp
         agsimgui/imgui/imgui_widgets.cpp
+        agsimgui/imgui/misc/cpp/imgui_stdlib.cpp
+        agsimgui/imgui/misc/cpp/imgui_stdlib.h
         agsimgui/imgui/misc/softraster/texture.h
         agsimgui/imgui/misc/softraster/softraster.h
         agsimgui/imgui/examples/imgui_impl_softraster.cpp
