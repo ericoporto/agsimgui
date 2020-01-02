@@ -1049,7 +1049,7 @@ enum MouseButton {
                data != eAGSKeyCodeUpArrow &&
                data != eAGSKeyCodeDownArrow &&
                data != eAGSKeyCodePageUp &&
-               data != eAGSKeyCodePageDown && data < 96 ) io.AddInputCharacter(data);
+               data != eAGSKeyCodePageDown && data < 177 ) io.AddInputCharacter(data);
         }
 
         if(event==AGSE_MOUSECLICK){
