@@ -30,6 +30,7 @@
 #include "imgui/misc/cpp/imgui_stdlib.h"
 
 #include "agsimgui.h"
+#include "Screen.h"
 
 #if defined(BUILTIN_PLUGINS)
 namespace agsimgui {
@@ -663,7 +664,7 @@ float ToNormalFloat(uint32_t ui32) {
 #define STRINGIFY_X(s) #s
 
 
-texture_color32_t screen;
+texture_color32_t software_renderer_screen;
 texture_alpha8_t fontAtlas;
 ImGuiContext *context;
 
@@ -682,11 +683,16 @@ void AgsImGui_EndFrame(){
 
 void AgsImGui_Render(){
     ImGui::Render();
-    ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
+    if(screen.driver == Screen::Driver::eSoftware) {
+        ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
+    }
 }
 
 int AgsImGui_GetDrawData(){
-    return ImGui_ImplSoftraster_GetSprite();
+    if(screen.driver == Screen::Driver::eSoftware) {
+        return ImGui_ImplSoftraster_GetSprite();
+    }
+    return 0;
 }
 
 const char* AgsImGui_GetVersion(){
@@ -814,13 +820,20 @@ bool AgsImGui_SmallButton(const char* label){
 void AgsImGui_Image(int sprite_id){
     int sprite_width = engine->GetSpriteWidth(sprite_id);
     int sprite_height = engine->GetSpriteHeight(sprite_id);
-    ImGui::Image(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),ImVec2((float)sprite_width,(float)sprite_height));
+    if(screen.driver == Screen::Driver::eSoftware) {
+        ImGui::Image(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
+                     ImVec2((float) sprite_width, (float) sprite_height));
+    }
 }
 
 bool AgsImGui_ImageButton(int sprite_id){
     int sprite_width = engine->GetSpriteWidth(sprite_id);
     int sprite_height = engine->GetSpriteHeight(sprite_id);
-    return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),ImVec2((float)sprite_width,(float)sprite_height));
+    if(screen.driver == Screen::Driver::eSoftware) {
+        return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
+                                  ImVec2((float) sprite_width, (float) sprite_height));
+    }
+    return false;
 }
 
 bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
@@ -1044,6 +1057,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 }
 
 
+
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
 		engine = lpEngine;
@@ -1053,10 +1067,27 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 			engine->AbortGame("Plugin needs engine version " STRINGIFY(MIN_ENGINE_VERSION) " or newer.");
 
 		//register functions
+        if(screen.driver == Screen::Driver::eOpenGL) {
 
-        ImGui_ImplSoftraster_InitializeEngine(engine);
+        }
+        if(screen.driver == Screen::Driver::eDirectx9) {
+
+        }
+        if(screen.driver == Screen::Driver::eSoftware) {
+            ImGui_ImplSoftraster_InitializeEngine(engine);
+        }
+
         context = ImGui::CreateContext();
-        ImGui_ImplSoftraster_Init(&screen);
+
+        if(screen.driver == Screen::Driver::eOpenGL) {
+
+        }
+        if(screen.driver == Screen::Driver::eDirectx9) {
+
+        }
+        if(screen.driver == Screen::Driver::eSoftware) {
+            ImGui_ImplSoftraster_Init(&software_renderer_screen);
+        }
 
         ImGuiStyle& style = ImGui::GetStyle();
         style.AntiAliasedLines = false;
@@ -1239,11 +1270,20 @@ enum MouseButton {
 
             //initialize debug
             if(!do_only_once) {
-                int screenWidth, screenHeight, colDepth;
-                engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
+                engine->GetScreenDimensions(&screen.width, &screen.height, &screen.colorDepth);
                 printf("\nagsimgui 0.1.0\n");
-                ImGui_ImplSoftraster_InitializeScreenAgs(screenWidth, screenHeight, colDepth);
-                screen.init(screenWidth, screenHeight);
+
+                if(screen.driver == Screen::Driver::eOpenGL) {
+
+                }
+                if(screen.driver == Screen::Driver::eDirectx9) {
+
+                }
+                if(screen.driver == Screen::Driver::eSoftware) {
+                     ImGui_ImplSoftraster_InitializeScreenAgs(screen.width, screen.height, screen.colorDepth);
+                     software_renderer_screen.init(screen.width, screen.height);
+                 }
+
                 do_only_once = true;
             }
         }
@@ -1305,11 +1345,37 @@ enum MouseButton {
 
 	//------------------------------------------------------------------------------
 
-	void AGS_EngineInitGfx(const char *driverID, void *data)      //*** optional ***
-	{
-		// This allows you to make changes to how the graphics driver starts up.
-		// See documentation
-	}
+    void AGS_EngineInitGfx( char const* driverID, void* data )
+    {
+        // This allows you to make changes to how the graphics driver starts up.
+        #if AGS_PLATFORM_OS_WINDOWS
+        if ( strcmp( driverID, "D3D9" ) == 0 )
+        {
+            D3DPRESENT_PARAMETERS* params = (D3DPRESENT_PARAMETERS*)data;
+            if (params->BackBufferFormat != D3DFMT_X8R8G8B8)
+            {
+                engine->AbortGame( "32bit colour mode required." );
+            }
+
+            screen.backBufferWidth = params->BackBufferWidth;
+            screen.backBufferHeight = params->BackBufferHeight;
+            screen.colorDepth = 32;
+            screen.driver = Screen::Driver::eDirectx9;
+
+            return;
+        }
+        #endif
+
+        if ( strcmp( driverID, "OpenGL" ) == 0 )
+        {
+            screen.driver = Screen::Driver::eOpenGL;
+            return;
+        }
+
+
+        screen.driver = Screen::Driver::eSoftware;
+
+    }
 
 	//..............................................................................
 

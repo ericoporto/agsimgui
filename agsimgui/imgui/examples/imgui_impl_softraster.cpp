@@ -228,6 +228,7 @@ void ImGui_ImplSoftraster_NewFrame()
 void ImGui_ImplSoftraster_RenderDrawData(ImDrawData* draw_data)
 {
     if (Screen == nullptr) return;
+    if (draw_data == nullptr) return;
 
     Screen->clear();
 

@@ -23,6 +23,8 @@ add_library(agsimgui SHARED
         agsimgui/imgui/examples/imgui_impl_softraster.cpp
         agsimgui/imgui/examples/imgui_impl_softraster.h
         agsimgui/agsimgui.h
-        agsimgui/agsimgui.cpp)
+        agsimgui/agsimgui.cpp
+        agsimgui/Screen.cpp
+        agsimgui/Screen.h)
 
 target_link_libraries(agsimgui m)
