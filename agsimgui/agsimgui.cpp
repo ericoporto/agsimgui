@@ -197,6 +197,21 @@ namespace agsimgui {
 "   eImGuiHoveredFlags_RootAndChildWindows           = 3 \r\n"
 " }; \r\n"
 "  \r\n"
+" enum ImGuiTabBarFlags \r\n"
+" { \r\n"
+"   eImGuiTabBarFlags_None                           = 0, \r\n"
+"   eImGuiTabBarFlags_Reorderable                    = 1,   // Allow manually dragging tabs to re-order them + New tabs are appended at the end of list \r\n"
+"   eImGuiTabBarFlags_AutoSelectNewTabs              = 2,   // Automatically select new tabs when they appear \r\n"
+"   eImGuiTabBarFlags_TabListPopupButton             = 4,   // Disable buttons to open the tab list popup \r\n"
+"   eImGuiTabBarFlags_NoCloseWithMiddleMouseButton   = 8,   // Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button.  \r\n"
+"   eImGuiTabBarFlags_NoTabListScrollingButtons      = 16,   // Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll) \r\n"
+"   eImGuiTabBarFlags_NoTooltip                      = 32,   // Disable tooltips when hovering a tab \r\n"
+"   eImGuiTabBarFlags_FittingPolicyResizeDown        = 64,   // Resize tabs when they don't fit \r\n"
+"   eImGuiTabBarFlags_FittingPolicyScroll            = 128,   // Add scroll buttons when tabs don't fit \r\n"
+"   eImGuiTabBarFlags_FittingPolicyMask_             = 192, \r\n"
+"   eImGuiTabBarFlags_FittingPolicyDefault_          = 64 \r\n"
+" }; \r\n"
+"  \r\n"
 " enum ImGuiBeginWindow \r\n"
 " { \r\n"
 "    eImGuiBeginWindow_Fail = 0, \r\n"
@@ -486,6 +501,23 @@ namespace agsimgui {
 "  \r\n"
 " /// set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). override any previous call to SetTooltip(). \r\n"
 " import static void SetTooltip(String text); \r\n"
+"  \r\n"
+" // Tab Bars, Tabs \r\n"
+"  \r\n"
+" /// create and append into a TabBar \r\n"
+" import static bool BeginTabBar(String str_id, ImGuiTabBarFlags flags = 0); \r\n"
+"  \r\n"
+" /// only call EndTabBar() if BeginTabBar() returns true! \r\n"
+" import static void EndTabBar(); \r\n"
+"  \r\n"
+" /// create a Tab. Returns true if the Tab is selected. \r\n"
+" import static bool BeginTabItem(String label, bool has_close_button = 0, ImGuiTabItemFlags flags = 0); \r\n"
+"  \r\n"
+" /// only call EndTabItem() if BeginTabItem() returns true! \r\n"
+" import static void EndTabItem(); \r\n"
+"  \r\n"
+" /// notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name. \r\n"
+" import static void SetTabItemClosed(String tab_or_docked_window_label); \r\n"
 "  \r\n"
 " /// append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window). \r\n"
 " import static bool BeginMenuBar(); \r\n"
@@ -927,6 +959,27 @@ void AgsImGui_SetTooltip(const char * text){
     ImGui::SetTooltip(text);
 }
 
+bool AgsImGui_BeginTabBar(const char * str_id, int flags){
+    return ImGui::BeginTabBar(str_id, flags);
+}
+
+void AgsImGui_EndTabBar(){
+    ImGui::EndTabBar();
+}
+
+bool AgsImGui_BeginTabItem(const char * label,  bool has_close_button, int flags){
+    bool p_open = false;
+    return ImGui::BeginTabItem(label, (has_close_button != 0 ? &p_open : NULL), flags);
+}
+
+void AgsImGui_EndTabItem(){
+    ImGui::EndTabItem();
+}
+
+void AgsImGui_SetTabItemClosed(const char * tab_or_docked_window_label){
+    ImGui::SetTabItemClosed(tab_or_docked_window_label);
+}
+
 
 bool AgsImGui_BeginMenuBar(){
     return ImGui::BeginMenuBar();
@@ -1104,6 +1157,11 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::BeginTooltip^0", (void*)AgsImGui_BeginTooltip);
         engine->RegisterScriptFunction("AgsImGui::EndTooltip^0", (void*)AgsImGui_EndTooltip);
         engine->RegisterScriptFunction("AgsImGui::SetTooltip^1", (void*)AgsImGui_SetTooltip);
+        engine->RegisterScriptFunction("AgsImGui::BeginTabBar^2", (void*)AgsImGui_BeginTabBar);
+        engine->RegisterScriptFunction("AgsImGui::EndTabBar^0", (void*)AgsImGui_EndTabBar);
+        engine->RegisterScriptFunction("AgsImGui::BeginTabItem^3", (void*)AgsImGui_BeginTabItem);
+        engine->RegisterScriptFunction("AgsImGui::EndTabItem^0", (void*)AgsImGui_EndTabItem);
+        engine->RegisterScriptFunction("AgsImGui::SetTabItemClosed^1", (void*)AgsImGui_SetTabItemClosed);
         engine->RegisterScriptFunction("AgsImGui::BeginMenuBar^0", (void*)AgsImGui_BeginMenuBar);
         engine->RegisterScriptFunction("AgsImGui::EndMenuBar^0", (void*)AgsImGui_EndMenuBar);
         engine->RegisterScriptFunction("AgsImGui::BeginMainMenuBar^0", (void*)AgsImGui_BeginMainMenuBar);
