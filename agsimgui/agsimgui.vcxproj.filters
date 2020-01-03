@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\BackendDx9">
+      <UniqueIdentifier>{0e77ffd9-b23e-4b9e-b1ea-e6e07c2b733a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BackendDx9">
+      <UniqueIdentifier>{208095e5-083e-4061-b218-70c21a98f37d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="agsimgui.cpp">
@@ -32,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="imgui\misc\cpp\imgui_stdlib.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\examples\imgui_impl_dx9.cpp">
+      <Filter>Source Files\BackendDx9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,11 +65,12 @@
     <ClInclude Include="imgui\misc\cpp\imgui_stdlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\examples\imgui_impl_dx9.h">
+      <Filter>Header Files\BackendDx9</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="imgui\misc\natvis\imgui.natvis">
-      <Filter>sources</Filter>
-    </None>
+    <None Include="imgui\misc\natvis\imgui.natvis" />
   </ItemGroup>
 </Project>
