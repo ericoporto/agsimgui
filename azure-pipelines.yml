@@ -67,7 +67,13 @@ steps:
     pushd ags
     git checkout release-3.5.0
     popd
+    mkdir dxsdk
+    pushd dxsdk
+    curl -L -o ./dxsdk_aug2007_minimal.zip -k https://github.com/ericoporto/agsimgui/releases/download/pack/dxsdk_aug2007_minimal.zip
+    unzip dxsdk_aug2007_minimal.zip
+    echo '##vso[task.setvariable variable=DXSDK_DIR]$(Build.SourcesDirectory)/../dxsdk/'
     popd
+    
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: 'prepareTask'
 
