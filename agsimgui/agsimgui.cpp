@@ -31,9 +31,8 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "imgui/imgui.h" 
 #include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
-#if AGS_PLATFORM_OS_WINDOWS
 #include "imgui/examples/imgui_impl_dx9.h"
-#endif
+
 #include "imgui/misc/cpp/imgui_stdlib.h"
 
 #include "agsimgui.h"

@@ -26,6 +26,7 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "../imgui.h"
 #include "imgui_impl_dx9.h"
 
+#if AGS_PLATFORM_OS_WINDOWS
 // DirectX
 #include <d3d9.h>
 #define DIRECTINPUT_VERSION 0x0800
@@ -284,3 +285,29 @@ void ImGui_ImplDX9_NewFrame()
     if (!g_FontTexture)
         ImGui_ImplDX9_CreateDeviceObjects();
 }
+
+#else
+bool ImGui_ImplDX9_CreateDeviceObjects()
+{
+    return false;
+}
+
+void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
+{
+
+}
+
+bool ImGui_ImplDX9_Init(void* device)
+{
+
+}
+
+void ImGui_ImplDX9_Shutdown()
+{
+
+}
+
+void ImGui_ImplDX9_NewFrame() {
+
+}
+#endif
