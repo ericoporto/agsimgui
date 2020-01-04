@@ -300,7 +300,7 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
 
 bool ImGui_ImplDX9_Init(void* device)
 {
-
+    return false;
 }
 
 void ImGui_ImplDX9_Shutdown()
@@ -309,6 +309,12 @@ void ImGui_ImplDX9_Shutdown()
 }
 
 void ImGui_ImplDX9_NewFrame() {
+
+}
+
+
+void ImGui_ImplDX9_InvalidateDeviceObjects()
+{
 
 }
 #endif
