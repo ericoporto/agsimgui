@@ -11,6 +11,9 @@
 
 #pragma once
 
+#ifndef AGSIMGUI_RENDER_DX9_H
+#define AGSIMGUI_RENDER_DX9_H
+
 #include "core/platform.h"
 
 struct IDirect3DDevice9;
@@ -28,3 +31,5 @@ IMGUI_IMPL_API void     ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data);
 // Use if you want to reset your rendering device without losing ImGui state.
 IMGUI_IMPL_API bool     ImGui_ImplDX9_CreateDeviceObjects();
 IMGUI_IMPL_API void     ImGui_ImplDX9_InvalidateDeviceObjects();
+
+#endif //AGSIMGUI_RENDER_DX9_H
