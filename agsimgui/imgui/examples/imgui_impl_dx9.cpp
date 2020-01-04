@@ -22,9 +22,11 @@
 //  2018-02-16: Misc: Obsoleted the io.RenderDrawListsFn callback and exposed ImGui_ImplDX9_RenderDrawData() in the .h file so you can call it yourself.
 //  2018-02-06: Misc: Removed call to ImGui::Shutdown() which is not available from 1.60 WIP, user needs to call CreateContext/DestroyContext themselves.
 
-#include "imgui.h"
+struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
+#include "../imgui.h"
 #include "imgui_impl_dx9.h"
 
+#if AGS_PLATFORM_OS_WINDOWS
 // DirectX
 #include <d3d9.h>
 #define DIRECTINPUT_VERSION 0x0800
@@ -105,6 +107,7 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
 void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
 {
+    if (draw_data == nullptr || g_pd3dDevice == nullptr) return;
     // Avoid rendering when minimized
     if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
         return;
@@ -282,3 +285,29 @@ void ImGui_ImplDX9_NewFrame()
     if (!g_FontTexture)
         ImGui_ImplDX9_CreateDeviceObjects();
 }
+
+#else
+bool ImGui_ImplDX9_CreateDeviceObjects()
+{
+    return false;
+}
+
+void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
+{
+
+}
+
+bool ImGui_ImplDX9_Init(void* device)
+{
+
+}
+
+void ImGui_ImplDX9_Shutdown()
+{
+
+}
+
+void ImGui_ImplDX9_NewFrame() {
+
+}
+#endif

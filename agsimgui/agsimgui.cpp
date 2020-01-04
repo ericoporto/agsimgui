@@ -8,6 +8,10 @@
 #define MIN_ENGINE_VERSION 3
 
 #if AGS_PLATFORM_OS_WINDOWS
+
+struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-s
+#include <d3d9.h>
+#include <d3dx9.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -27,9 +31,12 @@
 #include "imgui/imgui.h" 
 #include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
+#include "imgui/examples/imgui_impl_dx9.h"
+
 #include "imgui/misc/cpp/imgui_stdlib.h"
 
 #include "agsimgui.h"
+#include "Screen.h"
 
 #if defined(BUILTIN_PLUGINS)
 namespace agsimgui {
@@ -210,6 +217,15 @@ namespace agsimgui {
 "   eImGuiTabBarFlags_FittingPolicyScroll            = 128,   // Add scroll buttons when tabs don't fit \r\n"
 "   eImGuiTabBarFlags_FittingPolicyMask_             = 192, \r\n"
 "   eImGuiTabBarFlags_FittingPolicyDefault_          = 64 \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiTabItemFlags \r\n"
+" { \r\n"
+"   ImGuiTabItemFlags_None = 0, \r\n"
+"   ImGuiTabItemFlags_UnsavedDocument = 1,   // Append '*' to title without affecting the ID. \r\n"
+"   ImGuiTabItemFlags_SetSelected = 2,   // Trigger flag to programmatically make the tab selected when calling BeginTabItem() \r\n"
+"   ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4,   // Disable behavior of closing tabs  \r\n"
+"   ImGuiTabItemFlags_NoPushId = 8    // Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem() \r\n"
 " }; \r\n"
 "  \r\n"
 " enum ImGuiBeginWindow \r\n"
@@ -663,17 +679,28 @@ float ToNormalFloat(uint32_t ui32) {
 #define STRINGIFY_X(s) #s
 
 
-texture_color32_t screen;
+texture_color32_t software_renderer_screen;
 texture_alpha8_t fontAtlas;
 ImGuiContext *context;
 
 typedef int (*SCAPI_MOUSE_ISBUTTONDOWN) (int button);
 SCAPI_MOUSE_ISBUTTONDOWN Mouse_IsButtonDown = NULL;
 
-
+bool has_new_frame;
 void AgsImGui_NewFrame(){
-    ImGui_ImplSoftraster_NewFrame();
+	if (!screen.initialized) return;
+
+	if (screen.driver == Screen::Driver::eOpenGL) {
+
+	}
+	if (screen.driver == Screen::Driver::eDirectx9) {
+		ImGui_ImplDX9_NewFrame();
+	}
+	if (screen.driver == Screen::Driver::eSoftware) {
+		ImGui_ImplSoftraster_NewFrame();
+	}
     ImGui::NewFrame();
+	has_new_frame = true;
 }
 
 void AgsImGui_EndFrame(){
@@ -681,12 +708,17 @@ void AgsImGui_EndFrame(){
 }
 
 void AgsImGui_Render(){
-    ImGui::Render();
-    ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
+	ImGui::Render();
+    if(screen.driver == Screen::Driver::eSoftware) {
+        ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
+    }
 }
 
 int AgsImGui_GetDrawData(){
-    return ImGui_ImplSoftraster_GetSprite();
+    if(screen.driver == Screen::Driver::eSoftware) {
+        return ImGui_ImplSoftraster_GetSprite();
+    }
+    return 0;
 }
 
 const char* AgsImGui_GetVersion(){
@@ -814,13 +846,20 @@ bool AgsImGui_SmallButton(const char* label){
 void AgsImGui_Image(int sprite_id){
     int sprite_width = engine->GetSpriteWidth(sprite_id);
     int sprite_height = engine->GetSpriteHeight(sprite_id);
-    ImGui::Image(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),ImVec2((float)sprite_width,(float)sprite_height));
+    if(screen.driver == Screen::Driver::eSoftware) {
+        ImGui::Image(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
+                     ImVec2((float) sprite_width, (float) sprite_height));
+    }
 }
 
 bool AgsImGui_ImageButton(int sprite_id){
     int sprite_width = engine->GetSpriteWidth(sprite_id);
     int sprite_height = engine->GetSpriteHeight(sprite_id);
-    return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),ImVec2((float)sprite_width,(float)sprite_height));
+    if(screen.driver == Screen::Driver::eSoftware) {
+        return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
+                                  ImVec2((float) sprite_width, (float) sprite_height));
+    }
+    return false;
 }
 
 bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
@@ -1044,6 +1083,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 }
 
 
+
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
 	{
 		engine = lpEngine;
@@ -1053,10 +1093,27 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 			engine->AbortGame("Plugin needs engine version " STRINGIFY(MIN_ENGINE_VERSION) " or newer.");
 
 		//register functions
+        if(screen.driver == Screen::Driver::eOpenGL) {
 
-        ImGui_ImplSoftraster_InitializeEngine(engine);
+        }
+        if(screen.driver == Screen::Driver::eDirectx9) {
+
+        }
+        if(screen.driver == Screen::Driver::eSoftware) {
+            ImGui_ImplSoftraster_InitializeEngine(engine);
+        }
+
         context = ImGui::CreateContext();
-        ImGui_ImplSoftraster_Init(&screen);
+
+        if(screen.driver == Screen::Driver::eOpenGL) {
+
+        }
+        if(screen.driver == Screen::Driver::eDirectx9) {
+
+        }
+        if(screen.driver == Screen::Driver::eSoftware) {
+            ImGui_ImplSoftraster_Init(&software_renderer_screen);
+        }
 
         ImGuiStyle& style = ImGui::GetStyle();
         style.AntiAliasedLines = false;
@@ -1069,11 +1126,14 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         ImGuiIO& io = ImGui::GetIO();
         io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight | ImFontAtlasFlags_NoMouseCursors;
 
-        uint8_t* pixels;
-        int width, height;
-        io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
-        fontAtlas.init(width, height, (alpha8_t*)pixels);
-        io.Fonts->TexID = &fontAtlas;
+		if (screen.driver == Screen::Driver::eSoftware) {
+			uint8_t* pixels;
+			int width, height;
+			io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
+			fontAtlas.init(width, height, (alpha8_t*)pixels);
+			io.Fonts->TexID = &fontAtlas;
+		}
+
         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;       // We can honor GetMouseCursor() values (optional)
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
@@ -1177,6 +1237,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
+		engine->RequestEventHook(AGSE_POSTSCREENDRAW);
 	}
 
 	//------------------------------------------------------------------------------
@@ -1186,6 +1247,15 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 		// Called by the game engine just before it exits.
 		// This gives you a chance to free any memory and do any cleanup
 		// that you need to do before the engine shuts down.
+		if (screen.driver == Screen::Driver::eOpenGL) {
+
+		}
+		if (screen.driver == Screen::Driver::eDirectx9) {
+			ImGui_ImplDX9_Shutdown();
+		}
+		if (screen.driver == Screen::Driver::eSoftware) {
+			ImGui_ImplSoftraster_Shutdown();
+		}
 	}
 
 	//------------------------------------------------------------------------------
@@ -1210,9 +1280,37 @@ enum MouseButton {
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
         // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        ImGuiIO& io = ImGui::GetIO();
+        
 
         if(event==AGSE_PRESCREENDRAW){
+			ImGuiIO& io = ImGui::GetIO();
+			//initialize debug
+			if (!screen.initialized) {
+				engine->GetScreenDimensions(&screen.width, &screen.height, &screen.colorDepth);
+				printf("\nagsimgui 0.1.0\n");
+
+				if (screen.driver == Screen::Driver::eOpenGL) {
+
+					screen.initialized = true;
+				}
+				if (screen.driver == Screen::Driver::eDirectx9) {
+					if ((IDirect3DDevice9*)data != nullptr) {
+						io.DisplaySize.x = (float)screen.width;
+						io.DisplaySize.y = (float)screen.height;
+						ImGui_ImplDX9_Init((IDirect3DDevice9*)data);
+						ImGui_ImplDX9_InvalidateDeviceObjects();
+						ImGui_ImplDX9_CreateDeviceObjects();
+						screen.initialized = true;
+					}
+				}
+				if (screen.driver == Screen::Driver::eSoftware) {
+					ImGui_ImplSoftraster_InitializeScreenAgs(screen.width, screen.height, screen.colorDepth);
+					software_renderer_screen.init(screen.width, screen.height);
+					screen.initialized = true;
+
+				}
+			}
+
             if(!pressed_keys.empty()) {
                 unstuck_counter++;
 
@@ -1237,18 +1335,10 @@ enum MouseButton {
             io.MouseDown[ImGuiMouseButton_Right] = Mouse_IsButtonDown(eMouseRight) != 0;
             io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
 
-            //initialize debug
-            if(!do_only_once) {
-                int screenWidth, screenHeight, colDepth;
-                engine->GetScreenDimensions(&screenWidth, &screenHeight, &colDepth);
-                printf("\nagsimgui 0.1.0\n");
-                ImGui_ImplSoftraster_InitializeScreenAgs(screenWidth, screenHeight, colDepth);
-                screen.init(screenWidth, screenHeight);
-                do_only_once = true;
-            }
         }
 
         if(event==AGSE_KEYPRESS){
+			ImGuiIO& io = ImGui::GetIO();
             io.KeysDown[data] = true;
             pressed_keys.push_back(data);
             if(data != 0 &&
@@ -1259,6 +1349,15 @@ enum MouseButton {
                data != eAGSKeyCodePageUp &&
                data != eAGSKeyCodePageDown && data < 177 ) io.AddInputCharacter(data);
         }
+
+		if (event == AGSE_POSTSCREENDRAW) {
+			if (screen.driver == Screen::Driver::eDirectx9) {
+				if (has_new_frame) {
+					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+				}
+			}	
+			has_new_frame = false;
+		}
 
         if(event==AGSE_MOUSECLICK){
             //io.MouseDow
@@ -1305,11 +1404,37 @@ enum MouseButton {
 
 	//------------------------------------------------------------------------------
 
-	void AGS_EngineInitGfx(const char *driverID, void *data)      //*** optional ***
-	{
-		// This allows you to make changes to how the graphics driver starts up.
-		// See documentation
-	}
+    void AGS_EngineInitGfx( char const* driverID, void* data )
+    {
+        // This allows you to make changes to how the graphics driver starts up.
+        #if AGS_PLATFORM_OS_WINDOWS
+        if ( strcmp( driverID, "D3D9" ) == 0 )
+        {
+            D3DPRESENT_PARAMETERS* params = (D3DPRESENT_PARAMETERS*)data;
+            if (params->BackBufferFormat != D3DFMT_X8R8G8B8)
+            {
+                engine->AbortGame( "32bit colour mode required." );
+            }
+
+            screen.backBufferWidth = params->BackBufferWidth;
+            screen.backBufferHeight = params->BackBufferHeight;
+            screen.colorDepth = 32;
+            screen.driver = Screen::Driver::eDirectx9;
+
+            return;
+        }
+        #endif
+
+        if ( strcmp( driverID, "OpenGL" ) == 0 )
+        {
+            screen.driver = Screen::Driver::eOpenGL;
+            return;
+        }
+
+
+        screen.driver = Screen::Driver::eSoftware;
+
+    }
 
 	//..............................................................................
 
