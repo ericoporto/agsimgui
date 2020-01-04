@@ -12,6 +12,7 @@ Screen::Screen() {
     frameDelay = 1.f/40.f;
     backBufferWidth = 0;
     backBufferHeight = 0;
+	initialized = false;
 }
 
 Screen::~Screen() {

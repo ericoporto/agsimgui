@@ -15,6 +15,7 @@ class Screen
         eOpenGL = 2,
     };
 
+	bool initialized;
     int width;
     int height;
     int colorDepth;

@@ -106,7 +106,7 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
 void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
 {
-    if (draw_data == nullptr) return;
+    if (draw_data == nullptr || g_pd3dDevice == nullptr) return;
     // Avoid rendering when minimized
     if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
         return;
