@@ -11,9 +11,16 @@
 
 #pragma once
 
+#include "core/platform.h"
+
 struct IDirect3DDevice9;
 
+#if AGS_PLATFORM_OS_WINDOWS
 IMGUI_IMPL_API bool     ImGui_ImplDX9_Init(IDirect3DDevice9* device);
+#else
+IMGUI_IMPL_API bool     ImGui_ImplDX9_Init(void* device);
+#endif
+
 IMGUI_IMPL_API void     ImGui_ImplDX9_Shutdown();
 IMGUI_IMPL_API void     ImGui_ImplDX9_NewFrame();
 IMGUI_IMPL_API void     ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data);
