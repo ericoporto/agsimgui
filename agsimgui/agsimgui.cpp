@@ -8,6 +8,10 @@
 #define MIN_ENGINE_VERSION 3
 
 #if AGS_PLATFORM_OS_WINDOWS
+
+struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-s
+#include <d3d9.h>
+#include <d3dx9.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -27,6 +31,9 @@
 #include "imgui/imgui.h" 
 #include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
+#if AGS_PLATFORM_OS_WINDOWS
+#include "imgui/examples/imgui_impl_dx9.h"
+#endif
 #include "imgui/misc/cpp/imgui_stdlib.h"
 
 #include "agsimgui.h"
@@ -673,7 +680,15 @@ SCAPI_MOUSE_ISBUTTONDOWN Mouse_IsButtonDown = NULL;
 
 
 void AgsImGui_NewFrame(){
-    ImGui_ImplSoftraster_NewFrame();
+	if (screen.driver == Screen::Driver::eOpenGL) {
+
+	}
+	if (screen.driver == Screen::Driver::eDirectx9) {
+		ImGui_ImplDX9_NewFrame();
+	}
+	if (screen.driver == Screen::Driver::eSoftware) {
+		ImGui_ImplSoftraster_NewFrame();
+	}
     ImGui::NewFrame();
 }
 
@@ -1208,6 +1223,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
+		engine->RequestEventHook(AGSE_POSTSCREENDRAW);
 	}
 
 	//------------------------------------------------------------------------------
@@ -1217,6 +1233,15 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 		// Called by the game engine just before it exits.
 		// This gives you a chance to free any memory and do any cleanup
 		// that you need to do before the engine shuts down.
+		if (screen.driver == Screen::Driver::eOpenGL) {
+
+		}
+		if (screen.driver == Screen::Driver::eDirectx9) {
+			ImGui_ImplDX9_Shutdown();
+		}
+		if (screen.driver == Screen::Driver::eSoftware) {
+			ImGui_ImplSoftraster_Shutdown();
+		}
 	}
 
 	//------------------------------------------------------------------------------
@@ -1277,7 +1302,7 @@ enum MouseButton {
 
                 }
                 if(screen.driver == Screen::Driver::eDirectx9) {
-
+					ImGui_ImplDX9_Init((IDirect3DDevice9*)data);
                 }
                 if(screen.driver == Screen::Driver::eSoftware) {
                      ImGui_ImplSoftraster_InitializeScreenAgs(screen.width, screen.height, screen.colorDepth);
@@ -1299,6 +1324,12 @@ enum MouseButton {
                data != eAGSKeyCodePageUp &&
                data != eAGSKeyCodePageDown && data < 177 ) io.AddInputCharacter(data);
         }
+
+		if (event == AGSE_POSTSCREENDRAW) {
+			if (screen.driver == Screen::Driver::eDirectx9) {
+				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+			}		
+		}
 
         if(event==AGSE_MOUSECLICK){
             //io.MouseDow
