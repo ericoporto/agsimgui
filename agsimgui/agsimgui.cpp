@@ -1095,7 +1095,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 
         }
         if(screen.driver == Screen::Driver::eDirectx9) {
-
+			ImGui_ImplDX9_InitializeEngine(engine);
         }
         if(screen.driver == Screen::Driver::eSoftware) {
             ImGui_ImplSoftraster_InitializeEngine(engine);

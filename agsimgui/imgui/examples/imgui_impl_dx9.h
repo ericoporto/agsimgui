@@ -18,6 +18,11 @@
 
 struct IDirect3DDevice9;
 
+
+class IAGSEngine;
+
+void ImGui_ImplDX9_InitializeEngine(IAGSEngine* engine);
+
 #if AGS_PLATFORM_OS_WINDOWS
 IMGUI_IMPL_API bool     ImGui_ImplDX9_Init(IDirect3DDevice9* device);
 #else

@@ -30,8 +30,13 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #if AGS_PLATFORM_OS_WINDOWS
 // DirectX
 #include <d3d9.h>
+#include <d3dx9.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+
+#include "plugin/agsplugin.h"
+
+IAGSEngine* _Engine = nullptr;
 
 // DirectX data
 static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
@@ -263,68 +268,87 @@ static bool ImGui_ImplDX9_CreateFontsTexture()
     return true;
 }
 
-IDirect3DTexture9* ImGui_ImplDX9_priteIDToTexture(int sprite_id){
-    IDirect3DTexture9* CreateTexture( unsigned char const* data, int width, int height, bool alpha )
+
+bool SetTextureData(IDirect3DTexture9* texture, unsigned char const* const* data, int width, int height)
+{
+    //DBG( "Setting texture data" );
+
+    // Lock texture for writing
+    D3DLOCKED_RECT texRect;
+    if (FAILED(texture->LockRect(0, &texRect, NULL, D3DLOCK_DISCARD)))
     {
-        if ( !GetD3D() )
-        {
-            DBG( "Device not available" );
-            return NULL;
-        }
-
-        DBG( "Creating texture" );
-        IDirect3DTexture9* texture = NULL;
-
-        // RGB or ARGB format
-        D3DFORMAT format = D3DFMT_X8R8G8B8;
-
-        if ( alpha )
-        {
-            format = D3DFMT_A8R8G8B8;
-        }
-
-        // Create texture
-        int result = D3DXCreateTexture( GetD3D(), width, height, 1,
-                                        D3DUSAGE_DYNAMIC, format,
-                                        D3DPOOL_DEFAULT, &texture );
-
-        if ( result != D3D_OK )
-        {
-            DBG( "ERROR: Couldn't create texture: %08x", result );
-            return NULL;
-        }
-
-        DBG( "OK" );
-
-        SetTextureData( texture, data, width, height );
-        return texture;
+        //DBG("ERROR: LockRect failed");
+        return false;
     }
 
-    texture_color32_t* image_texture = new texture_color32_t();
+    //DBG( "Copying data" );
+    // Copy data rows
+    int bytesPerPixel = 4;
+    for (int y = 0; y < height; ++y)
+    {
+        unsigned char* pDest = (unsigned char*)texRect.pBits + y * texRect.Pitch;
+        memcpy(pDest, data[y], width * bytesPerPixel);
+    }
+
+    if (FAILED(texture->UnlockRect(0)))
+    {
+        //DBG("ERROR: UnlockRect failed");
+        return false;
+    }
+
+    //DBG( "OK" );
+    return true;
+}
+
+IDirect3DTexture9* CreateTexture(unsigned char const* const* data, int width, int height, bool alpha)
+{
+    if (!g_pd3dDevice)
+    {
+        //DBG("Device not available");
+        return NULL;
+    }
+
+    //DBG("Creating texture");
+    IDirect3DTexture9* texture = NULL;
+
+    // RGB or ARGB format
+    D3DFORMAT format = D3DFMT_X8R8G8B8;
+
+    if (alpha)
+    {
+        format = D3DFMT_A8R8G8B8;
+    }
+
+    // Create texture
+    int result = D3DXCreateTexture(g_pd3dDevice, width, height, 1,
+        D3DUSAGE_DYNAMIC, format,
+        D3DPOOL_DEFAULT, &texture);
+
+    if (result != D3D_OK)
+    {
+        //DBG("ERROR: Couldn't create texture: %08x", result);
+        return NULL;
+    }
+
+    //DBG("OK");
+
+    SetTextureData(texture, data, width, height);
+    return texture;
+}
+
+IDirect3DTexture9* ImGui_ImplDX9_priteIDToTexture(int sprite_id){
 
     BITMAP *engineSprite = _Engine->GetSpriteGraphic(sprite_id);
     int sprite_width = _Engine->GetSpriteWidth(sprite_id);
     int sprite_height = _Engine->GetSpriteHeight(sprite_id);
-
-    image_texture->init(sprite_width,sprite_height);
+    bool has_alpha = _Engine->IsSpriteAlphaBlended(sprite_id) != 0;
 
     unsigned char **charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
-    uint32_t **longbuffer = (uint32_t**)charbuffer;
 
-    for(int ix=0; ix<sprite_width; ix++) {
-        for (int iy = 0; iy < sprite_height; iy++) {
+    IDirect3DTexture9* texture = CreateTexture(charbuffer, sprite_width, sprite_height, has_alpha);
 
-            image_texture->at(ix,iy).r = getr32(longbuffer[iy][ix]);
-            image_texture->at(ix,iy).g = getg32(longbuffer[iy][ix]);
-            image_texture->at(ix,iy).b = getb32(longbuffer[iy][ix]);
-            image_texture->at(ix,iy).a = geta32(longbuffer[iy][ix]);
-
-        }
-    }
-
-    image_texture_stack.push_back(image_texture);
     _Engine->ReleaseBitmapSurface(engineSprite);
-    return image_texture;
+    return texture;
 }
 
 bool ImGui_ImplDX9_CreateDeviceObjects()
@@ -352,6 +376,9 @@ void ImGui_ImplDX9_NewFrame()
 }
 
 #else
+
+#include "plugin/agsplugin.h"
+
 bool ImGui_ImplDX9_CreateDeviceObjects()
 {
     return false;
@@ -382,3 +409,7 @@ void ImGui_ImplDX9_InvalidateDeviceObjects()
 
 }
 #endif
+
+void ImGui_ImplDX9_InitializeEngine(IAGSEngine* engine) {
+    _Engine = engine;
+}
