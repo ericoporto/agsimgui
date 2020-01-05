@@ -1,6 +1,7 @@
 UNAME := $(shell uname)
 
 INCDIR = ../../ags/Engine ../../ags/Common
+OBJS = libs/clip/clip.o libs/clip/image.o
 LIBDIR =
 CC = gcc
 CXX = g++
@@ -10,9 +11,11 @@ LIBS = -lstdc++
 ifeq ($(UNAME), Darwin)
 TARGET = libagsimgui.dylib
 CFLAGS += -DMAC_VERSION
+OBJS += libs/clip/clip_osx.o
 else
 TARGET = libagsimgui.so
 CFLAGS += -DLINUX_VERSION
+OBJS += libs/clip/clip_x11.o
 endif
 
 CXXFLAGS = $(CFLAGS)
