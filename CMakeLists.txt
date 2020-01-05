@@ -54,7 +54,7 @@ add_library(agsimgui SHARED
 
 set(CLIP_EXAMPLES OFF CACHE BOOL "Compile clip examples")
 set(CLIP_TESTS OFF CACHE BOOL "Compile clip tests")
-add_subdirectory(agsimgui/clip    EXCLUDE_FROM_ALL)
+add_subdirectory(agsimgui/libs/clip    EXCLUDE_FROM_ALL)
 
 target_link_libraries(agsimgui m
         clip)
