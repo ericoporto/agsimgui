@@ -20,7 +20,7 @@ struct IDirect3DDevice9;
 
 
 class IAGSEngine;
-class IDirect3DTexture9;
+struct IDirect3DTexture9;
 
 void ImGui_ImplDX9_InitializeEngine(IAGSEngine* engine);
 
