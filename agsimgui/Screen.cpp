@@ -9,6 +9,7 @@ Screen::Screen() {
     height = 0;
     colorDepth = 0;
     gameSpeed = 40;
+    Driver driver = Driver::eSoftware;
     frameDelay = 1.f/40.f;
     backBufferWidth = 0;
     backBufferHeight = 0;

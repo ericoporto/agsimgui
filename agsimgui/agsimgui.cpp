@@ -333,8 +333,8 @@ namespace agsimgui {
 " /// ends the Dear ImGui frame, finalize the draw data. You can get call GetDrawData() to obtain it and run your rendering function. \r\n"
 " import static void Render(); \r\n"
 "  \r\n"
-" /// valid after Render() and until the next call to NewFrame(). this is what you have to render. \r\n"
-" import static int GetDrawData(); \r\n"
+" // valid after Render() and until the next call to NewFrame(). this is what you have to render. \r\n"
+" //import static int GetDrawData(); \r\n"
 "  \r\n"
 "  \r\n"
 " // Demo, Debug, Information \r\n"
@@ -681,12 +681,12 @@ float ToNormalFloat(uint32_t ui32) {
 
 texture_color32_t software_renderer_screen;
 texture_alpha8_t fontAtlas;
-ImGuiContext *context;
+ImGuiContext *context = nullptr;
 
 typedef int (*SCAPI_MOUSE_ISBUTTONDOWN) (int button);
 SCAPI_MOUSE_ISBUTTONDOWN Mouse_IsButtonDown = NULL;
-
-bool has_new_frame;
+bool has_new_render = false;
+bool has_new_frame = false;
 void AgsImGui_NewFrame(){
 	if (!screen.initialized) return;
 
@@ -709,17 +709,15 @@ void AgsImGui_EndFrame(){
 
 void AgsImGui_Render(){
 	ImGui::Render();
-    if(screen.driver == Screen::Driver::eSoftware) {
-        ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
-    }
+    has_new_render = true;
 }
 
-int AgsImGui_GetDrawData(){
-    if(screen.driver == Screen::Driver::eSoftware) {
-        return ImGui_ImplSoftraster_GetSprite();
-    }
-    return 0;
-}
+//int AgsImGui_GetDrawData(){
+//    return 0;
+//    if(screen.driver == Screen::Driver::eSoftware) {
+//        return ImGui_ImplSoftraster_GetSprite();
+//    }
+//}
 
 const char* AgsImGui_GetVersion(){
     return engine->CreateScriptString(ImGui::GetVersion());
@@ -1166,7 +1164,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
         engine->RegisterScriptFunction("AgsImGui::Render^0", (void*)AgsImGui_Render);
-        engine->RegisterScriptFunction("AgsImGui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
+        //engine->RegisterScriptFunction("AgsImGui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
         engine->RegisterScriptFunction("AgsImGui::GetVersion^0", (void*)AgsImGui_GetVersion);
         engine->RegisterScriptFunction("AgsImGui::BeginWindow^3", (void*)AgsImGui_BeginWindow);
         engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
@@ -1352,11 +1350,18 @@ enum MouseButton {
 
 		if (event == AGSE_POSTSCREENDRAW) {
 			if (screen.driver == Screen::Driver::eDirectx9) {
-				if (has_new_frame) {
+				if (has_new_frame && has_new_render) {
 					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 				}
-			}	
-			has_new_frame = false;
+			}
+            if (screen.driver == Screen::Driver::eSoftware) {
+                if (has_new_frame && has_new_render) {
+                    ImGui_ImplSoftraster_RenderDrawData(ImGui::GetDrawData());
+                    engine->BlitBitmap(0,0,engine->GetSpriteGraphic(ImGui_ImplSoftraster_GetSprite()),1);
+                }
+            }
+            has_new_frame = false;
+            has_new_render = false;
 		}
 
         if(event==AGSE_MOUSECLICK){
@@ -1425,11 +1430,11 @@ enum MouseButton {
         }
         #endif
 
-        if ( strcmp( driverID, "OpenGL" ) == 0 )
-        {
-            screen.driver = Screen::Driver::eOpenGL;
-            return;
-        }
+//        if ( strcmp( driverID, "OpenGL" ) == 0 )
+//        {
+//            screen.driver = Screen::Driver::eOpenGL;
+//            return;
+//        }
 
 
         screen.driver = Screen::Driver::eSoftware;
