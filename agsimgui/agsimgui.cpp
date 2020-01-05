@@ -848,6 +848,10 @@ void AgsImGui_Image(int sprite_id){
         ImGui::Image(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
                      ImVec2((float) sprite_width, (float) sprite_height));
     }
+    if(screen.driver == Screen::Driver::eDirectx9) {
+        ImGui::Image(ImGui_ImplDX9_SpriteIDToTexture(sprite_id),
+                     ImVec2((float) sprite_width, (float) sprite_height));
+    }
 }
 
 bool AgsImGui_ImageButton(int sprite_id){
@@ -856,6 +860,10 @@ bool AgsImGui_ImageButton(int sprite_id){
     if(screen.driver == Screen::Driver::eSoftware) {
         return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
                                   ImVec2((float) sprite_width, (float) sprite_height));
+    }
+    if(screen.driver == Screen::Driver::eDirectx9) {
+        return ImGui::ImageButton(ImGui_ImplDX9_SpriteIDToTexture(sprite_id),
+                     ImVec2((float) sprite_width, (float) sprite_height));
     }
     return false;
 }

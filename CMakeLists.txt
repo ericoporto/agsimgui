@@ -3,12 +3,34 @@ project(agsimgui VERSION 0.1.0 DESCRIPTION "Dear ImGui plugin for Adventure Game
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -O2 -g -Wall -std=c++11")
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    # WIN32 is set by CMake for any Windows platform
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(LINUX TRUE)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOS TRUE)
+else()
+    message(FATAL_ERROR "Unsupported system: ${CMAKE_SYSTEM_NAME}")
+endif ()
 
 include_directories(../ags/Engine/)
 include_directories(../ags/Common/)
 
 include_directories(.)
+
+if(NOT MACOS)
+    find_package(OpenGL)
+endif ()
+
+if (WIN32)
+    find_package(DirectX)
+elseif (LINUX)
+    find_package(X11)
+endif()
 
 add_library(agsimgui SHARED
         agsimgui/imgui/imconfig.h

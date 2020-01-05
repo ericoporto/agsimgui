@@ -33,11 +33,13 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include <d3dx9.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+#endif
 
 #include "plugin/agsplugin.h"
 
 IAGSEngine* _Engine = nullptr;
 
+#if AGS_PLATFORM_OS_WINDOWS
 // DirectX data
 static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
 static LPDIRECT3DVERTEXBUFFER9  g_pVB = NULL;
@@ -336,7 +338,7 @@ IDirect3DTexture9* CreateTexture(unsigned char const* const* data, int width, in
     return texture;
 }
 
-IDirect3DTexture9* ImGui_ImplDX9_priteIDToTexture(int sprite_id){
+IDirect3DTexture9* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id){
 
     BITMAP *engineSprite = _Engine->GetSpriteGraphic(sprite_id);
     int sprite_width = _Engine->GetSpriteWidth(sprite_id);
@@ -376,9 +378,6 @@ void ImGui_ImplDX9_NewFrame()
 }
 
 #else
-
-#include "plugin/agsplugin.h"
-
 bool ImGui_ImplDX9_CreateDeviceObjects()
 {
     return false;
@@ -408,6 +407,11 @@ void ImGui_ImplDX9_InvalidateDeviceObjects()
 {
 
 }
+
+void* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id){
+    return nullptr;
+}
+
 #endif
 
 void ImGui_ImplDX9_InitializeEngine(IAGSEngine* engine) {
