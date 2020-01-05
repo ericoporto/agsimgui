@@ -665,14 +665,18 @@ union
     uint32_t ui32;
 } AgsNumber;
 
-uint32_t ToAgsFloat(float f) {
+uint32_t inline ToAgsFloat(float f) {
     AgsNumber.f = f;
     return AgsNumber.ui32;
 }
 
-float ToNormalFloat(uint32_t ui32) {
+float inline ToNormalFloat(uint32_t ui32) {
     AgsNumber.ui32 = ui32;
     return AgsNumber.f;
+}
+
+int inline ToAgsBool(bool b){
+    return b ? 1 : 0;
 }
 
 #define STRINGIFY(s) STRINGIFY_X(s)
@@ -737,76 +741,76 @@ void AgsImGui_EndWindow(){
     ImGui::End();
 }
 
-bool AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
-    return ImGui::BeginChild(str_id,ImVec2((float) width,(float) height), border, flags);
+int AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
+    return ToAgsBool(ImGui::BeginChild(str_id,ImVec2((float) width,(float) height), border, flags));
 }
 
 void AgsImGui_EndChild(){
     ImGui::EndChild();
 }
 
-bool AgsImGui_IsWindowAppearing(){
-    return ImGui::IsWindowAppearing();
+int AgsImGui_IsWindowAppearing(){
+    return ToAgsBool(ImGui::IsWindowAppearing());
 }
 
-bool AgsImGui_IsWindowCollapsed(){
-    return ImGui::IsWindowCollapsed();
+int AgsImGui_IsWindowCollapsed(){
+    return ToAgsBool(ImGui::IsWindowCollapsed());
 }
 
-bool AgsImGui_IsWindowFocused(int flags){
-    return ImGui::IsWindowFocused(flags);
+int AgsImGui_IsWindowFocused(int flags){
+    return ToAgsBool(ImGui::IsWindowFocused(flags));
 }
 
-bool AgsImGui_IsWindowHovered(int flags){
-    return ImGui::IsWindowHovered(flags);
+int AgsImGui_IsWindowHovered(int flags){
+    return ToAgsBool(ImGui::IsWindowHovered(flags));
 }
 
-bool AgsImGui_IsItemHovered(int flags){
-    return ImGui::IsItemHovered(flags);
+int AgsImGui_IsItemHovered(int flags){
+    return ToAgsBool(ImGui::IsItemHovered(flags));
 }
 
-bool AgsImGui_IsItemActive(){
-    return ImGui::IsItemActive();
+int AgsImGui_IsItemActive(){
+    return ToAgsBool(ImGui::IsItemActive());
 }
 
-bool AgsImGui_IsItemFocused(){
-    return ImGui::IsItemFocused();
+int AgsImGui_IsItemFocused(){
+    return ToAgsBool(ImGui::IsItemFocused());
 }
 
-bool AgsImGui_IsItemVisible(){
-    return ImGui::IsItemVisible();
+int AgsImGui_IsItemVisible(){
+    return ToAgsBool(ImGui::IsItemVisible());
 }
 
-bool AgsImGui_IsItemEdited(){
-    return ImGui::IsItemEdited();
+int AgsImGui_IsItemEdited(){
+    return ToAgsBool(ImGui::IsItemEdited());
 }
 
-bool AgsImGui_IsItemActivated(){
-    return ImGui::IsItemActivated();
+int AgsImGui_IsItemActivated(){
+    return ToAgsBool(ImGui::IsItemActivated());
 }
 
-bool AgsImGui_IsItemDeactivated(){
-    return ImGui::IsItemDeactivated();
+int AgsImGui_IsItemDeactivated(){
+    return ToAgsBool(ImGui::IsItemDeactivated());
 }
 
-bool AgsImGui_IsItemDeactivatedAfterEdit(){
-    return ImGui::IsItemDeactivatedAfterEdit();
+int AgsImGui_IsItemDeactivatedAfterEdit(){
+    return ToAgsBool(ImGui::IsItemDeactivatedAfterEdit());
 }
 
-bool AgsImGui_IsItemToggledOpen(){
-    return ImGui::IsItemToggledOpen();
+int AgsImGui_IsItemToggledOpen(){
+    return ToAgsBool(ImGui::IsItemToggledOpen());
 }
 
-bool AgsImGui_IsAnyItemHovered(){
-    return ImGui::IsAnyItemHovered();
+int AgsImGui_IsAnyItemHovered(){
+    return ToAgsBool(ImGui::IsAnyItemHovered());
 }
 
-bool AgsImGui_IsAnyItemActive(){
-    return ImGui::IsAnyItemActive();
+int AgsImGui_IsAnyItemActive(){
+    return ToAgsBool(ImGui::IsAnyItemActive());
 }
 
-bool AgsImGui_IsAnyItemFocused(){
-    return ImGui::IsAnyItemFocused();
+int AgsImGui_IsAnyItemFocused(){
+    return ToAgsBool(ImGui::IsAnyItemFocused());
 }
 
 void AgsImGui_Text(const char* text){
@@ -833,12 +837,12 @@ void AgsImGui_BulletText(const char* text){
     ImGui::BulletText(text);
 }
 
-bool AgsImGui_Button(const char* label, int width, int height){
-    return ImGui::Button(label, ImVec2((float) width, (float) height));
+int AgsImGui_Button(const char* label, int width, int height){
+    return ToAgsBool(ImGui::Button(label, ImVec2((float) width, (float) height)));
 }
 
-bool AgsImGui_SmallButton(const char* label){
-    return ImGui::SmallButton(label);
+int AgsImGui_SmallButton(const char* label){
+    return ToAgsBool(ImGui::SmallButton(label));
 }
 
 void AgsImGui_Image(int sprite_id){
@@ -854,42 +858,42 @@ void AgsImGui_Image(int sprite_id){
     }
 }
 
-bool AgsImGui_ImageButton(int sprite_id){
+int AgsImGui_ImageButton(int sprite_id){
     int sprite_width = engine->GetSpriteWidth(sprite_id);
     int sprite_height = engine->GetSpriteHeight(sprite_id);
     if(screen.driver == Screen::Driver::eSoftware) {
-        return ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
-                                  ImVec2((float) sprite_width, (float) sprite_height));
+        return ToAgsBool(ImGui::ImageButton(ImGui_ImplSoftraster_SpriteIDToTexture(sprite_id),
+                                  ImVec2((float) sprite_width, (float) sprite_height)));
     }
     if(screen.driver == Screen::Driver::eDirectx9) {
-        return ImGui::ImageButton(ImGui_ImplDX9_SpriteIDToTexture(sprite_id),
-                     ImVec2((float) sprite_width, (float) sprite_height));
+        return ToAgsBool(ImGui::ImageButton(ImGui_ImplDX9_SpriteIDToTexture(sprite_id),
+                     ImVec2((float) sprite_width, (float) sprite_height)));
     }
-    return false;
+    return 0;
 }
 
-bool AgsImGui_ArrowButton(const char* str_id, int32 dir){
-    return ImGui::ArrowButton(str_id, dir);
+int AgsImGui_ArrowButton(const char* str_id, int32 dir){
+    return ToAgsBool(ImGui::ArrowButton(str_id, dir));
 }
 
-bool AgsImGui_Checkbox(const char* label, bool v){
-    return ImGui::Checkbox(label, &v);
+int AgsImGui_Checkbox(const char* label, bool v){
+    return ToAgsBool(ImGui::Checkbox(label, &v));
 }
 
-bool AgsImGui_RadioButton(const char* label, bool active){
-    return ImGui::RadioButton(label, active);
+int AgsImGui_RadioButton(const char* label, bool active){
+    return ToAgsBool(ImGui::RadioButton(label, active));
 }
 
 void AgsImGui_Bullet(){
     ImGui::Bullet();
 }
 
-bool AgsImGui_Selectable(const char* label, int selected, int flags, int width, int height){
-    return ImGui::Selectable(label, selected != 0, flags, ImVec2((float) width, (float) height));
+int AgsImGui_Selectable(const char* label, int selected, int flags, int width, int height){
+    return ToAgsBool(ImGui::Selectable(label, selected != 0, flags, ImVec2((float) width, (float) height)));
 }
 
-bool AgsImGui_BeginCombo(const char* name, const char* preview_value, int32 flags = 0){
-    return ImGui::BeginCombo(name, preview_value, flags);
+int AgsImGui_BeginCombo(const char* name, const char* preview_value, int32 flags = 0){
+    return ToAgsBool(ImGui::BeginCombo(name, preview_value, flags));
 }
 
 void AgsImGui_EndCombo(){
@@ -984,8 +988,8 @@ const char* AgsImgui_InputTextWithHint(const char* label, const char* hint, cons
     return buf;
 }
 
-bool AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
-    return ImGui::ListBoxHeader(name,items_count,height_in_items);
+int AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
+    return ToAgsBool(ImGui::ListBoxHeader(name,items_count,height_in_items));
 }
 
 void AgsImGui_EndListBox(){
@@ -1004,17 +1008,17 @@ void AgsImGui_SetTooltip(const char * text){
     ImGui::SetTooltip(text);
 }
 
-bool AgsImGui_BeginTabBar(const char * str_id, int flags){
-    return ImGui::BeginTabBar(str_id, flags);
+int AgsImGui_BeginTabBar(const char * str_id, int flags){
+    return ToAgsBool(ImGui::BeginTabBar(str_id, flags));
 }
 
 void AgsImGui_EndTabBar(){
     ImGui::EndTabBar();
 }
 
-bool AgsImGui_BeginTabItem(const char * label,  bool has_close_button, int flags){
+int AgsImGui_BeginTabItem(const char * label,  bool has_close_button, int flags){
     bool p_open = false;
-    return ImGui::BeginTabItem(label, (has_close_button != 0 ? &p_open : NULL), flags);
+    return ToAgsBool(ImGui::BeginTabItem(label, (has_close_button != 0 ? &p_open : NULL), flags));
 }
 
 void AgsImGui_EndTabItem(){
@@ -1026,8 +1030,8 @@ void AgsImGui_SetTabItemClosed(const char * tab_or_docked_window_label){
 }
 
 
-bool AgsImGui_BeginMenuBar(){
-    return ImGui::BeginMenuBar();
+int AgsImGui_BeginMenuBar(){
+    return ToAgsBool(ImGui::BeginMenuBar());
 }
 
 void AgsImGui_EndMenuBar(){
@@ -1035,24 +1039,24 @@ void AgsImGui_EndMenuBar(){
 }
 
 
-bool AgsImGui_BeginMainMenuBar(){
-    return ImGui::BeginMainMenuBar();
+int AgsImGui_BeginMainMenuBar(){
+    return ToAgsBool(ImGui::BeginMainMenuBar());
 }
 
 void AgsImGui_EndMainMenuBar(){
     ImGui::EndMainMenuBar();
 }
 
-bool AgsImGui_BeginMenu(const char* name, int enabled){
-    return ImGui::BeginMenu(name,enabled != 0);
+int AgsImGui_BeginMenu(const char* name, int enabled){
+    return ToAgsBool(ImGui::BeginMenu(name,enabled != 0));
 }
 
 void AgsImGui_EndMenu(){
     ImGui::EndMenu();
 }
 
-bool AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = false, bool enabled = true){
-    return  ImGui::MenuItem(label, shortcut, &selected, enabled);
+int AgsImGui_MenuItem(const char* label, const char* shortcut, bool selected = false, bool enabled = true){
+    return  ToAgsBool(ImGui::MenuItem(label, shortcut, &selected, enabled));
 }
 
 void AgsImGui_DoCaptureMouse(int want_capture_mouse){
@@ -1193,7 +1197,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::IsItemToggledOpen^0", (void*)AgsImGui_IsItemToggledOpen);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
-        engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemHovered);
+        engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
         engine->RegisterScriptFunction("AgsImGui::Text^1", (void*)AgsImGui_Text);
         engine->RegisterScriptFunction("AgsImGui::TextColored^2", (void*)AgsImGui_TextColored);
         engine->RegisterScriptFunction("AgsImGui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
