@@ -30,9 +30,16 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #if AGS_PLATFORM_OS_WINDOWS
 // DirectX
 #include <d3d9.h>
+#include <d3dx9.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+#endif
 
+#include "plugin/agsplugin.h"
+
+IAGSEngine* _Engine = nullptr;
+
+#if AGS_PLATFORM_OS_WINDOWS
 // DirectX data
 static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
 static LPDIRECT3DVERTEXBUFFER9  g_pVB = NULL;
@@ -263,6 +270,89 @@ static bool ImGui_ImplDX9_CreateFontsTexture()
     return true;
 }
 
+
+bool SetTextureData(IDirect3DTexture9* texture, unsigned char const* const* data, int width, int height)
+{
+    //DBG( "Setting texture data" );
+
+    // Lock texture for writing
+    D3DLOCKED_RECT texRect;
+    if (FAILED(texture->LockRect(0, &texRect, NULL, D3DLOCK_DISCARD)))
+    {
+        //DBG("ERROR: LockRect failed");
+        return false;
+    }
+
+    //DBG( "Copying data" );
+    // Copy data rows
+    int bytesPerPixel = 4;
+    for (int y = 0; y < height; ++y)
+    {
+        unsigned char* pDest = (unsigned char*)texRect.pBits + y * texRect.Pitch;
+        memcpy(pDest, data[y], width * bytesPerPixel);
+    }
+
+    if (FAILED(texture->UnlockRect(0)))
+    {
+        //DBG("ERROR: UnlockRect failed");
+        return false;
+    }
+
+    //DBG( "OK" );
+    return true;
+}
+
+IDirect3DTexture9* CreateTexture(unsigned char const* const* data, int width, int height, bool alpha)
+{
+    if (!g_pd3dDevice)
+    {
+        //DBG("Device not available");
+        return NULL;
+    }
+
+    //DBG("Creating texture");
+    IDirect3DTexture9* texture = NULL;
+
+    // RGB or ARGB format
+    D3DFORMAT format = D3DFMT_X8R8G8B8;
+
+    if (alpha)
+    {
+        format = D3DFMT_A8R8G8B8;
+    }
+
+    // Create texture
+    int result = D3DXCreateTexture(g_pd3dDevice, width, height, 1,
+        D3DUSAGE_DYNAMIC, format,
+        D3DPOOL_DEFAULT, &texture);
+
+    if (result != D3D_OK)
+    {
+        //DBG("ERROR: Couldn't create texture: %08x", result);
+        return NULL;
+    }
+
+    //DBG("OK");
+
+    SetTextureData(texture, data, width, height);
+    return texture;
+}
+
+IDirect3DTexture9* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id){
+
+    BITMAP *engineSprite = _Engine->GetSpriteGraphic(sprite_id);
+    int sprite_width = _Engine->GetSpriteWidth(sprite_id);
+    int sprite_height = _Engine->GetSpriteHeight(sprite_id);
+    bool has_alpha = _Engine->IsSpriteAlphaBlended(sprite_id) != 0;
+
+    unsigned char **charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
+
+    IDirect3DTexture9* texture = CreateTexture(charbuffer, sprite_width, sprite_height, has_alpha);
+
+    _Engine->ReleaseBitmapSurface(engineSprite);
+    return texture;
+}
+
 bool ImGui_ImplDX9_CreateDeviceObjects()
 {
     if (!g_pd3dDevice)
@@ -317,4 +407,13 @@ void ImGui_ImplDX9_InvalidateDeviceObjects()
 {
 
 }
+
+void* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id){
+    return nullptr;
+}
+
 #endif
+
+void ImGui_ImplDX9_InitializeEngine(IAGSEngine* engine) {
+    _Engine = engine;
+}

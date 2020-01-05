@@ -18,10 +18,18 @@
 
 struct IDirect3DDevice9;
 
+
+class IAGSEngine;
+class IDirect3DTexture9;
+
+void ImGui_ImplDX9_InitializeEngine(IAGSEngine* engine);
+
 #if AGS_PLATFORM_OS_WINDOWS
 IMGUI_IMPL_API bool     ImGui_ImplDX9_Init(IDirect3DDevice9* device);
+IDirect3DTexture9* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id);
 #else
 IMGUI_IMPL_API bool     ImGui_ImplDX9_Init(void* device);
+void* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id);
 #endif
 
 IMGUI_IMPL_API void     ImGui_ImplDX9_Shutdown();
