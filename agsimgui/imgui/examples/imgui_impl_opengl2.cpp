@@ -29,7 +29,8 @@
 //  2016-09-10: OpenGL: Uploading font texture as RGBA32 to increase compatibility with users shaders (not ideal).
 //  2016-09-05: OpenGL: Fixed save and restore of current scissor rectangle.
 
-#include "imgui.h"
+#include "core/platform.h"
+#include "../imgui.h"
 #include "imgui_impl_opengl2.h"
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
 #include <stddef.h>     // intptr_t
@@ -49,6 +50,8 @@
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
+#include <cstdio>
+
 #endif
 
 // OpenGL Data
@@ -139,6 +142,7 @@ void ImGui_ImplOpenGL2_RenderDrawData(ImDrawData* draw_data)
     for (int n = 0; n < draw_data->CmdListsCount; n++)
     {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
+        if(cmd_list == nullptr) continue;
         const ImDrawVert* vtx_buffer = cmd_list->VtxBuffer.Data;
         const ImDrawIdx* idx_buffer = cmd_list->IdxBuffer.Data;
         glVertexPointer(2, GL_FLOAT, sizeof(ImDrawVert), (const GLvoid*)((const char*)vtx_buffer + IM_OFFSETOF(ImDrawVert, pos)));
@@ -218,6 +222,8 @@ bool ImGui_ImplOpenGL2_CreateFontsTexture()
 
     // Restore state
     glBindTexture(GL_TEXTURE_2D, last_texture);
+
+    printf("\ncreate fonts for opengl\n");
 
     return true;
 }

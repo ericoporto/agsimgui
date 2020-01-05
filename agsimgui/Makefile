@@ -1,11 +1,11 @@
 UNAME := $(shell uname)
 
-INCDIR = ../../ags/Engine ../../ags/Common
+INCDIR = ../../ags/Engine ../../ags/Common imgui/examples/libs/gl3w
 LIBDIR =
 CC = gcc
 CXX = g++
 CFLAGS = -fPIC -fvisibility=hidden -O2 -g -Wall -std=c++11
-LIBS = -lstdc++
+LIBS = -lstdc++ -lGL -ldl
 
 ifeq ($(UNAME), Darwin)
 TARGET = libagsimgui.dylib
@@ -24,6 +24,7 @@ CFLAGS   := $(addprefix -I,$(INCDIR)) $(CFLAGS)
 CXXFLAGS := $(CFLAGS) $(CXXFLAGS)
 ASFLAGS  := $(CFLAGS) $(ASFLAGS)
 
+CXXFLAGS += -DIMGUI_IMPL_OPENGL_LOADER_GL3W
 
 .PHONY: clean
 

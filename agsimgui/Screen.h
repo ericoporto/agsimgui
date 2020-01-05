@@ -10,9 +10,9 @@ class Screen
 
     public:
     enum Driver {
-        eSoftware = 0,
+        eSoftware = 2,
         eDirectx9 = 1,
-        eOpenGL = 2,
+        eOpenGL = 0,
     };
 
 	bool initialized;

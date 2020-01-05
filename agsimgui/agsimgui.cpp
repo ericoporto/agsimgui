@@ -32,8 +32,17 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "imgui/misc/softraster/softraster.h"
 #include "imgui/examples/imgui_impl_softraster.h"
 #include "imgui/examples/imgui_impl_dx9.h"
+#include "imgui/examples/imgui_impl_opengl2.h"
 
 #include "imgui/misc/cpp/imgui_stdlib.h"
+
+#define GL_GLEXT_PROTOTYPES
+#if AGS_PLATFORM_OS_MACOS || AGS_PLATFORM_OS_IOS
+#define GL_SILENCE_DEPRECATION
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 
 #include "agsimgui.h"
 #include "Screen.h"
@@ -576,13 +585,6 @@ namespace agsimgui {
 
 
 	//------------------------------------------------------------------------------
-	LPCSTR AGS_GetPluginName(void)
-	{
-		// Return the plugin description
-		return "agsimgui";
-	}
-
-	//------------------------------------------------------------------------------
 
 	int AGS_EditorStartup(IAGSEditor *lpEditor)
 	{
@@ -691,7 +693,7 @@ void AgsImGui_NewFrame(){
 	if (!screen.initialized) return;
 
 	if (screen.driver == Screen::Driver::eOpenGL) {
-
+        ImGui_ImplOpenGL2_NewFrame();
 	}
 	if (screen.driver == Screen::Driver::eDirectx9) {
 		ImGui_ImplDX9_NewFrame();
@@ -1238,6 +1240,8 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
 		engine->RequestEventHook(AGSE_POSTSCREENDRAW);
+
+		printf("\nAgsImGui Engine Startup Successfully\n");
 	}
 
 	//------------------------------------------------------------------------------
@@ -1248,7 +1252,7 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
 		// This gives you a chance to free any memory and do any cleanup
 		// that you need to do before the engine shuts down.
 		if (screen.driver == Screen::Driver::eOpenGL) {
-
+            ImGui_ImplOpenGL2_Shutdown();
 		}
 		if (screen.driver == Screen::Driver::eDirectx9) {
 			ImGui_ImplDX9_Shutdown();
@@ -1270,145 +1274,182 @@ enum MouseButton {
     eMouseWheelNorth = 8,
     eMouseWheelSouth = 9
 };
-    std::vector<int> pressed_keys;
-    int32 ags_mouse_x = 0;
-    int32 ags_mouse_y = 0;
-    bool do_only_once = false;
-    int unstuck_counter = 0;
-    int AGS_EngineOnEvent(int event, int data)                    //*** optional ***
-    {
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        
 
-        if(event==AGSE_PRESCREENDRAW){
-			ImGuiIO& io = ImGui::GetIO();
-			//initialize debug
-			if (!screen.initialized) {
-				engine->GetScreenDimensions(&screen.width, &screen.height, &screen.colorDepth);
-				printf("\nagsimgui 0.1.0\n");
+std::vector<int> pressed_keys;
+int32 ags_mouse_x = 0;
+int32 ags_mouse_y = 0;
+int unstuck_counter = 0;
 
-				if (screen.driver == Screen::Driver::eOpenGL) {
+const char * AGS_GetPluginName(void)
+{
+    // Return the plugin description
+    return "agsimgui";
+}
 
-					screen.initialized = true;
-				}
-				if (screen.driver == Screen::Driver::eDirectx9) {
-					if ((IDirect3DDevice9*)data != nullptr) {
-						io.DisplaySize.x = (float)screen.width;
-						io.DisplaySize.y = (float)screen.height;
-						ImGui_ImplDX9_Init((IDirect3DDevice9*)data);
-						ImGui_ImplDX9_InvalidateDeviceObjects();
-						ImGui_ImplDX9_CreateDeviceObjects();
-						screen.initialized = true;
-					}
-				}
-				if (screen.driver == Screen::Driver::eSoftware) {
-					ImGui_ImplSoftraster_InitializeScreenAgs(screen.width, screen.height, screen.colorDepth);
-					software_renderer_screen.init(screen.width, screen.height);
-					screen.initialized = true;
+int AGS_EngineOnEvent(int event, int data)
+{
+    // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+    // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+    // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 
-				}
-			}
 
-            if(!pressed_keys.empty()) {
-                unstuck_counter++;
+    if(event==AGSE_PRESCREENDRAW){
+        ImGuiIO& io = ImGui::GetIO();
+        //initialize debug
+        if (!screen.initialized) {
+            engine->GetScreenDimensions(&screen.width, &screen.height, &screen.colorDepth);
+            printf("\nagsimgui 0.1.0\n");
 
-                if(unstuck_counter>5) {
-                    unstuck_counter = 0;
-                    while (!pressed_keys.empty()) {
-                        int key_pressed = pressed_keys.back();
-                        io.KeysDown[key_pressed] = false;
-                        pressed_keys.pop_back();
-
-                        // probably is better to keep traversing this and remove only things that have the button lift off, but this is enough for now.
-                    }
+            if (screen.driver == Screen::Driver::eOpenGL) {
+                printf("\ninitializing AgsImGui OpenGL\n");
+                io.DisplaySize.x = (float)screen.width;
+                io.DisplaySize.y = (float)screen.height;
+                ImGui_ImplOpenGL2_Init();
+                screen.initialized = true;
+                printf("\nAgsImGui OpenGL initialized\n");
+            }
+            if (screen.driver == Screen::Driver::eDirectx9) {
+                if ((IDirect3DDevice9*)data != nullptr) {
+                    io.DisplaySize.x = (float)screen.width;
+                    io.DisplaySize.y = (float)screen.height;
+                    ImGui_ImplDX9_Init((IDirect3DDevice9*)data);
+                    ImGui_ImplDX9_InvalidateDeviceObjects();
+                    ImGui_ImplDX9_CreateDeviceObjects();
+                    screen.initialized = true;
                 }
             }
-            else {
-                engine->GetMousePosition(&ags_mouse_x, &ags_mouse_y);
+            if (screen.driver == Screen::Driver::eSoftware) {
+                ImGui_ImplSoftraster_InitializeScreenAgs(screen.width, screen.height, screen.colorDepth);
+                software_renderer_screen.init(screen.width, screen.height);
+                screen.initialized = true;
 
-                io.MousePos = ImVec2((float) ags_mouse_x, (float) ags_mouse_y);
             }
-
-            io.MouseDown[ImGuiMouseButton_Left] = Mouse_IsButtonDown(eMouseLeft) != 0;
-            io.MouseDown[ImGuiMouseButton_Right] = Mouse_IsButtonDown(eMouseRight) != 0;
-            io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
-
         }
 
-        if(event==AGSE_KEYPRESS){
-			ImGuiIO& io = ImGui::GetIO();
-            io.KeysDown[data] = true;
-            pressed_keys.push_back(data);
-            if(data != 0 &&
-               data != eAGSKeyCodeLeftArrow &&
-               data != eAGSKeyCodeRightArrow &&
-               data != eAGSKeyCodeUpArrow &&
-               data != eAGSKeyCodeDownArrow &&
-               data != eAGSKeyCodePageUp &&
-               data != eAGSKeyCodePageDown && data < 177 ) io.AddInputCharacter(data);
+        if(!pressed_keys.empty()) {
+            unstuck_counter++;
+
+            if(unstuck_counter>5) {
+                unstuck_counter = 0;
+                while (!pressed_keys.empty()) {
+                    int key_pressed = pressed_keys.back();
+                    io.KeysDown[key_pressed] = false;
+                    pressed_keys.pop_back();
+
+                    // probably is better to keep traversing this and remove only things that have the button lift off, but this is enough for now.
+                }
+            }
+        }
+        else {
+            engine->GetMousePosition(&ags_mouse_x, &ags_mouse_y);
+
+            io.MousePos = ImVec2((float) ags_mouse_x, (float) ags_mouse_y);
         }
 
-		if (event == AGSE_POSTSCREENDRAW) {
-			if (screen.driver == Screen::Driver::eDirectx9) {
-				if (has_new_frame) {
-					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-				}
-			}	
-			has_new_frame = false;
-		}
+        io.MouseDown[ImGuiMouseButton_Left] = Mouse_IsButtonDown(eMouseLeft) != 0;
+        io.MouseDown[ImGuiMouseButton_Right] = Mouse_IsButtonDown(eMouseRight) != 0;
+        io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
 
-        if(event==AGSE_MOUSECLICK){
-            //io.MouseDow
+    }
+
+    if(event==AGSE_KEYPRESS){
+        ImGuiIO& io = ImGui::GetIO();
+        io.KeysDown[data] = true;
+        pressed_keys.push_back(data);
+        if(data != 0 &&
+           data != eAGSKeyCodeLeftArrow &&
+           data != eAGSKeyCodeRightArrow &&
+           data != eAGSKeyCodeUpArrow &&
+           data != eAGSKeyCodeDownArrow &&
+           data != eAGSKeyCodePageUp &&
+           data != eAGSKeyCodePageDown && data < 177 ) io.AddInputCharacter(data);
+    }
+
+    if (event == AGSE_POSTSCREENDRAW) {
+        if (screen.driver == Screen::Driver::eDirectx9) {
+            if (has_new_frame) {
+                ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+            }
         }
+        if (screen.driver == Screen::Driver::eOpenGL) {
+            if (has_new_frame) {
+//                GLint last_program;
+//                glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+//                glUseProgram(0);
+                ImDrawData* draw_data = ImGui::GetDrawData();
+//                GLsizei width  = (GLsizei)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
+//                GLsizei height = (GLsizei)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
+//                glViewport(0, 0, width, height);
 
-        /*
-        switch (event)
-        {
-                case AGSE_KEYPRESS:
-                case AGSE_MOUSECLICK:
-                case AGSE_POSTSCREENDRAW:
-                case AGSE_PRESCREENDRAW:
-                case AGSE_SAVEGAME:
-                case AGSE_RESTOREGAME:
-                case AGSE_PREGUIDRAW:
-                case AGSE_LEAVEROOM:
-                case AGSE_ENTERROOM:
-                case AGSE_TRANSITIONIN:
-                case AGSE_TRANSITIONOUT:
-                case AGSE_FINALSCREENDRAW:
-                case AGSE_TRANSLATETEXT:
-                case AGSE_SCRIPTDEBUG:
-                case AGSE_SPRITELOAD:
-                case AGSE_PRERENDER:
-                case AGSE_PRESAVEGAME:
-                case AGSE_POSTRESTOREGAME:
-        default:
-            break;
+                glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                glBegin(GL_POLYGON);
+                double halfside = 50.0;
+                double xx = 100.0;
+                double yy = 100.0;
+                glVertex2d(xx + halfside, yy + halfside);
+                glVertex2d(xx + halfside, yy - halfside);
+                glVertex2d(xx - halfside, yy - halfside);
+                glVertex2d(xx - halfside, yy + halfside);
+
+                glEnd();
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+               // ImGui_ImplOpenGL2_RenderDrawData(draw_data);
+                //glUseProgram(last_program);
+            }
         }
-         */
+        has_new_frame = false;
+    }
 
-		// Return 1 to stop event from processing further (when needed)
-		return (0);
-	}
+    if(event==AGSE_MOUSECLICK){
+        //io.MouseDow
+    }
 
-	//------------------------------------------------------------------------------
-
-	int AGS_EngineDebugHook(const char *scriptName,
-		int lineNum, int reserved)            //*** optional ***
-	{
-		// Can be used to debug scripts, see documentation
-		return 0;
-	}
-
-	//------------------------------------------------------------------------------
-
-    void AGS_EngineInitGfx( char const* driverID, void* data )
+    /*
+    switch (event)
     {
-        // This allows you to make changes to how the graphics driver starts up.
-        #if AGS_PLATFORM_OS_WINDOWS
-        if ( strcmp( driverID, "D3D9" ) == 0 )
+            case AGSE_KEYPRESS:
+            case AGSE_MOUSECLICK:
+            case AGSE_POSTSCREENDRAW:
+            case AGSE_PRESCREENDRAW:
+            case AGSE_SAVEGAME:
+            case AGSE_RESTOREGAME:
+            case AGSE_PREGUIDRAW:
+            case AGSE_LEAVEROOM:
+            case AGSE_ENTERROOM:
+            case AGSE_TRANSITIONIN:
+            case AGSE_TRANSITIONOUT:
+            case AGSE_FINALSCREENDRAW:
+            case AGSE_TRANSLATETEXT:
+            case AGSE_SCRIPTDEBUG:
+            case AGSE_SPRITELOAD:
+            case AGSE_PRERENDER:
+            case AGSE_PRESAVEGAME:
+            case AGSE_POSTRESTOREGAME:
+    default:
+        break;
+    }
+     */
+
+    // Return 1 to stop event from processing further (when needed)
+    return (0);
+}
+
+//------------------------------------------------------------------------------
+
+int AGS_EngineDebugHook(const char *scriptName,
+    int lineNum, int reserved)            //*** optional ***
+{
+    // Can be used to debug scripts, see documentation
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void AGS_EngineInitGfx( char const* driverID, void* data )
+{
+    // This allows you to make changes to how the graphics driver starts up.
+#if AGS_PLATFORM_OS_WINDOWS
+    if ( strcmp( driverID, "D3D9" ) == 0 )
         {
             D3DPRESENT_PARAMETERS* params = (D3DPRESENT_PARAMETERS*)data;
             if (params->BackBufferFormat != D3DFMT_X8R8G8B8)
@@ -1423,20 +1464,21 @@ enum MouseButton {
 
             return;
         }
-        #endif
+#endif
 
-        if ( strcmp( driverID, "OpenGL" ) == 0 )
-        {
-            screen.driver = Screen::Driver::eOpenGL;
-            return;
-        }
-
-
-        screen.driver = Screen::Driver::eSoftware;
-
+    if ( strcmp( driverID, "OGL" ) == 0 )
+    {
+        screen.driver = Screen::Driver::eOpenGL;
+        return;
     }
 
-	//..............................................................................
+    if (strcmp( driverID, "Software") == 0) {
+        screen.driver = Screen::Driver::eSoftware;
+        return;
+    }
+}
+
+//..............................................................................
 
 
 #if defined(BUILTIN_PLUGINS)
