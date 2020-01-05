@@ -263,6 +263,70 @@ static bool ImGui_ImplDX9_CreateFontsTexture()
     return true;
 }
 
+IDirect3DTexture9* ImGui_ImplDX9_priteIDToTexture(int sprite_id){
+    IDirect3DTexture9* CreateTexture( unsigned char const* data, int width, int height, bool alpha )
+    {
+        if ( !GetD3D() )
+        {
+            DBG( "Device not available" );
+            return NULL;
+        }
+
+        DBG( "Creating texture" );
+        IDirect3DTexture9* texture = NULL;
+
+        // RGB or ARGB format
+        D3DFORMAT format = D3DFMT_X8R8G8B8;
+
+        if ( alpha )
+        {
+            format = D3DFMT_A8R8G8B8;
+        }
+
+        // Create texture
+        int result = D3DXCreateTexture( GetD3D(), width, height, 1,
+                                        D3DUSAGE_DYNAMIC, format,
+                                        D3DPOOL_DEFAULT, &texture );
+
+        if ( result != D3D_OK )
+        {
+            DBG( "ERROR: Couldn't create texture: %08x", result );
+            return NULL;
+        }
+
+        DBG( "OK" );
+
+        SetTextureData( texture, data, width, height );
+        return texture;
+    }
+
+    texture_color32_t* image_texture = new texture_color32_t();
+
+    BITMAP *engineSprite = _Engine->GetSpriteGraphic(sprite_id);
+    int sprite_width = _Engine->GetSpriteWidth(sprite_id);
+    int sprite_height = _Engine->GetSpriteHeight(sprite_id);
+
+    image_texture->init(sprite_width,sprite_height);
+
+    unsigned char **charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
+    uint32_t **longbuffer = (uint32_t**)charbuffer;
+
+    for(int ix=0; ix<sprite_width; ix++) {
+        for (int iy = 0; iy < sprite_height; iy++) {
+
+            image_texture->at(ix,iy).r = getr32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).g = getg32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).b = getb32(longbuffer[iy][ix]);
+            image_texture->at(ix,iy).a = geta32(longbuffer[iy][ix]);
+
+        }
+    }
+
+    image_texture_stack.push_back(image_texture);
+    _Engine->ReleaseBitmapSurface(engineSprite);
+    return image_texture;
+}
+
 bool ImGui_ImplDX9_CreateDeviceObjects()
 {
     if (!g_pd3dDevice)
