@@ -19,6 +19,12 @@
     <Filter Include="Source Files\BackendDx9">
       <UniqueIdentifier>{208095e5-083e-4061-b218-70c21a98f37d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\clip">
+      <UniqueIdentifier>{3de12c54-547c-4c42-8d0c-2705b377a1bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\clip">
+      <UniqueIdentifier>{ab006068-9ddf-4d96-ab7a-5c1e41b87328}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="agsimgui.cpp">
@@ -44,6 +50,15 @@
     </ClCompile>
     <ClCompile Include="Screen.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\clip\clip.cpp">
+      <Filter>Source Files\clip</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\clip\clip_win.cpp">
+      <Filter>Source Files\clip</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\clip\image.cpp">
+      <Filter>Source Files\clip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +88,15 @@
     </ClInclude>
     <ClInclude Include="Screen.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\clip\clip.h">
+      <Filter>Header Files\clip</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\clip\clip_lock_impl.h">
+      <Filter>Header Files\clip</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\clip\clip_x11_png.h">
+      <Filter>Header Files\clip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
