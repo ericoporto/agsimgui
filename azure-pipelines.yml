@@ -30,7 +30,7 @@ steps:
     git checkout release-3.5.0
     popd
     popd
-    cd agsimgui && make
+    cd agsimgui && mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug && make
   condition: eq( variables['Agent.OS'], 'Linux' )
   displayName: 'make'
 
@@ -49,7 +49,7 @@ steps:
     git checkout release-3.5.0
     popd
     popd
-    cd agsimgui && make
+    cd agsimgui && mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug && make
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: 'make'
 
