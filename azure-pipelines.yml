@@ -24,6 +24,7 @@ pool:
 steps:
 # Linux
 - bash: |
+    sudo apt install -y libx11-dev
     pushd ..
     git clone https://github.com/adventuregamestudio/ags.git
     pushd ags
