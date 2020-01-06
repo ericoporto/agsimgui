@@ -11,6 +11,44 @@ Using ocornut Dear ImGui, and also using software renderer with modifications fr
 
 Additionally using David Cappelo clip library for providing clipboard integration.
 
+## Usage
+
+Run a simple demo window to see what's possible with Dear ImGui.
+
+```
+// use function room_RepExec() when in Room Script and link it throught the editor
+void repeatedly_execute(){
+	AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+	AgsImGui.ShowDemoWindow(); //Shows a demo of everything possible
+	AgsImGui.Render(); // This will generate drawing instructions. 
+	// AGS will actually draw this on screen later on, on Post Screen Draw stage.
+}
+```
+
+Some of what is shown on Demo Window is not yet exposed in the AgsImGui Script API.
+
+Let's do a simple example now.
+
+```
+bool is_button_clicked;
+
+// use function room_RepExec() when in Room Script and link it throught the editor
+void repeatedly_execute(){
+	AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+	
+    AgsImGui.BeginWindow("My first window");	
+    ViewFrame* vf = Game.GetViewFrame(player.View, player.Loop, player.Frame);
+    is_button_clicked = AgsImGui.ImageButton(vf.Graphic); 
+    if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip(String.Format("frame %d",player.Frame));
+	player.x = AgsImGui.DragInt("player.x", player.x);
+    player.y = AgsImGui.DragInt("player.y", player.y);
+    AgsImGui.EndWindow();
+	
+	AgsImGui.Render(); // This will generate drawing instructions. 
+	// AGS will actually draw this on screen later on, on Post Screen Draw stage.
+}
+```
+
 ## AGS Script API
 
 ### Main
@@ -19,15 +57,19 @@ Additionally using David Cappelo clip library for providing clipboard integratio
 
 `static void AgsImGui.NewFrame()`
 
+Call this before calling any AgsImGui commands.
 
 #### `AgsImGui.EndFrame`
 
 `static void AgsImGui.EndFrame()`
 
+We don't need this if we are using Render, since it will automatically call `AgsImGui.EndFrame()` too.
 
 #### `AgsImGui.Render`
 
 `static void AgsImGui.Render()`
+
+This will EndFrame and proceed to generate drawing instructions.
 
 ---
 
