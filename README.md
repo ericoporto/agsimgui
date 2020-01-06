@@ -15,13 +15,13 @@ Additionally using David Cappelo clip library for providing clipboard integratio
 
 Run a simple demo window to see what's possible with Dear ImGui.
 
-```
+```AGS Script
 // use function room_RepExec() when in Room Script and link it throught the editor
 void repeatedly_execute(){
-	AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
-	AgsImGui.ShowDemoWindow(); //Shows a demo of everything possible
-	AgsImGui.Render(); // This will generate drawing instructions. 
-	// AGS will actually draw this on screen later on, on Post Screen Draw stage.
+    AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+    AgsImGui.ShowDemoWindow(); //Shows a demo of everything possible
+    AgsImGui.Render(); // This will generate drawing instructions. 
+    // AGS will actually draw this on screen later on, on Post Screen Draw stage.
 }
 ```
 
@@ -29,23 +29,23 @@ Some of what is shown on Demo Window is not yet exposed in the AgsImGui Script A
 
 Let's do a simple example now.
 
-```
+```AGS Script
 bool is_button_clicked;
 
 // use function room_RepExec() when in Room Script and link it throught the editor
 void repeatedly_execute(){
-	AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+    AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
 	
     AgsImGui.BeginWindow("My first window");	
     ViewFrame* vf = Game.GetViewFrame(player.View, player.Loop, player.Frame);
     is_button_clicked = AgsImGui.ImageButton(vf.Graphic); 
     if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip(String.Format("frame %d",player.Frame));
-	player.x = AgsImGui.DragInt("player.x", player.x);
+    player.x = AgsImGui.DragInt("player.x", player.x);
     player.y = AgsImGui.DragInt("player.y", player.y);
     AgsImGui.EndWindow();
 	
-	AgsImGui.Render(); // This will generate drawing instructions. 
-	// AGS will actually draw this on screen later on, on Post Screen Draw stage.
+    AgsImGui.Render(); // This will generate drawing instructions. 
+    // AGS will actually draw this on screen later on, on Post Screen Draw stage.
 }
 ```
 
