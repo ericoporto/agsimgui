@@ -1348,6 +1348,7 @@ enum MouseButton {
                     while (!pressed_keys.empty()) {
                         int key_pressed = pressed_keys.back();
                         io.KeysDown[key_pressed] = false;
+
                         if( key_pressed == eAGSKeyCodeCtrlC ){
                             io.KeysDown[eAGSKeyCodeC] = false;
                             io.KeyCtrl = false;
@@ -1356,6 +1357,15 @@ enum MouseButton {
                             io.KeyCtrl = false;
                         } else if( key_pressed == eAGSKeyCodeCtrlV ){
                             io.KeysDown[eAGSKeyCodeV] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlZ ){
+                            io.KeysDown[eAGSKeyCodeZ] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlA ){
+                            io.KeysDown[eAGSKeyCodeA] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlY ){
+                            io.KeysDown[eAGSKeyCodeY] = false;
                             io.KeyCtrl = false;
                         }
                         pressed_keys.pop_back();
@@ -1387,6 +1397,15 @@ enum MouseButton {
                 io.KeyCtrl = true;
             } else if( data == eAGSKeyCodeCtrlV ){
                 io.KeysDown[eAGSKeyCodeV] = true;
+                io.KeyCtrl = true;
+            }  else if( data == eAGSKeyCodeCtrlZ ){
+                io.KeysDown[eAGSKeyCodeZ] = true;
+                io.KeyCtrl = true;
+            } else if( data == eAGSKeyCodeCtrlA ){
+                io.KeysDown[eAGSKeyCodeA] = true;
+                io.KeyCtrl = true;
+            } else if( data == eAGSKeyCodeCtrlY ){
+                io.KeysDown[eAGSKeyCodeY] = true;
                 io.KeyCtrl = true;
             } else {
                 io.KeysDown[data] = true;
