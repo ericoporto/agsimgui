@@ -51,7 +51,7 @@ steps:
     git checkout release-3.5.0
     popd
     popd
-    cd agsimgui && mkdir build && cd build && cmake .. && make
+    mkdir build && cd build && cmake .. && make
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: 'make'
 
