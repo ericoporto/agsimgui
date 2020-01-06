@@ -24,6 +24,7 @@ pool:
 steps:
 # Linux
 - bash: |
+    sudo apt install -y libx11-dev
     pushd ..
     git clone https://github.com/adventuregamestudio/ags.git
     pushd ags
@@ -43,20 +44,21 @@ steps:
 
 # macOS
 - bash: |
+    curl -fLSs "https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5-Darwin-x86_64.tar.gz" | bsdtar -f - -xvzC /Applications --strip-components 1
     pushd ..
     git clone https://github.com/adventuregamestudio/ags.git
     pushd ags
     git checkout release-3.5.0
     popd
     popd
-    cd agsimgui && make
+    mkdir build && cd build && cmake .. && make
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: 'make'
 
 - task: CopyFiles@2
   condition: eq( variables['Agent.OS'], 'Darwin' )
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/agsimgui'
+    sourceFolder: '$(Build.SourcesDirectory)/build/'
     contents: 'libagsimgui.dylib'
     targetFolder: $(Build.ArtifactStagingDirectory)
 

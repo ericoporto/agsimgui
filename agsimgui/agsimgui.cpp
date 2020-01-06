@@ -37,6 +37,7 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 
 #include "agsimgui.h"
 #include "Screen.h"
+#include "libs/clip/clip.h"
 
 #if defined(BUILTIN_PLUGINS)
 namespace agsimgui {
@@ -679,6 +680,20 @@ int inline ToAgsBool(bool b){
     return b ? 1 : 0;
 }
 
+std::string g_ClipboardTextData = "";
+
+static const char* ImGui_ImplClip_GetClipboardText(void*)
+{
+    g_ClipboardTextData.clear();
+    clip::get_text(g_ClipboardTextData);
+    return g_ClipboardTextData.c_str();
+}
+
+static void ImGui_ImplClip_SetClipboardText(void*, const char* text)
+{
+    clip::set_text(text);
+}
+
 #define STRINGIFY(s) STRINGIFY_X(s)
 #define STRINGIFY_X(s) #s
 
@@ -1171,6 +1186,10 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         io.KeyMap[ImGuiKey_Z] = eAGSKeyCodeZ;
         io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
 
+        io.SetClipboardTextFn = ImGui_ImplClip_SetClipboardText;
+        io.GetClipboardTextFn = ImGui_ImplClip_GetClipboardText;
+        io.ClipboardUserData = NULL;
+
         Mouse_IsButtonDown = (SCAPI_MOUSE_ISBUTTONDOWN) engine->GetScriptFunctionAddress("Mouse::IsButtonDown^1");
 
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
@@ -1329,6 +1348,26 @@ enum MouseButton {
                     while (!pressed_keys.empty()) {
                         int key_pressed = pressed_keys.back();
                         io.KeysDown[key_pressed] = false;
+
+                        if( key_pressed == eAGSKeyCodeCtrlC ){
+                            io.KeysDown[eAGSKeyCodeC] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlX ){
+                            io.KeysDown[eAGSKeyCodeX] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlV ){
+                            io.KeysDown[eAGSKeyCodeV] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlZ ){
+                            io.KeysDown[eAGSKeyCodeZ] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlA ){
+                            io.KeysDown[eAGSKeyCodeA] = false;
+                            io.KeyCtrl = false;
+                        } else if( key_pressed == eAGSKeyCodeCtrlY ){
+                            io.KeysDown[eAGSKeyCodeY] = false;
+                            io.KeyCtrl = false;
+                        }
                         pressed_keys.pop_back();
 
                         // probably is better to keep traversing this and remove only things that have the button lift off, but this is enough for now.
@@ -1349,15 +1388,41 @@ enum MouseButton {
 
         if(event==AGSE_KEYPRESS){
 			ImGuiIO& io = ImGui::GetIO();
-            io.KeysDown[data] = true;
+
+			if( data == eAGSKeyCodeCtrlC ){
+                io.KeysDown[eAGSKeyCodeC] = true;
+                io.KeyCtrl = true;
+			} else if( data == eAGSKeyCodeCtrlX ){
+                io.KeysDown[eAGSKeyCodeX] = true;
+                io.KeyCtrl = true;
+            } else if( data == eAGSKeyCodeCtrlV ){
+                io.KeysDown[eAGSKeyCodeV] = true;
+                io.KeyCtrl = true;
+            }  else if( data == eAGSKeyCodeCtrlZ ){
+                io.KeysDown[eAGSKeyCodeZ] = true;
+                io.KeyCtrl = true;
+            } else if( data == eAGSKeyCodeCtrlA ){
+                io.KeysDown[eAGSKeyCodeA] = true;
+                io.KeyCtrl = true;
+            } else if( data == eAGSKeyCodeCtrlY ){
+                io.KeysDown[eAGSKeyCodeY] = true;
+                io.KeyCtrl = true;
+            } else {
+                io.KeysDown[data] = true;
+                io.KeyCtrl = false;
+			}
+
             pressed_keys.push_back(data);
+
             if(data != 0 &&
                data != eAGSKeyCodeLeftArrow &&
                data != eAGSKeyCodeRightArrow &&
                data != eAGSKeyCodeUpArrow &&
                data != eAGSKeyCodeDownArrow &&
                data != eAGSKeyCodePageUp &&
-               data != eAGSKeyCodePageDown && data < 177 ) io.AddInputCharacter(data);
+               data != eAGSKeyCodePageDown && data < 177 ) {
+                io.AddInputCharacter(data);
+            }
         }
 
 		if (event == AGSE_POSTSCREENDRAW) {

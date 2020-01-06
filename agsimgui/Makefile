@@ -1,6 +1,8 @@
 UNAME := $(shell uname)
 
 INCDIR = ../../ags/Engine ../../ags/Common
+SOURCES =
+OBJS = libs/clip/clip.o libs/clip/image.o
 LIBDIR =
 CC = gcc
 CXX = g++
@@ -8,11 +10,13 @@ CFLAGS = -fPIC -fvisibility=hidden -O2 -g -Wall -std=c++11
 LIBS = -lstdc++
 
 ifeq ($(UNAME), Darwin)
+SOURCES += libs/clip/clip_osx.mm
 TARGET = libagsimgui.dylib
-CFLAGS += -DMAC_VERSION
+CFLAGS += -DMAC_VERSION -framework Cocoa
 else
 TARGET = libagsimgui.so
 CFLAGS += -DLINUX_VERSION
+OBJS += libs/clip/clip_x11.o
 endif
 
 CXXFLAGS = $(CFLAGS)
@@ -27,7 +31,7 @@ ASFLAGS  := $(CFLAGS) $(ASFLAGS)
 
 .PHONY: clean
 
-all: $(TARGET)
+all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJS)
 	@$(CC) -shared -dynamiclib -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LIBS)
