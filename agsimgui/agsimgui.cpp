@@ -422,7 +422,7 @@ namespace agsimgui {
 " import static bool IsWindowFocused(ImGuiFocusedFlags flags=0); \r\n"
 "  \r\n"
 " /// is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.\r\n"
-" import static bool IsWindowHovered(ImGuiFocusedFlags flags=0); \r\n"
+" import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
 "  \r\n"
 "  \r\n"
 " // Widgets: Text \r\n"
