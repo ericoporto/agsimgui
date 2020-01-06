@@ -585,6 +585,21 @@ namespace agsimgui {
 "  \r\n"
 " /// Override capture or not capture keyboard by ImGui for next frame. Keyboard will still be captured by AGS. \r\n"
 " import static void DoCaptureKeyboard(bool want_capture_keyboard = true); \r\n"
+"  \r\n"
+" /// Override capture or not capture keyboard by ImGui for next frame. Keyboard will still be captured by AGS. \r\n"
+" import static void DoMouseWheel(ImGuiDir wheel_direction); \r\n"
+" }; \r\n"
+"  \r\n"
+" struct AgsImGuiHelper { \r\n"
+"  \r\n"
+"  import static void SetClipboarText(String text); \r\n"
+"  \r\n"
+"  import static String GetClipboarText(); \r\n"
+"  \r\n"
+"  //import static void SetClipboarImage(int sprite_id); \r\n"
+"  \r\n"
+"  //import static int GetClipboarImage(); \r\n"
+"  \r\n"
 " }; \r\n";
 
 
@@ -697,7 +712,9 @@ std::string g_ClipboardTextData = "";
 static const char* ImGui_ImplClip_GetClipboardText(void*)
 {
     g_ClipboardTextData.clear();
-    clip::get_text(g_ClipboardTextData);
+	if (clip::has(clip::text_format())) {
+		clip::get_text(g_ClipboardTextData);
+	}     
     return g_ClipboardTextData.c_str();
 }
 
@@ -1135,6 +1152,94 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
     ImGui::Value(prefix,ToNormalFloat(value));
 }
 
+void AgsImGui_DoMouseWheel(int wheel_dir) {
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (wheel_dir == 0) io.MouseWheelH -= 1;
+	else if (wheel_dir == 1) io.MouseWheelH += 1;
+	else if (wheel_dir == 2) io.MouseWheel -= 1;
+	else if (wheel_dir == 3) io.MouseWheel += 1;
+}
+
+
+void AgsImGuiHelper_SetClipboarText(const char* text) {
+	clip::set_text(text);
+}
+
+const char* AgsImGuiHelper_GetClipboarText() {
+	if (!clip::has(clip::text_format())) {
+		return engine->CreateScriptString("");
+	}
+
+	g_ClipboardTextData.clear();
+	clip::get_text(g_ClipboardTextData);
+	return engine->CreateScriptString(g_ClipboardTextData.c_str());
+}
+
+void AgsImGuiHelper_SetClipboarImage(int sprite_id) {
+	BITMAP* engineSprite = engine->GetSpriteGraphic(sprite_id);
+	int sprite_width = engine->GetSpriteWidth(sprite_id);
+	int sprite_height = engine->GetSpriteHeight(sprite_id);
+
+	unsigned char** charbuffer = engine->GetRawBitmapSurface(engineSprite);
+	uint32_t** longbuffer = (uint32_t * *)charbuffer;
+	char* single_char_buffer = (char*)charbuffer;
+	
+	clip::image_spec spec;
+	spec.width = sprite_width;
+	spec.height = sprite_height;
+	spec.bits_per_pixel = 32;
+	spec.bytes_per_row = spec.width * 4;
+	spec.red_mask = 0x00ff0000;
+	spec.green_mask = 0xff00;
+	spec.blue_mask = 0xff;
+	spec.alpha_mask = 0xff000000;
+	spec.red_shift = 16;
+	spec.green_shift = 8;
+	spec.blue_shift = 0;
+	spec.alpha_shift = 24;
+	clip::image img(single_char_buffer, spec);
+	clip::set_image(img);
+	engine->ReleaseBitmapSurface(engineSprite);
+}
+
+int AgsImGuiHelper_GetClipboarImage() {
+	if (!clip::has(clip::image_format())) {
+		// no image on clipboard
+		return 0;
+	}
+
+	clip::image img;
+	if (!clip::get_image(img)) {
+		// Error getting image from clipboard
+		return 0;
+	}
+
+	clip::image_spec spec = img.spec();
+
+	int sprite_width = spec.width;
+	int sprite_height = spec.height;
+	int color_depth = spec.bits_per_pixel;
+
+	if (color_depth != 32) {
+		return 0;
+	}
+
+	int sprite_id = engine->CreateDynamicSprite(color_depth, sprite_width, sprite_height);
+	BITMAP* engineSprite = engine->GetSpriteGraphic(sprite_id);
+
+	unsigned char** charbuffer = engine->GetRawBitmapSurface(engineSprite);
+	uint32_t** longbuffer = (uint32_t * *)charbuffer;
+
+	for (int ix = 0; ix < sprite_width; ix++) {
+		for (int iy = 0; iy < sprite_height; iy++) {
+			
+			longbuffer[iy][ix] = ((uint32_t * *)(img.data()))[iy][ix];
+		}
+	}
+
+	engine->ReleaseBitmapSurface(engineSprite);
+}
 
 
 	void AGS_EngineStartup(IAGSEngine *lpEngine)
@@ -1295,10 +1400,17 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::ValueBool^2", (void*)AgsImGui_ValueBool);
         engine->RegisterScriptFunction("AgsImGui::ValueInt^2", (void*)AgsImGui_ValueInt);
         engine->RegisterScriptFunction("AgsImGui::ValueFloat^2", (void*)AgsImGui_ValueFloat);
+		engine->RegisterScriptFunction("AgsImGui::DoMouseWheel^1", (void*)AgsImGui_DoMouseWheel);
+
+		engine->RegisterScriptFunction("AgsImGuiHelper::SetClipboarText^1", (void*)AgsImGuiHelper_SetClipboarText);
+		engine->RegisterScriptFunction("AgsImGuiHelper::GetClipboarText^0", (void*)AgsImGuiHelper_GetClipboarText);
+		//engine->RegisterScriptFunction("AgsImGuiHelper::SetClipboarImage^1", (void*)AgsImGuiHelper_SetClipboarImage);
+		//engine->RegisterScriptFunction("AgsImGuiHelper::GetClipboarImage^0", (void*)AgsImGuiHelper_GetClipboarImage);
 
         engine->RequestEventHook(AGSE_PRESCREENDRAW);
         engine->RequestEventHook(AGSE_KEYPRESS);
 		engine->RequestEventHook(AGSE_POSTSCREENDRAW);
+		engine->RequestEventHook(AGSE_MOUSECLICK);
 	}
 
 	//------------------------------------------------------------------------------
@@ -1412,7 +1524,7 @@ enum MouseButton {
                 io.MousePos = ImVec2((float) ags_mouse_x, (float) ags_mouse_y);
             }
 
-            io.MouseDown[ImGuiMouseButton_Left] = Mouse_IsButtonDown(eMouseLeft) != 0;
+			io.MouseDown[ImGuiMouseButton_Left] = Mouse_IsButtonDown(eMouseLeft) != 0;
             io.MouseDown[ImGuiMouseButton_Right] = Mouse_IsButtonDown(eMouseRight) != 0;
             io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
 
@@ -1474,7 +1586,12 @@ enum MouseButton {
 		}
 
         if(event==AGSE_MOUSECLICK){
-            //io.MouseDow
+			ImGuiIO& io = ImGui::GetIO();
+
+			io.MouseDown[ImGuiMouseButton_Left] |= eMouseLeft == data;
+			io.MouseDown[ImGuiMouseButton_Right] |= eMouseRight == data;
+			io.MouseDown[ImGuiMouseButton_Middle] |= eMouseMiddle == data;
+			
         }
 
         /*
