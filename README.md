@@ -224,3 +224,153 @@ Display text+label aligned the same way as value+label widgets .
 `static void AgsImGui.Bullet(String text)`
 
 Draws a bullet and a string of text. Shortcut for Bullet()+Text().
+
+---
+
+### Widgets: Main
+
+Most widgets return true when the value has been changed or when pressed/selected.
+
+You may also use one of the many IsItemXXX functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
+
+#### `AgsImGui.Button`
+
+`static bool AgsImGui.Button(String label, int width = 0, int height = 0)`
+
+Creates a button. Returns true while button is pressed.
+
+#### `AgsImGui.SmallButton`
+
+`static bool AgsImGui.SmallButton(String label)`
+
+Creates a button with no padding to be easier to embed within text. Returns true while button is pressed.
+
+#### `AgsImGui.Image`
+
+`static void AgsImGui.Image(int sprite_id)`
+
+Create an image with passed sprite ID.
+
+#### `AgsImGui.ImageButton`
+
+`static bool AgsImGui.ImageButton(int sprite_id)`
+
+Create a button with an image with passed sprite ID. Returns true while button is pressed.
+
+#### `AgsImGui.ArrowButton`
+
+`static bool AgsImGui.ArrowButton(String label, ImGuiDir dir)`
+
+Creates a button with an arrow shape. Returns true while button is pressed.
+
+#### `AgsImGui.Checkbox`
+
+`static bool AgsImGui.Checkbox(String label, bool initial_value)`
+
+Creates a checkbox button. Returns true when button is marked.
+
+#### `AgsImGui.RadioButton`
+
+`static bool AgsImGui.RadioButton(String label, bool active)`
+
+Creates a radio button. Returns true while button is marked.
+
+#### `AgsImGui.Bullet`
+
+`static void AgsImGui.Bullet()`
+
+Draw a small circle and keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses .
+
+---
+
+### Widgets: Selectables
+
+A selectable highlights when hovered, and can display another color when selected.
+
+#### `AgsImGui.Selectable`
+
+`static bool AgsImGui.Selectable(String label, bool selected = false, ImGuiSelectableFlags flags = 0, int width = 0, int height = 0)`
+
+bool selected carry the selection state (read-only). When Selectable() is clicked it returns true so you can modify your selection state.
+
+---
+
+### Widgets: Drag
+
+CTRL+Click on any drag box to turn them into an input box. Manually input values aren't clamped and can go off-bounds. 
+
+#### `AgsImGui.DragFloat`
+
+`static float AgsImGui.DragFloat(String label, float value, float min_value = 0, float max_value = 0, float speed = 0, String format = 0)`
+
+Returns the current value of the drag box. Format string uses regular `"%f"` specifiers, so you can use to define how many decimals you want.
+
+#### `AgsImGui.DragInt`
+
+`static int AgsImGui.DragInt(String label, int value, int min_value = 0, int max_value = 0, float speed = 0, String format = 0)`
+
+Returns the current value of the drag box. Format string uses regular `"%d"`, you can use it to specify left most zeroes.
+
+---
+
+### Widgets: Slider
+
+CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped and can go off-bounds. 
+
+#### `AgsImGui.SliderFloat`
+
+`static float AgsImGui.SliderFloat(String label, float value, float min_value = 0, float max_value = 0, String format = 0)`
+
+Returns the current value of the slider. Format string uses regular `"%f"` specifiers, so you can use to define how many decimals you want.
+
+#### `AgsImGui.SliderInt`
+
+`static int AgsImGui.SliderInt(String label, int value, int min_value = 0, int max_value = 0, String format = 0)`
+
+Returns the current value of the slider. Format string uses regular `"%d"`, you can use it to specify left most zeroes.
+
+---
+
+### Widgets: Input with Keyboard
+
+#### `AgsImGui.InputText`
+
+`static String AgsImGui.InputText(String label, String text_buffer, ImGuiInputTextFlags flags =0)`
+
+#### `AgsImGui.InputTextMultiline`
+
+`static String AgsImGui.InputTextMultiline(String label, String text_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0)`
+
+#### `AgsImGui.InputTextWithHint`
+
+`static String AgsImGui.InputTextWithHint(String label, String hint, String text_buffer, ImGuiInputTextFlags flags = 0)`
+
+---
+
+### Widgets: Combobox commands
+
+#### `AgsImGui.BeginCombo`
+
+`static bool AgsImGui.BeginCombo(String label, String preview_value, ImGuiComboFlags flags = 0);`
+
+The BeginCombo()/EndCombo() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. 
+
+Example:
+
+```
+	bool option1;
+	bool option2;
+	if(AgsImGui.BeginCombo("My combo","click me!")){
+		option1 = AgsImGui.Selectable("Option 1");
+		option2 = AgsImGui.Selectable("Option 2");
+		AgsImGui.EndCombo();
+	}
+```
+
+#### `AgsImGui.EndCombo`
+
+`static void EndCombo()`
+
+Only call EndCombo() if BeginCombo() returns true!
+
+
