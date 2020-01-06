@@ -373,4 +373,56 @@ Example:
 
 Only call EndCombo() if BeginCombo() returns true!
 
+---
 
+### Widgets: List Boxes commands
+
+#### `AgsImGui.BeginListBox`
+
+`static bool AgsImGui.BeginListBox(String label, String preview_value, ImGuiListBoxFlags flags = 0);`
+
+The BeginListBox()/EndListBox() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. 
+
+Example:
+
+```
+	bool option1;
+	bool option2;
+	if(AgsImGui.BeginListBox("My ListBox","click me!")){
+		option1 = AgsImGui.Selectable("Option 1");
+		option2 = AgsImGui.Selectable("Option 2");
+		AgsImGui.EndListBox();
+	}
+```
+
+#### `AgsImGui.EndListBox`
+
+`static void EndListBox()`
+
+Only call EndListBox() if BeginListBox() returns true!
+
+---
+
+### Tooltips
+
+Tooltip are windows following the mouse which do not take focus away.
+
+Remember we can only have one active tooltip at all times, and the last one called is the active one.
+
+#### `AgsImGui.BeginTooltip`
+
+`static void BeginTooltip()`
+
+Begin/append a tooltip window. to create full-featured tooltip (with any kind of items). Doesn't return nothing.
+
+#### `AgsImGui.EndTooltip`
+
+`static void EndTooltip()`
+
+Always call after a BeginTooltip block!
+
+#### `AgsImGui.SetTooltip`
+
+`static void SetTooltip(String text)`
+
+Set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). Override any previous call to SetTooltip().
