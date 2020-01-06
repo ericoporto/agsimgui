@@ -184,3 +184,43 @@ is current window focused? or its root/child, depending on flags. see flags for 
 `static bool AgsImGui.IsWindowHovered(ImGuiHoveredFlags flags=0)`
 
 is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.
+
+---
+
+### Widgets: Text
+
+#### `AgsImGui.Text`
+
+`static void AgsImGui.Text(String text)`
+
+Draws a string of text.
+
+#### `AgsImGui.TextColored`
+
+`static void AgsImGui.TextColored(int ags_color, String text)`
+
+shortcut for PushStyleColor(ImGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
+
+#### `AgsImGui.TextDisabled`
+
+`static void AgsImGui.TextDisabled(String text)`
+
+shortcut for PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor(); 
+
+#### `AgsImGui.TextWrapped`
+
+`static void AgsImGui.TextWrapped(String text)`
+
+shortcut for PushTextWrapPos(0.0f); Text(fmt, ...); PopTextWrapPos();.
+
+#### `AgsImGui.LabelText`
+
+`static void AgsImGui.LabelText(String label, String text)`
+
+Display text+label aligned the same way as value+label widgets .
+
+#### `AgsImGui.Bullet`
+
+`static void AgsImGui.Bullet(String text)`
+
+Draws a bullet and a string of text. Shortcut for Bullet()+Text().
