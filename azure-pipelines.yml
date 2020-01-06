@@ -58,7 +58,7 @@ steps:
 - task: CopyFiles@2
   condition: eq( variables['Agent.OS'], 'Darwin' )
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/agsimgui/build/'
+    sourceFolder: '$(Build.SourcesDirectory)/build/'
     contents: 'libagsimgui.dylib'
     targetFolder: $(Build.ArtifactStagingDirectory)
 
