@@ -439,7 +439,7 @@ Example:
 
 #### `AgsImGui.EndListBox`
 
-`static void EndListBox()`
+`static void AgsImGui.EndListBox()`
 
 Only call EndListBox() if BeginListBox() returns true!
 
@@ -453,18 +453,66 @@ Remember we can only have one active tooltip at all times, and the last one call
 
 #### `AgsImGui.BeginTooltip`
 
-`static void BeginTooltip()`
+`static void AgsImGui.BeginTooltip()`
 
 Begin/append a tooltip window. to create full-featured tooltip (with any kind of items). Doesn't return nothing.
 
 #### `AgsImGui.EndTooltip`
 
-`static void EndTooltip()`
+`static void AgsImGui.EndTooltip()`
 
 Always call after a BeginTooltip block!
 
 #### `AgsImGui.SetTooltip`
 
-`static void SetTooltip(String text)`
+`static void AgsImGui.SetTooltip(String text)`
 
 Set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). Override any previous call to SetTooltip().
+
+---
+
+### Tab Bars, Tabs
+
+#### `AgsImGui.BeginTabBar`
+
+`static bool AgsImGui.BeginTabBar(String str_id, ImGuiTabBarFlags flags = 0)`
+
+create and append into a TabBar
+
+#### `AgsImGui.EndTabBar`
+
+`static void AgsImGui.EndTabBar()`
+
+only call EndTabBar() if BeginTabBar() returns true!
+
+#### `AgsImGui.BeginTabItem`
+
+`static bool AgsImGui.BeginTabItem(String label, bool has_close_button = 0, ImGuiTabItemFlags flags = 0)`
+
+create a Tab. Returns true if the Tab is selected.
+
+#### `AgsImGui.EndTabItem`
+
+`static void AgsImGui.EndTabItem()`
+
+only call EndTabItem() if BeginTabItem() returns true!
+
+#### `AgsImGui.SetTabItemClosed`
+
+`static void AgsImGui.SetTabItemClosed(String tab_or_docked_window_label)`
+
+notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name.
+
+---
+
+### General Helpers
+
+#### `AgsImGuiHelper.SetClipboarText` 
+
+`static void AgsImGuiHelper.SetClipboarText(String text)`
+
+#### `AgsImGuiHelper.GetClipboarText`
+
+`static String AgsImGuiHelper.GetClipboarText()`
+
+---
