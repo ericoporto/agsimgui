@@ -379,7 +379,7 @@ Only call EndCombo() if BeginCombo() returns true!
 
 #### `AgsImGui.BeginListBox`
 
-`static bool AgsImGui.BeginListBox(String label, String preview_value, ImGuiListBoxFlags flags = 0);`
+`static bool AgsImGui.BeginListBox(String label, int items_count, int height_in_items = -1);`
 
 The BeginListBox()/EndListBox() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. 
 
@@ -388,7 +388,7 @@ Example:
 ```
 	bool option1;
 	bool option2;
-	if(AgsImGui.BeginListBox("My ListBox","click me!")){
+	if(AgsImGui.BeginListBox("My ListBox",2)){
 		option1 = AgsImGui.Selectable("Option 1");
 		option2 = AgsImGui.Selectable("Option 2");
 		AgsImGui.EndListBox();
