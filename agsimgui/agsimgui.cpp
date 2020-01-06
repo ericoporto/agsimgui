@@ -340,6 +340,18 @@ namespace agsimgui {
 "  \r\n"
 " // Demo, Debug, Information \r\n"
 "  \r\n"
+" /// create Demo window (previously called ShowTestWindow). demonstrate most ImGui features. call this to learn about the library! \r\n"
+" import static void ShowDemoWindow(); \r\n"
+"  \r\n"
+" /// create About window. display Dear ImGui version, credits and build/system information. \r\n"
+" import static void ShowAboutWindow(); \r\n"
+"  \r\n"
+" /// create Metrics/Debug window. display Dear ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc. \r\n"
+" import static void ShowMetricsWindow(); \r\n"
+"  \r\n"
+" /// add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls). \r\n"
+" import static void ShowUserGuide(); \r\n"
+"  \r\n"
 " /// get the compiled version string e.g. \"1.23\" (essentially the compiled value for IMGUI_VERSION) \r\n"
 " import static String GetVersion(); \r\n"
 "  \r\n"
@@ -754,6 +766,22 @@ int AgsImGui_BeginWindow(const char* name, int has_close_button, int32 flags = 0
 
 void AgsImGui_EndWindow(){
     ImGui::End();
+}
+
+void AgsImGui_ShowDemoWindow(){
+    ImGui::ShowDemoWindow();
+}
+
+void AgsImGui_ShowAboutWindow(){
+    ImGui::ShowAboutWindow();
+}
+
+void AgsImGui_ShowMetricsWindow(){
+    ImGui::ShowMetricsWindow();
+}
+
+void AgsImGui_ShowUserGuide(){
+    ImGui::ShowUserGuide();
 }
 
 int AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
@@ -1197,6 +1225,10 @@ void AgsImGui_ValueFloat(const char* prefix, uint32_t value){
         engine->RegisterScriptFunction("AgsImGui::Render^0", (void*)AgsImGui_Render);
         //engine->RegisterScriptFunction("AgsImGui::GetDrawData^0", (void*)AgsImGui_GetDrawData);
         engine->RegisterScriptFunction("AgsImGui::GetVersion^0", (void*)AgsImGui_GetVersion);
+        engine->RegisterScriptFunction("AgsImGui::ShowDemoWindow^0", (void*)AgsImGui_ShowDemoWindow);
+        engine->RegisterScriptFunction("AgsImGui::ShowAboutWindow^0", (void*)AgsImGui_ShowAboutWindow);
+        engine->RegisterScriptFunction("AgsImGui::ShowMetricsWindow^0", (void*)AgsImGui_ShowMetricsWindow);
+        engine->RegisterScriptFunction("AgsImGui::ShowUserGuide^0", (void*)AgsImGui_ShowUserGuide);
         engine->RegisterScriptFunction("AgsImGui::BeginWindow^3", (void*)AgsImGui_BeginWindow);
         engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
         engine->RegisterScriptFunction("AgsImGui::BeginChild^5", (void*)AgsImGui_BeginChild);
