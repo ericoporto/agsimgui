@@ -562,3 +562,23 @@ return true when activated. shortcuts are displayed for convenience but not proc
 `static String AgsImGuiHelper.GetClipboarText()`
 
 ---
+
+## FAQ
+
+### How do I make mouse wheel work?
+
+First, make sure you have mouse wheel support enabled in Global Settings.
+
+Then, in some script, add the code below. Note: If the script is a Room script, it will only work in that room.
+
+```AGS Script
+void on_mouse_click (int btn){
+  if(btn == eMouseWheelNorth){
+    AgsImGui.DoMouseWheel(eImGuiDir_Up);
+  } else if(btn == eMouseWheelSouth){
+    AgsImGui.DoMouseWheel(eImGuiDir_Down);    
+  }  
+}
+```
+
+For now, mouse wheel events are not exposed in the AGS Plugin API, so you have to do it through script. In the future, if this changes, it will be integrated in the plugin.
