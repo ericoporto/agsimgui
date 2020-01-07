@@ -363,6 +363,11 @@ namespace agsimgui {
 " /// get the compiled version string e.g. \"1.23\" (essentially the compiled value for IMGUI_VERSION) \r\n"
 " import static String GetVersion(); \r\n"
 "  \r\n"
+" import static void StyleColorsDark(); \r\n"
+"  \r\n"
+" import static void StyleColorsClassic(); \r\n"
+"  \r\n"
+" import static void StyleColorsLight(); \r\n"
 "  \r\n"
 " // Windows \r\n"
 "  \r\n"
@@ -828,6 +833,18 @@ void AgsImGui_ShowMetricsWindow(){
 
 void AgsImGui_ShowUserGuide(){
     ImGui::ShowUserGuide();
+}
+
+void AgsImGui_StyleColorsDark(){
+    ImGui::StyleColorsDark();
+}
+
+void AgsImGui_StyleColorsClassic(){
+    ImGui::StyleColorsClassic();
+}
+
+void AgsImGui_StyleColorsLight(){
+    ImGui::StyleColorsLight();
 }
 
 int AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool border = false, int32 flags = 0){
@@ -1394,6 +1411,9 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::ShowAboutWindow^0", (void*)AgsImGui_ShowAboutWindow);
         engine->RegisterScriptFunction("AgsImGui::ShowMetricsWindow^0", (void*)AgsImGui_ShowMetricsWindow);
         engine->RegisterScriptFunction("AgsImGui::ShowUserGuide^0", (void*)AgsImGui_ShowUserGuide);
+        engine->RegisterScriptFunction("AgsImGui::StyleColorsDark^0", (void*)AgsImGui_StyleColorsDark);
+        engine->RegisterScriptFunction("AgsImGui::StyleColorsClassic^0", (void*)AgsImGui_StyleColorsClassic);
+        engine->RegisterScriptFunction("AgsImGui::StyleColorsLight^0", (void*)AgsImGui_StyleColorsLight);
         engine->RegisterScriptFunction("AgsImGui::BeginWindow^3", (void*)AgsImGui_BeginWindow);
         engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
         engine->RegisterScriptFunction("AgsImGui::BeginChild^5", (void*)AgsImGui_BeginChild);
