@@ -322,6 +322,14 @@ namespace agsimgui {
 " eImGuiInputTextFlags_CallbackResize      = 262144,  // Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. \r\n"
 " }; \r\n"
 "  \r\n"
+" enum ImGuiCond \r\n"
+" { \r\n"
+"   ImGuiCond_Always       = 1, // Set the variable \r\n"
+"   ImGuiCond_Once         = 2, // Set the variable once per runtime session (only the first call with succeed) \r\n"
+"   ImGuiCond_FirstUseEver = 4, // Set the variable if the object/window has no persistently saved data (no entry in .ini file) \r\n"
+"   ImGuiCond_Appearing    = 8, // Set the variable if the object/window is appearing after being hidden/inactive (or the first time) \r\n"
+" }; \r\n"
+"  \r\n"
 " struct AgsImGui{ \r\n"
 " // Main \r\n"
 "  \r\n"
@@ -371,6 +379,27 @@ namespace agsimgui {
 "  \r\n"
 " /// pop child window from the stack. \r\n"
 " import static void EndChild(); \r\n"
+"  \r\n"
+" /// set next window position. call before Begin(). use pivot=(0.5,0.5) to center on given point, etc. \r\n"
+" import static void SetNextWindowPos(int position_x, int position_y, ImGuiCond cond = 0, float pivot_x = 0, float pivot_y = 0); \r\n"
+"  \r\n"
+" /// set next window size. set axis to 0 to force an auto-fit on this axis. call before Begin() \r\n"
+" import static void SetNextWindowSize(int width = 0, int height = 0, ImGuiCond cond = 0); \r\n"
+"  \r\n"
+" /// set next window size limits. use -1,-1 on either X/Y axis to preserve the current size. Sizes will be rounded down. \r\n"
+" import static void SetNextWindowSizeConstraints(int min_width, int min_height, int max_width, int max_height); \r\n"
+"  \r\n"
+" /// set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations nor WindowPadding. set an axis to 0 to leave it automatic. call before Begin() \r\n"
+" import static void SetNextWindowContentSize(int width = 0, int height = 0); \r\n"
+"  \r\n"
+" /// set next window collapsed state. call before Begin() \r\n"
+" import static void SetNextWindowCollapsed(bool collapsed, ImGuiCond cond = 0); \r\n"
+"  \r\n"
+" /// set next window to be focused / top-most. call before Begin() \r\n"
+" import static void SetNextWindowFocus(); \r\n"
+"  \r\n"
+" /// set next window background color alpha. helper to easily modify ImGuiCol_WindowBg/ChildBg/PopupBg. \r\n"
+" import static void SetNextWindowBgAlpha(float alpha); \r\n"
 "  \r\n"
 " // Item/Widgets Utilities \r\n"
 " // - Most of the functions are referring to the last/previous item we submitted. \r\n"
@@ -807,6 +836,37 @@ int AgsImGui_BeginChild(const char* str_id, int width = 0, int height = 0, bool 
 
 void AgsImGui_EndChild(){
     ImGui::EndChild();
+}
+
+void AgsImGui_SetNextWindowPos(int position_x, int position_y, int cond, uint32_t pivot_x, uint32_t pivot_y){
+    float f_pivot_x = ToNormalFloat(pivot_x);
+    float f_pivot_y = ToNormalFloat(pivot_y);
+
+    ImGui::SetNextWindowPos(ImVec2((float) position_x, (float)position_y), cond, ImVec2(f_pivot_x,f_pivot_y));
+}
+
+void AgsImGui_SetNextWindowSize(int width, int height, int cond){
+    ImGui::SetNextWindowPos(ImVec2((float) width, (float)height), cond);
+}
+
+void AgsImGui_SetNextWindowSizeConstraints(int min_width, int min_height, int max_width, int max_height){
+    ImGui::SetNextWindowSizeConstraints(ImVec2((float) min_width, (float)min_height),ImVec2((float) max_width, (float)max_height));
+}
+
+void AgsImGui_SetNextWindowContentSize(int width, int height){
+    ImGui::SetNextWindowContentSize(ImVec2((float) width, (float)height));
+}
+
+void AgsImGui_SetNextWindowCollapsed(int collapsed, int cond){
+    ImGui::SetNextWindowCollapsed(collapsed != 0, cond);
+}
+
+void AgsImGui_SetNextWindowFocus(){
+    ImGui::SetNextWindowFocus();
+}
+
+void AgsImGui_SetNextWindowBgAlpha(float alpha){
+    ImGui::SetNextWindowBgAlpha(alpha);
 }
 
 int AgsImGui_IsWindowAppearing(){
@@ -1338,6 +1398,13 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::EndWindow^0", (void*)AgsImGui_EndWindow);
         engine->RegisterScriptFunction("AgsImGui::BeginChild^5", (void*)AgsImGui_BeginChild);
         engine->RegisterScriptFunction("AgsImGui::EndChild^0", (void*)AgsImGui_EndChild);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowPos^5", (void*)AgsImGui_SetNextWindowPos);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowSize^3", (void*)AgsImGui_SetNextWindowSize);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowSizeConstraints^4", (void*)AgsImGui_SetNextWindowSizeConstraints);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowContentSize^2", (void*)AgsImGui_SetNextWindowContentSize);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowCollapsed^2", (void*)AgsImGui_SetNextWindowCollapsed);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowFocus^0", (void*)AgsImGui_SetNextWindowFocus);
+        engine->RegisterScriptFunction("AgsImGui::SetNextWindowBgAlpha^1", (void*)AgsImGui_SetNextWindowBgAlpha);
         engine->RegisterScriptFunction("AgsImGui::IsWindowAppearing^0", (void*)AgsImGui_IsWindowAppearing);
         engine->RegisterScriptFunction("AgsImGui::IsWindowCollapsed^0", (void*)AgsImGui_IsWindowCollapsed);
         engine->RegisterScriptFunction("AgsImGui::IsWindowFocused^1", (void*)AgsImGui_IsWindowFocused);
