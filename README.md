@@ -505,6 +505,52 @@ notify TabBar or Docking system of a closed tab/window ahead (useful to reduce v
 
 ---
 
+### Menus 
+
+#### `AgsImGui.BeginMenuBar`
+
+`static bool AgsImGui.BeginMenuBar()`
+
+Append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window).
+
+#### `AgsImGui.EndMenuBar`
+
+`static void AgsImGui.EndMenuBar()`
+
+Only call EndMenuBar() if BeginMenuBar() returns true!
+
+#### `AgsImGui.BeginMainMenuBar`
+
+`static bool AgsImGui.BeginMainMenuBar()`
+
+Create and append to a full screen menu-bar.
+
+#### `AgsImGui.EndMainMenuBar`
+
+`static void AgsImGui.EndMainMenuBar()`
+
+Only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+
+#### `AgsImGui.BeginMenu`
+
+`static bool AgsImGui.BeginMenu(String label, bool enabled = true)`
+
+Create a sub-menu entry. Only call EndMenu() if this returns true!
+
+#### `AgsImGui.EndMenu`
+
+`static void AgsImGui.EndMenu()`
+
+Only call EndMenu() if BeginMenu() returns true!
+
+#### `AgsImGui.MenuItem`
+
+`static bool AgsImGui.MenuItem(String label, String shortcut, bool selected = false, bool enabled = true)`
+
+return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment!
+
+---
+
 ### General Helpers
 
 #### `AgsImGuiHelper.SetClipboarText` 
