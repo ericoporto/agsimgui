@@ -472,6 +472,14 @@ Always call after a BeginTooltip block!
 
 Set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). Override any previous call to SetTooltip().
 
+Example:
+
+```AGS Script
+    AgsImGui.Button("Clicks for nothing!");
+    if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip("Button is hovered!");
+
+```
+
 ---
 
 ### Popups and Modals
