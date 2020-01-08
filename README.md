@@ -673,6 +673,57 @@ In any cases below, you still have to call `AgsImGui.EndWindow()`.
 
 - `eImGuiBeginWindow_Collapsed_Closed` the window is both collapsed and closed, rare but theoretically possible.
 
+#### `ImGuiWindowFlags`
+
+- `eImGuiWindowFlags_None` (= 0),
+
+- `eImGuiWindowFlags_NoTitleBar`, Disable title-bar
+
+- `eImGuiWindowFlags_NoResize`, Disable user resizing with the lower-right grip
+
+- `eImGuiWindowFlags_NoMove`,  Disable user moving the window
+
+- `eImGuiWindowFlags_NoScrollbar`, Disable scrollbars (window can still scroll with mouse or programmatically)
+
+- `eImGuiWindowFlags_NoScrollWithMouse`, Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set.
+
+- `eImGuiWindowFlags_NoCollapse`, Disable user collapsing window by double-clicking on it
+
+- `eImGuiWindowFlags_AlwaysAutoResize`, Resize every window to its content every frame
+
+- `eImGuiWindowFlags_NoBackground`,Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f).
+
+- `eImGuiWindowFlags_NoSavedSettings`, Never load/save settings in .ini file
+
+- `eImGuiWindowFlags_NoMouseInputs`, Disable catching mouse, hovering test with pass through.
+
+- `eImGuiWindowFlags_MenuBar`, Has a menu-bar
+
+- `eImGuiWindowFlags_HorizontalScrollbar`, Allow horizontal scrollbar to appear (off by default).
+
+- `eImGuiWindowFlags_NoFocusOnAppearing`, Disable taking focus when transitioning from hidden to visible state
+
+- `eImGuiWindowFlags_NoBringToFrontOnFocus`, Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus)
+
+- `eImGuiWindowFlags_AlwaysVerticalScrollbar`, Always show vertical scrollbar (even if ContentSize.y < Size.y)
+
+- `eImGuiWindowFlags_AlwaysHorizontalScrollbar`, Always show horizontal scrollbar (even if ContentSize.x < Size.x)
+
+- `eImGuiWindowFlags_AlwaysUseWindowPadding`, Ensure child windows without border uses style.WindowPadding (ignored by default for non-bordered child windows, because more convenient)
+
+- `eImGuiWindowFlags_NoNavInputs`, No gamepad/keyboard navigation within the window
+
+- `eImGuiWindowFlags_NoNavFocus`, No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB)
+
+- `eImGuiWindowFlags_UnsavedDocument`, Append '*' to title without affecting the ID, as a convenience to avoid using the ### operator.
+
+- `eImGuiWindowFlags_NoNav`,
+
+- `eImGuiWindowFlags_NoDecoration`,
+
+- `eImGuiWindowFlags_NoInputs`,
+
+
 ## FAQ
 
 ### How do I make mouse wheel work?
