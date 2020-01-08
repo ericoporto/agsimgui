@@ -515,6 +515,23 @@ and return false again once it's closed.
  Modal dialog, a regular window with title bar, block interactions behind the modal window, and you can't close the 
  modal window by clicking outside. 
 
+#### `AgsImGui.EndPopup`
+
+`static void AgsImGui.EndPopup()`
+
+Only call EndPopup() if BeginPopupXXX() returns true!
+
+#### `AgsImGui.IsPopupOpen`
+
+`static bool AgsImGui.IsPopupOpen(String str_id)`
+
+Return true if the popup is open at the current begin-ed level of the popup stack.
+
+#### `AgsImGui.CloseCurrentPopup`
+
+`static void AgsImGui.CloseCurrentPopup()`
+
+Close the popup we have begin-ed into. clicking on a MenuItem or Selectable automatically close the current popup.
 
 ---
 
