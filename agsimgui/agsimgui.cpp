@@ -565,6 +565,25 @@ namespace agsimgui {
 " /// set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). override any previous call to SetTooltip(). \r\n"
 " import static void SetTooltip(String text); \r\n"
 "  \r\n"
+"  \r\n"
+" /// call to mark popup as open (don't call every frame!). popups are closed when user click outside, or if CloseCurrentPopup() is called within a BeginPopup()/EndPopup() block. Popup identifiers are relative to the current ID-stack. \r\n"
+" import static void OpenPopup(String str_id); \r\n"
+"  \r\n"
+" /// return true if the popup is open, and you can start outputting to it. only call EndPopup() if BeginPopup() returns true! \r\n"
+" import static bool BeginPopup(String str_id, ImGuiWindowFlags flags = 0);  \r\n"
+"  \r\n"
+" /// modal dialog (regular window with title bar, block interactions behind the modal window, can't close the modal window by clicking outside) \r\n"
+" import static bool BeginPopupModal(String name, bool has_close_button = 0, ImGuiWindowFlags flags = 0); \r\n"
+"  \r\n"
+" /// only call EndPopup() if BeginPopupXXX() returns true! \r\n"
+" import static void EndPopup(); \r\n"
+"  \r\n"
+" /// return true if the popup is open at the current begin-ed level of the popup stack. \r\n"
+" import static bool IsPopupOpen(String str_id); \r\n"
+"  \r\n"
+" /// close the popup we have begin-ed into. clicking on a MenuItem or Selectable automatically close the current popup. \r\n"
+" import static void CloseCurrentPopup(); \r\n"
+"  \r\n"
 " // Tab Bars, Tabs \r\n"
 "  \r\n"
 " /// create and append into a TabBar \r\n"
@@ -1145,6 +1164,31 @@ void AgsImGui_SetTooltip(const char * text){
     ImGui::SetTooltip(text);
 }
 
+void AgsImGui_OpenPopup(const char* str_id) {
+    ImGui::OpenPopup(str_id);
+}
+
+int AgsImGui_BeginPopup(const char* str_id, int flags) {
+    return ToAgsBool(ImGui::BeginPopup(str_id, flags));
+}
+
+int AgsImGui_BeginPopupModal(const char* name, bool has_close_button, int flags) {
+    bool p_open = false;
+    return ToAgsBool(ImGui::BeginPopupModal(name,(has_close_button != 0 ? &p_open : nullptr),flags));
+}
+
+void AgsImGui_EndPopup() {
+    ImGui::EndPopup();
+}
+
+int AgsImGui_IsPopupOpen(const char* str_id) {
+    return ToAgsBool(ImGui::IsPopupOpen(str_id));
+}
+
+void AgsImGui_CloseCurrentPopup() {
+    ImGui::CloseCurrentPopup();
+}
+
 int AgsImGui_BeginTabBar(const char * str_id, int flags){
     return ToAgsBool(ImGui::BeginTabBar(str_id, flags));
 }
@@ -1155,7 +1199,7 @@ void AgsImGui_EndTabBar(){
 
 int AgsImGui_BeginTabItem(const char * label,  bool has_close_button, int flags){
     bool p_open = false;
-    return ToAgsBool(ImGui::BeginTabItem(label, (has_close_button != 0 ? &p_open : NULL), flags));
+    return ToAgsBool(ImGui::BeginTabItem(label, (has_close_button != 0 ? &p_open : nullptr), flags));
 }
 
 void AgsImGui_EndTabItem(){
@@ -1470,6 +1514,12 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::BeginTooltip^0", (void*)AgsImGui_BeginTooltip);
         engine->RegisterScriptFunction("AgsImGui::EndTooltip^0", (void*)AgsImGui_EndTooltip);
         engine->RegisterScriptFunction("AgsImGui::SetTooltip^1", (void*)AgsImGui_SetTooltip);
+        engine->RegisterScriptFunction("AgsImGui::OpenPopup^1", (void*)AgsImGui_OpenPopup);
+        engine->RegisterScriptFunction("AgsImGui::BeginPopup^2", (void*)AgsImGui_BeginPopup);
+        engine->RegisterScriptFunction("AgsImGui::BeginPopupModal^3", (void*)AgsImGui_BeginPopupModal);
+        engine->RegisterScriptFunction("AgsImGui::EndPopup^0", (void*)AgsImGui_EndPopup);
+        engine->RegisterScriptFunction("AgsImGui::IsPopupOpen^1", (void*)AgsImGui_IsPopupOpen);
+        engine->RegisterScriptFunction("AgsImGui::CloseCurrentPopup^0", (void*)AgsImGui_CloseCurrentPopup);
         engine->RegisterScriptFunction("AgsImGui::BeginTabBar^2", (void*)AgsImGui_BeginTabBar);
         engine->RegisterScriptFunction("AgsImGui::EndTabBar^0", (void*)AgsImGui_EndTabBar);
         engine->RegisterScriptFunction("AgsImGui::BeginTabItem^3", (void*)AgsImGui_BeginTabItem);
