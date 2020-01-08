@@ -1441,6 +1441,7 @@ int AgsImGuiHelper_GetClipboarImage() {
 	}
 
 	engine->ReleaseBitmapSurface(engineSprite);
+	return sprite_id;
 }
 
 
