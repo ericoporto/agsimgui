@@ -825,7 +825,7 @@ const char* AgsImGui_GetVersion(){
 }
 
 int AgsImGui_BeginWindow(const char* name, int has_close_button, int32 flags = 0){
-    bool p_open = false;
+    bool p_open = true;
     bool not_collapsed = ImGui::Begin(name, (has_close_button != 0 ? &p_open : NULL), flags);
 
     if(p_open && !not_collapsed) return 4;
@@ -1173,7 +1173,7 @@ int AgsImGui_BeginPopup(const char* str_id, int flags) {
 }
 
 int AgsImGui_BeginPopupModal(const char* name, bool has_close_button, int flags) {
-    bool p_open = false;
+    bool p_open = true;
     return ToAgsBool(ImGui::BeginPopupModal(name,(has_close_button != 0 ? &p_open : nullptr),flags));
 }
 
