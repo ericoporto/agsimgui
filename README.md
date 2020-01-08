@@ -18,10 +18,10 @@ Run a simple demo window to see what's possible with Dear ImGui.
 ```AGS Script
 // use function room_RepExec() when in Room Script and link it throught the editor
 void repeatedly_execute(){
-    AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
-    AgsImGui.ShowDemoWindow(); //Shows a demo of everything possible
-    AgsImGui.Render(); // This will generate drawing instructions. 
-    // AGS will actually draw this on screen later on, on Post Screen Draw stage.
+  AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+  AgsImGui.ShowDemoWindow(); //Shows a demo of everything possible
+  AgsImGui.Render(); // This will generate drawing instructions. 
+  // AGS will actually draw this on screen later on, on Post Screen Draw stage.
 }
 ```
 
@@ -34,18 +34,18 @@ bool is_button_clicked;
 
 // use function room_RepExec() when in Room Script and link it throught the editor
 void repeatedly_execute(){
-    AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+  AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
 	
-    AgsImGui.BeginWindow("My first window");	
-    ViewFrame* vf = Game.GetViewFrame(player.View, player.Loop, player.Frame);
-    is_button_clicked = AgsImGui.ImageButton(vf.Graphic); 
-    if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip(String.Format("frame %d",player.Frame));
-    player.x = AgsImGui.DragInt("player.x", player.x);
-    player.y = AgsImGui.DragInt("player.y", player.y);
-    AgsImGui.EndWindow();
+  AgsImGui.BeginWindow("My first window");	
+  ViewFrame* vf = Game.GetViewFrame(player.View, player.Loop, player.Frame);
+  is_button_clicked = AgsImGui.ImageButton(vf.Graphic); 
+  if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip(String.Format("frame %d",player.Frame));
+  player.x = AgsImGui.DragInt("player.x", player.x);
+  player.y = AgsImGui.DragInt("player.y", player.y);
+  AgsImGui.EndWindow();
 	
-    AgsImGui.Render(); // This will generate drawing instructions. 
-    // AGS will actually draw this on screen later on, on Post Screen Draw stage.
+  AgsImGui.Render(); // This will generate drawing instructions. 
+  // AGS will actually draw this on screen later on, on Post Screen Draw stage.
 }
 ```
 
@@ -403,13 +403,13 @@ The BeginCombo()/EndCombo() allows to manage your contents and selection state h
 Example:
 
 ```
-	bool option1;
-	bool option2;
-	if(AgsImGui.BeginCombo("My combo","click me!")){
-		option1 = AgsImGui.Selectable("Option 1");
-		option2 = AgsImGui.Selectable("Option 2");
-		AgsImGui.EndCombo();
-	}
+bool option1;
+bool option2;
+if(AgsImGui.BeginCombo("My combo","click me!")){
+  option1 = AgsImGui.Selectable("Option 1");
+  option2 = AgsImGui.Selectable("Option 2");
+  AgsImGui.EndCombo();
+}
 ```
 
 #### `AgsImGui.EndCombo`
@@ -431,13 +431,13 @@ The BeginListBox()/EndListBox() allows to manage your contents and selection sta
 Example:
 
 ```
-	bool option1;
-	bool option2;
-	if(AgsImGui.BeginListBox("My ListBox",2)){
-		option1 = AgsImGui.Selectable("Option 1");
-		option2 = AgsImGui.Selectable("Option 2");
-		AgsImGui.EndListBox();
-	}
+bool option1;
+bool option2;
+if(AgsImGui.BeginListBox("My ListBox",2)){
+  option1 = AgsImGui.Selectable("Option 1");
+  option2 = AgsImGui.Selectable("Option 2");
+  AgsImGui.EndListBox();
+}
 ```
 
 #### `AgsImGui.EndListBox`
@@ -475,8 +475,8 @@ Set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). Override a
 Example:
 
 ```AGS Script
-    AgsImGui.Button("Clicks for nothing!");
-    if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip("Button is hovered!");
+AgsImGui.Button("Clicks for nothing!");
+if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip("Button is hovered!");
 
 ```
 
@@ -495,15 +495,15 @@ Popup identifiers are relative to the current ID-stack.
 Example:
 
 ```AGS Script
-    // If the button is in the Window, this code goes inside the window.
-    if(AgsImGui.BeginPopup("my_popup")){
-      AgsImGui.Text("This is a popup");
-      AgsImGui.EndPopup();  
-    }
-    if(AgsImGui.Button("open popup"))
-    {
-      AgsImGui.OpenPopup("my_popup");
-    }
+// If the button is in the Window, this code goes inside the window.
+if(AgsImGui.BeginPopup("my_popup")){
+  AgsImGui.Text("This is a popup");
+  AgsImGui.EndPopup();  
+}
+if(AgsImGui.Button("open popup"))
+{
+  AgsImGui.OpenPopup("my_popup");
+}
 ```
 
 #### `AgsImGui.BeginPopup`
