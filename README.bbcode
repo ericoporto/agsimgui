@@ -1,0 +1,679 @@
+[b][size=14pt]agsimgui[/size][/b]  [color=gray][b] version 0.1.0 [/b][/color]
+
+[img]https://dev.azure.com/ericoporto/agsimgui/_apis/build/status/ericoporto.agsimgui?branchName=master[/img]
+
+Dear ImGui plugin for Adventure Game Studio
+
+[img]https://user-images.githubusercontent.com/2244442/71694439-f3ac1080-2d8d-11ea-9c98-e6954409b66b.gif[/img]
+
+Supports Directx9 and Software renderer. Using OpenGL will default to Software renderer for ImGui only (it has it's own renderer), but OpenGL support will be provided in the future.
+
+[b][size=12pt]Usage example[/size][/b]
+
+Run a simple demo window to see what's possible with Dear ImGui.
+[code=AGS]
+// use function room_RepExec() when in Room Script and link it throught the editor
+void repeatedly_execute(){
+  AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+  AgsImGui.ShowDemoWindow(); //Shows a demo of everything possible
+  AgsImGui.Render(); // This will generate drawing instructions. 
+  // AGS will actually draw this on screen later on, on Post Screen Draw stage.
+}
+[/code]
+Some of what is shown on Demo Window is not yet exposed in the AgsImGui Script API.
+
+Let's do a simple example now.
+[code=AGS]
+bool is_button_clicked;
+
+// use function room_RepExec() when in Room Script and link it throught the editor
+void repeatedly_execute(){
+  AgsImGui.NewFrame(); //let's begin a new frame, we end it with a Render
+
+AgsImGui.BeginWindow("My first window");    
+  ViewFrame* vf = Game.GetViewFrame(player.View, player.Loop, player.Frame);
+  is_button_clicked = AgsImGui.ImageButton(vf.Graphic); 
+  if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip(String.Format("frame %d",player.Frame));
+  player.x = AgsImGui.DragInt("player.x", player.x);
+  player.y = AgsImGui.DragInt("player.y", player.y);
+  AgsImGui.EndWindow();
+
+AgsImGui.Render(); // This will generate drawing instructions. 
+  // AGS will actually draw this on screen later on, on Post Screen Draw stage.
+}
+[/code]
+Note ImGui will save a [tt]imgui.ini[/tt] file to allow window positions and some more data to persist between sections when no guidance is given.
+
+[b][size=12pt]AGS Script API[/size][/b]
+
+[i][b]Main[/b][/i]
+
+[*] [b][tt]AgsImGui.NewFrame[/tt][/b]
+
+[code]static void AgsImGui.NewFrame()[/code]
+
+Call this before calling any AgsImGui commands.
+
+[*] [b][tt]AgsImGui.EndFrame[/tt][/b]
+
+[code]static void AgsImGui.EndFrame()[/code]
+
+We don't need this if we are using Render, since it will automatically call [tt]AgsImGui.EndFrame()[/tt] too.
+
+[*] [b][tt]AgsImGui.Render[/tt][/b]
+
+[code]static void AgsImGui.Render()[/code]
+
+This will EndFrame and proceed to generate drawing instructions.
+
+
+
+[i][b]Demo, Debug, Information[/b][/i]
+
+[*] [b][tt]AgsImGui.GetVersion[/tt][/b]
+
+[code]static String AgsImGui.GetVersion()[/code]
+
+[*] [b][tt]AgsImGui.ShowDemoWindow[/tt][/b]
+
+[code]static void AgsImGui.ShowDemoWindow()[/code]
+
+[*] [b][tt]AgsImGui.ShowAboutWindow[/tt][/b]
+
+[code]static void AgsImGui.ShowAboutWindow()[/code]
+
+[*] [b][tt]AgsImGui.ShowMetricsWindow[/tt][/b]
+
+[code]static void AgsImGui.ShowMetricsWindow()[/code]
+
+[*] [b][tt]AgsImGui.ShowUserGuide[/tt][/b]
+
+[code]static void AgsImGui.ShowUserGuide()[/code]
+
+[hr]
+
+[i][b]Windows[/b][/i]
+
+[*] [b][tt]AgsImGui.BeginWindow[/tt][/b]
+
+[code]static AgsImGui.ImGuiBeginWindow BeginWindow(String name, bool has_close_button = 0, ImGuiWindowFlags flags = 0)[/code]
+
+[*] [b][tt]AgsImGui.EndWindow[/tt][/b]
+
+[code]static void EndWindow()[/code]
+
+[hr]
+
+[i][b]Child Windows[/b][/i]
+
+[*] [b][tt]AgsImGui.BeginChild[/tt][/b]
+
+[code]static bool BeginChild(String str_id, int width = 0, int height = 0, bool border = false, ImGuiWindowFlags flags = 0)[/code]
+
+Child Windows. Always call a matching EndChild() for each BeginChild() call, regardless of its return value. Child windows can embed their own child.
+
+[*] [b][tt]AgsImGui.EndChild[/tt][/b]
+
+[code]static void EndChild()[/code]
+
+Pop child window from the stack.
+
+[hr]
+
+[i][b]Item/Widgets Utilities[/b][/i]
+
+Most of the functions are referring to the last/previous item we submitted.
+
+[*] [b][tt]AgsImGui.IsItemHovered[/tt][/b]
+
+[code]static bool AgsImGui.IsItemHovered(ImGuiHoveredFlags flags = 0)[/code]
+
+Is the last item hovered? (and usable, aka not blocked by a popup, etc.). You can specify a flag for more options.
+
+static bool IsItemHovered(ImGuiHoveredFlags flags = 0)
+
+[*] [b][tt]AgsImGui.IsItemActive[/tt][/b]
+
+[code]static bool AgsImGui.IsItemActive()[/code]
+
+Is the last item active? (e.g. button being held, text field being edited. This will continuously return true while holding mouse button on an item.)
+
+[*] [b][tt]AgsImGui.IsItemFocused[/tt][/b]
+
+[code]static bool AgsImGui.IsItemFocused()[/code]
+
+Is the last item focused for keyboard navigation?
+
+[*] [b][tt]AgsImGui.IsItemVisible[/tt][/b]
+
+[code]static bool AgsImGui.IsItemVisible()[/code]
+
+Is the last item visible? (items may be out of sight because of clipping/scrolling)
+
+[*] [b][tt]AgsImGui.IsItemEdited[/tt][/b]
+
+[code]static bool AgsImGui.IsItemEdited()[/code]
+
+Did the last item modify its underlying value this frame? or was pressed? This is generally the same as the bool return value of many widgets.
+
+[*] [b][tt]AgsImGui.IsItemActivated[/tt][/b]
+
+[code]static bool AgsImGui.IsItemActivated()[/code]
+
+Was the last item just made active (item was previously inactive).
+
+[*] [b][tt]AgsImGui.IsItemDeactivated[/tt][/b]
+
+[code]static bool AgsImGui.IsItemDeactivated()[/code]
+
+Was the last item just made inactive (item was previously active). Useful for Undo/Redo patterns with widgets that requires continuous editing.
+
+[*] [b][tt]AgsImGui.IsItemDeactivatedAfterEdit[/tt][/b]
+
+[code]static bool AgsImGui.IsItemDeactivatedAfterEdit()[/code]
+
+Was the last item just made inactive and made a value change when it was active? (e.g. Slider/Drag moved). Useful for Undo/Redo patterns with widgets that requires continuous editing.
+
+[*] [b][tt]AgsImGui.IsItemToggledOpen[/tt][/b]
+
+[code]static bool AgsImGui.IsItemToggledOpen()[/code]
+
+Was the last item open state toggled? set by TreeNode().
+
+[*] [b][tt]AgsImGui.IsAnyItemHovered[/tt][/b]
+
+[code]static bool AgsImGui.IsAnyItemHovered()[/code]
+
+is any item hovered?
+
+[*] [b][tt]AgsImGui.IsAnyItemActive[/tt][/b]
+
+[code]static bool AgsImGui.IsAnyItemActive()[/code]
+
+is any item active?
+
+[*] [b][tt]AgsImGui.IsAnyItemFocused[/tt][/b]
+
+[code]static bool AgsImGui.IsAnyItemFocused()[/code]
+
+is any item focused?
+
+[*] [b][tt]AgsImGui.IsWindowAppearing[/tt][/b]
+
+[code]static bool AgsImGui.IsWindowAppearing()[/code]
+
+'current window' = the window we are appending into while inside a Begin()/End() block.
+
+[*] [b][tt]AgsImGui.IsWindowCollapsed[/tt][/b]
+
+[code]static bool AgsImGui.IsWindowCollapsed()[/code]
+
+return true when window is collapsed. Use this between Begin and End of a window.
+
+[*] [b][tt]AgsImGui.IsWindowFocused[/tt][/b]
+
+[code]static bool AgsImGui.IsWindowFocused(ImGuiFocusedFlags flags=0)[/code]
+
+is current window focused? or its root/child, depending on flags. see flags for options. Use this between Begin and End of a window.
+
+[*] [b][tt]AgsImGui.IsWindowHovered[/tt][/b]
+
+[code]static bool AgsImGui.IsWindowHovered(ImGuiHoveredFlags flags=0)[/code]
+
+is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.
+
+[hr]
+
+[i][b]Widgets: Text[/b][/i]
+
+[*] [b][tt]AgsImGui.Text[/tt][/b]
+
+[code]static void AgsImGui.Text(String text)[/code]
+
+Draws a string of text.
+
+[*] [b][tt]AgsImGui.TextColored[/tt][/b]
+
+[code]static void AgsImGui.TextColored(int ags_color, String text)[/code]
+
+shortcut for PushStyleColor(ImGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
+
+[*] [b][tt]AgsImGui.TextDisabled[/tt][/b]
+
+[code]static void AgsImGui.TextDisabled(String text)[/code]
+
+shortcut for PushStyleColor(ImGuiCol[cur]Text, style.Colors[ImGuiCol[/cur]TextDisabled]); Text(fmt, ...); PopStyleColor(); 
+
+[*] [b][tt]AgsImGui.TextWrapped[/tt][/b]
+
+[code]static void AgsImGui.TextWrapped(String text)[/code]
+
+shortcut for PushTextWrapPos(0.0f); Text(fmt, ...); PopTextWrapPos();.
+
+[*] [b][tt]AgsImGui.LabelText[/tt][/b]
+
+[code]static void AgsImGui.LabelText(String label, String text)[/code]
+
+Display text+label aligned the same way as value+label widgets .
+
+[*] [b][tt]AgsImGui.Bullet[/tt][/b]
+
+[code]static void AgsImGui.Bullet(String text)[/code]
+
+Draws a bullet and a string of text. Shortcut for Bullet()+Text().
+
+[hr]
+
+[i][b]Widgets: Main[/b][/i]
+
+Most widgets return true when the value has been changed or when pressed/selected.
+
+You may also use one of the many IsItemXXX functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
+
+[*] [b][tt]AgsImGui.Button[/tt][/b]
+
+[code]static bool AgsImGui.Button(String label, int width = 0, int height = 0)[/code]
+
+Creates a button. Returns true while button is pressed.
+
+[*] [b][tt]AgsImGui.SmallButton[/tt][/b]
+
+[code]static bool AgsImGui.SmallButton(String label)[/code]
+
+Creates a button with no padding to be easier to embed within text. Returns true while button is pressed.
+
+[*] [b][tt]AgsImGui.Image[/tt][/b]
+
+[code]static void AgsImGui.Image(int sprite_id)[/code]
+
+Create an image with passed sprite ID.
+
+[*] [b][tt]AgsImGui.ImageButton[/tt][/b]
+
+[code]static bool AgsImGui.ImageButton(int sprite_id)[/code]
+
+Create a button with an image with passed sprite ID. Returns true while button is pressed.
+
+[*] [b][tt]AgsImGui.ArrowButton[/tt][/b]
+
+[code]static bool AgsImGui.ArrowButton(String label, ImGuiDir dir)[/code]
+
+Creates a button with an arrow shape. Returns true while button is pressed.
+
+[*] [b][tt]AgsImGui.Checkbox[/tt][/b]
+
+[code]static bool AgsImGui.Checkbox(String label, bool initial_value)[/code]
+
+Creates a checkbox button. Returns true when button is marked.
+
+[*] [b][tt]AgsImGui.RadioButton[/tt][/b]
+
+[code]static bool AgsImGui.RadioButton(String label, bool active)[/code]
+
+Creates a radio button. Returns true while button is marked.
+
+[*] [b][tt]AgsImGui.Bullet[/tt][/b]
+
+[code]static void AgsImGui.Bullet()[/code]
+
+Draw a small circle and keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses .
+
+[hr]
+
+[i][b]Widgets: Selectables[/b][/i]
+
+A selectable highlights when hovered, and can display another color when selected.
+
+[*] [b][tt]AgsImGui.Selectable[/tt][/b]
+
+[code]static bool AgsImGui.Selectable(String label, bool selected = false, ImGuiSelectableFlags flags = 0, int width = 0, int height = 0)[/code]
+
+bool selected carry the selection state (read-only). When Selectable() is clicked it returns true so you can modify your selection state.
+
+[hr]
+
+[i][b]Widgets: Drag[/b][/i]
+
+CTRL+Click on any drag box to turn them into an input box. Manually input values aren't clamped and can go off-bounds. 
+
+[*] [b][tt]AgsImGui.DragFloat[/tt][/b]
+
+[code]static float AgsImGui.DragFloat(String label, float value, float min_value = 0, float max_value = 0, float speed = 0, String format = 0)[/code]
+
+Returns the current value of the drag box. Format string uses regular [code]"%f"[/code] specifiers, so you can use to define how many decimals you want.
+
+[*] [b][tt]AgsImGui.DragInt[/tt][/b]
+
+[code]static int AgsImGui.DragInt(String label, int value, int min_value = 0, int max_value = 0, float speed = 0, String format = 0)[/code]
+
+Returns the current value of the drag box. Format string uses regular [code]"%d"[/code], you can use it to specify left most zeroes.
+
+[hr]
+
+[i][b]Widgets: Slider[/b][/i]
+
+CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped and can go off-bounds. 
+
+[*] [b][tt]AgsImGui.SliderFloat[/tt][/b]
+
+[code]static float AgsImGui.SliderFloat(String label, float value, float min_value = 0, float max_value = 0, String format = 0)[/code]
+
+Returns the current value of the slider. Format string uses regular [code]"%f"[/code] specifiers, so you can use to define how many decimals you want.
+
+[*] [b][tt]AgsImGui.SliderInt[/tt][/b]
+
+[code]static int AgsImGui.SliderInt(String label, int value, int min_value = 0, int max_value = 0, String format = 0)[/code]
+
+Returns the current value of the slider. Format string uses regular [code]"%d"[/code], you can use it to specify left most zeroes.
+
+[hr]
+
+[i][b]Widgets: Input with Keyboard[/b][/i]
+
+[*] [b][tt]AgsImGui.InputText[/tt][/b]
+
+[code]static String AgsImGui.InputText(String label, String text_buffer, ImGuiInputTextFlags flags =0)[/code]
+
+[*] [b][tt]AgsImGui.InputTextMultiline[/tt][/b]
+
+[code]static String AgsImGui.InputTextMultiline(String label, String text_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0)[/code]
+
+[*] [b][tt]AgsImGui.InputTextWithHint[/tt][/b]
+
+[code]static String AgsImGui.InputTextWithHint(String label, String hint, String text_buffer, ImGuiInputTextFlags flags = 0)[/code]
+
+[hr]
+
+[i][b]Widgets: Combobox commands[/b][/i]
+
+[*] [b][tt]AgsImGui.BeginCombo[/tt][/b]
+
+[code]static bool AgsImGui.BeginCombo(String label, String preview_value, ImGuiComboFlags flags = 0);[/code]
+
+The BeginCombo()/EndCombo() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. 
+
+Example:
+[code=AGS]
+bool option1;
+bool option2;
+if(AgsImGui.BeginCombo("My combo","click me!")){
+  option1 = AgsImGui.Selectable("Option 1");
+  option2 = AgsImGui.Selectable("Option 2");
+  AgsImGui.EndCombo();
+}
+[/code]
+
+[*] [b][tt]AgsImGui.EndCombo[/tt][/b]
+
+[code]static void EndCombo()[/code]
+
+Only call EndCombo() if BeginCombo() returns true!
+
+[hr]
+
+[i][b]Widgets: List Boxes commands[/b][/i]
+
+[*] [b][tt]AgsImGui.BeginListBox[/tt][/b]
+
+[code]static bool AgsImGui.BeginListBox(String label, int items_count, int height_in_items = -1);[/code]
+
+The BeginListBox()/EndListBox() allows to manage your contents and selection state however you want it, by creating e.g. Selectable() items. 
+
+Example:
+[code=AGS]
+bool option1;
+bool option2;
+if(AgsImGui.BeginListBox("My ListBox",2)){
+  option1 = AgsImGui.Selectable("Option 1");
+  option2 = AgsImGui.Selectable("Option 2");
+  AgsImGui.EndListBox();
+}
+[/code]
+
+[*] [b][tt]AgsImGui.EndListBox[/tt][/b]
+
+[code]static void AgsImGui.EndListBox()[/code]
+
+Only call EndListBox() if BeginListBox() returns true!
+
+[hr]
+
+[i][b]Tooltips[/b][/i]
+
+Tooltip are windows following the mouse which do not take focus away.
+
+Remember we can only have one active tooltip at all times, and the last one called is the active one.
+
+[*] [b][tt]AgsImGui.BeginTooltip[/tt][/b]
+
+[code]static void AgsImGui.BeginTooltip()[/code]
+
+Begin/append a tooltip window. to create full-featured tooltip (with any kind of items). Doesn't return nothing.
+
+[*] [b][tt]AgsImGui.EndTooltip[/tt][/b]
+
+[code]static void AgsImGui.EndTooltip()[/code]
+
+Always call after a BeginTooltip block!
+
+[*] [b][tt]AgsImGui.SetTooltip[/tt][/b]
+
+[code]static void AgsImGui.SetTooltip(String text)[/code]
+
+Set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). Override any previous call to SetTooltip().
+
+Example:
+[code=AGS]
+AgsImGui.Button("Clicks for nothing!");
+if(AgsImGui.IsItemHovered()) AgsImGui.SetTooltip("Button is hovered!");
+
+[big][/code][/big]
+
+[i][b]Popups and Modals[/b][/i]
+
+[*] [b][tt]AgsImGui.OpenPopup[/tt][/b]
+
+[code]static void AgsImGui.OpenPopup(String str_id)[/code]
+
+call to mark popup as open (don't call every frame!). Popups are closed when user click outside, or if CloseCurrentPopup() is called within a BeginPopup()/EndPopup() block. 
+
+Popup identifiers are relative to the current ID-stack.
+
+Example:
+[code=AGS]
+// If the button is in the Window, this code goes inside the window.
+if(AgsImGui.BeginPopup("my_popup")){
+  AgsImGui.Text("This is a popup");
+  AgsImGui.EndPopup();  
+}
+if(AgsImGui.Button("open popup"))
+{
+  AgsImGui.OpenPopup("my_popup");
+}
+[/code]
+
+[*] [b][tt]AgsImGui.BeginPopup[/tt][/b]
+
+[code]static bool AgsImGui.BeginPopup(String str_id, ImGuiWindowFlags flags = 0)[/code]
+
+Return true if the popup is open, and you can start outputting to it. 
+Only call EndPopup() if BeginPopup() returns true!
+
+Generally you will want to run this on every frame, and it will return true once the popup has been made open, 
+and return false again once it's closed.
+
+[*] [b][tt]AgsImGui.BeginPopupModal[/tt][/b]
+
+[code]static bool AgsImGui.BeginPopupModal(String name, bool has_close_button = 0, ImGuiWindowFlags flags = 0)[/code]
+
+Modal dialog, a regular window with title bar, block interactions behind the modal window, and you can't close the 
+ modal window by clicking outside. 
+
+[*] [b][tt]AgsImGui.EndPopup[/tt][/b]
+
+[code]static void AgsImGui.EndPopup()[/code]
+
+Only call EndPopup() if BeginPopupXXX() returns true!
+
+[*] [b][tt]AgsImGui.IsPopupOpen[/tt][/b]
+
+[code]static bool AgsImGui.IsPopupOpen(String str_id)[/code]
+
+Return true if the popup is open at the current begin-ed level of the popup stack.
+
+[*] [b][tt]AgsImGui.CloseCurrentPopup[/tt][/b]
+
+[code]static void AgsImGui.CloseCurrentPopup()[/code]
+
+Close the popup we have begin-ed into. clicking on a MenuItem or Selectable automatically close the current popup.
+
+[hr]
+
+[i][b]Tab Bars, Tabs[/b][/i]
+
+[*] [b][tt]AgsImGui.BeginTabBar[/tt][/b]
+
+[code]static bool AgsImGui.BeginTabBar(String str_id, ImGuiTabBarFlags flags = 0)[/code]
+
+create and append into a TabBar
+
+[*] [b][tt]AgsImGui.EndTabBar[/tt][/b]
+
+[code]static void AgsImGui.EndTabBar()[/code]
+
+only call EndTabBar() if BeginTabBar() returns true!
+
+[*] [b][tt]AgsImGui.BeginTabItem[/tt][/b]
+
+[code]static bool AgsImGui.BeginTabItem(String label, bool has_close_button = 0, ImGuiTabItemFlags flags = 0)[/code]
+
+create a Tab. Returns true if the Tab is selected.
+
+[*] [b][tt]AgsImGui.EndTabItem[/tt][/b]
+
+[code]static void AgsImGui.EndTabItem()[/code]
+
+only call EndTabItem() if BeginTabItem() returns true!
+
+[*] [b][tt]AgsImGui.SetTabItemClosed[/tt][/b]
+
+[code]static void AgsImGui.SetTabItemClosed(String tab_or_docked_window_label)[/code]
+
+notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name.
+
+[hr]
+
+[i][b]Menus[/b][/i]
+
+[*] [b][tt]AgsImGui.BeginMenuBar[/tt][/b]
+
+[code]static bool AgsImGui.BeginMenuBar()[/code]
+
+Append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window).
+
+[*] [b][tt]AgsImGui.EndMenuBar[/tt][/b]
+
+[code]static void AgsImGui.EndMenuBar()[/code]
+
+Only call EndMenuBar() if BeginMenuBar() returns true!
+
+[*] [b][tt]AgsImGui.BeginMainMenuBar[/tt][/b]
+
+[code]static bool AgsImGui.BeginMainMenuBar()[/code]
+
+Create and append to a full screen menu-bar.
+
+[*] [b][tt]AgsImGui.EndMainMenuBar[/tt][/b]
+
+[code]static void AgsImGui.EndMainMenuBar()[/code]
+
+Only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+
+[*] [b][tt]AgsImGui.BeginMenu[/tt][/b]
+
+[code]static bool AgsImGui.BeginMenu(String label, bool enabled = true)[/code]
+
+Create a sub-menu entry. Only call EndMenu() if this returns true!
+
+[*] [b][tt]AgsImGui.EndMenu[/tt][/b]
+
+[code]static void AgsImGui.EndMenu()[/code]
+
+Only call EndMenu() if BeginMenu() returns true!
+
+[*] [b][tt]AgsImGui.MenuItem[/tt][/b]
+
+[code]static bool AgsImGui.MenuItem(String label, String shortcut, bool selected = false, bool enabled = true)[/code]
+
+return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment!
+
+[hr]
+
+[i][b]General Helpers[/b][/i]
+
+[*] [b][tt]AgsImGuiHelper.SetClipboarText[/tt][/b]
+
+[code]static void AgsImGuiHelper.SetClipboarText(String text)[/code]
+
+[*] [b][tt]AgsImGuiHelper.GetClipboarText[/tt][/b]
+
+[code]static String AgsImGuiHelper.GetClipboarText()[/code]
+
+[hr]
+
+[i][b]Enums[/b][/i]
+
+[code]ImGuiCond[/code]
+
+[list]
+[*] [tt]eImGuiCond_Always[/tt], used when condition should always trigger, is usually the default when the AgImGui API requires 
+conditions.
+[*] [tt]eImGuiCond_Once[/tt], Set the variable once per runtime session (only the first call with succeed).
+[*] [tt]eImGuiCond_FirstUseEver[/tt], Set the variable if the object/window has no persistently saved data (no entry in .ini file).
+[*] [tt]eImGuiCond_Appearing[/tt], Set the variable if the object/window is appearing after being hidden/inactive (or the first time).
+[/list]
+[code]ImGuiDir[/code]
+
+[list]
+[*] [tt]eImGuiDir_Left[/tt], left direction.
+[*] [tt]eImGuiDir_Right[/tt], right direction.
+[*] [tt]eImGuiDir_Up[/tt], up direction.
+[*] [tt]eImGuiDir_Down[/tt], down direction.
+[/list]
+[code]ImGuiBeginWindow[/code]
+
+obs: This is exclusive to AgsImGui implementation because in AGS we don't have pointers to primitive types.
+
+In any cases below, you still have to call [tt]AgsImGui.EndWindow()[/tt].
+
+[list]
+[*] [code]eImGuiBeginWindow_OK[/code], the window is open.
+[*] [code]eImGuiBeginWindow_Collapsed[/code], the window is collapsed (using the arrow at top left).
+[*] [code]eImGuiBeginWindow_OK_Closed[/code] the window is closed. This value is only returned at mouse release frame, after clicking on close button!
+[*] [code]eImGuiBeginWindow_Collapsed_Closed[/code] the window is both collapsed and closed, rare but theoretically possible.
+[/list]
+[big]FAQ[/big]
+
+[i][b]How do I make mouse wheel work?[/b][/i]
+
+First, make sure you have mouse wheel support enabled in Global Settings.
+
+Then, in some script, add the code below. Note: If the script is a Room script, it will only work in that room.
+[code=AGS Script]
+void on_mouse_click (int btn){
+  if(btn == eMouseWheelNorth){
+    AgsImGui.DoMouseWheel(eImGuiDir_Down);
+  } else if(btn == eMouseWheelSouth){
+    AgsImGui.DoMouseWheel(eImGuiDir_Up);    
+  }  
+}
+[/code]
+For now, mouse wheel events are not exposed in the AGS Plugin API, so you have to do it through script. In the future, if this changes, it will be integrated in the plugin.
+
+[b][size=12pt]License and Author[/size][/b]
+
+AgsImGui is made by eri0o provided with MIT [url=https://github.com/ericoporto/agsimgui/blob/master/LICENSE]LICENSE[/url].
+
+Using ocornut Dear ImGui, and also using software renderer with modifications from LAK132, and using other changes to ensure AGS compatibility, provided with MIT License.
+
+Additionally using David Cappelo clip library for providing cross platform clipboard integration, also provided with MIT License.
