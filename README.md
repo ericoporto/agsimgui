@@ -49,6 +49,9 @@ void repeatedly_execute(){
 }
 ```
 
+Note ImGui will save a `ImGui.ini` to allow window positions and some more data to persist between sections when 
+no guidance is given.
+
 ## AGS Script API
 
 ### Main
@@ -563,6 +566,44 @@ return true when activated. shortcuts are displayed for convenience but not proc
 
 ---
 
+### Enums
+
+#### `ImGuiCond`
+
+- `eImGuiCond_Always`, used when condition should always trigger, is usually the default when the AgImGui API requires 
+conditions.
+
+- `eImGuiCond_Once`, Set the variable once per runtime session (only the first call with succeed).
+
+- `eImGuiCond_FirstUseEver`, Set the variable if the object/window has no persistently saved data (no entry in .ini file).
+
+- `eImGuiCond_Appearing`, Set the variable if the object/window is appearing after being hidden/inactive (or the first time).
+
+
+#### `ImGuiDir`
+
+- `eImGuiDir_Left`, left direction.
+
+- `eImGuiDir_Right`, right direction.
+
+- `eImGuiDir_Up`, up direction.
+
+- `eImGuiDir_Down`, down direction.
+
+#### `ImGuiBeginWindow`
+
+obs: This is exclusive to AgsImGui implementation because in AGS we don't have pointers to primitive types.
+
+In any cases below, you still have to call `AgsImGui.EndWindow()`.
+
+- `eImGuiBeginWindow_OK`, the window is open.
+
+- `eImGuiBeginWindow_Collapsed`, the window is collapsed (using the arrow at top left).
+
+- `eImGuiBeginWindow_OK_Closed` the window is closed.
+
+- `eImGuiBeginWindow_Collapsed_Closed` the window is both collapsed and closed, rare but theoretically possible.
+
 ## FAQ
 
 ### How do I make mouse wheel work?
@@ -582,3 +623,4 @@ void on_mouse_click (int btn){
 ```
 
 For now, mouse wheel events are not exposed in the AGS Plugin API, so you have to do it through script. In the future, if this changes, it will be integrated in the plugin.
+
