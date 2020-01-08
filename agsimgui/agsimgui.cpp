@@ -458,6 +458,19 @@ namespace agsimgui {
 " /// is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.\r\n"
 " import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
 "  \r\n"
+" // ID stack/scopes \r\n"
+" // - Read the FAQ for more details about how ID are handled in dear imgui. If you are creating widgets in a loop you most \r\n"
+" //   likely want to push a unique identifier (e.g. object pointer, loop index) to uniquely differentiate them. \r\n"
+" // - The resulting ID are hashes of the entire stack. \r\n"
+" // - You can also use the "Label##foobar" syntax within widget label to distinguish them from each others. \r\n"
+" // - In this header file we use the "label"/"name" terminology to denote a string that will be displayed and used as an ID, \r\n"
+" //   whereas "str_id" denote a string that is only used as an ID and not normally displayed. \r\n"
+"  \r\n"
+" /// push string into the ID stack (will hash string). \r\n"
+" import static void PushID(String str_id); \r\n"
+"  \r\n"
+" /// pop from the ID stack. \r\n"
+" import static void PopID(); \r\n"
 "  \r\n"
 " // Widgets: Text \r\n"
 "  \r\n"
@@ -967,6 +980,14 @@ int AgsImGui_IsAnyItemActive(){
 
 int AgsImGui_IsAnyItemFocused(){
     return ToAgsBool(ImGui::IsAnyItemFocused());
+}
+
+void AgsImGui_PushID(const char* str_id) {
+    ImGui::PushID(str_id);
+}
+
+void AgsImGui_PopID() {
+    ImGui::PopID();
 }
 
 void AgsImGui_Text(const char* text){
@@ -1485,6 +1506,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
+        engine->RegisterScriptFunction("AgsImGui::PushID^1", (void*)AgsImGui_PushID);
+        engine->RegisterScriptFunction("AgsImGui::PopID^0", (void*)AgsImGui_PopID);
         engine->RegisterScriptFunction("AgsImGui::Text^1", (void*)AgsImGui_Text);
         engine->RegisterScriptFunction("AgsImGui::TextColored^2", (void*)AgsImGui_TextColored);
         engine->RegisterScriptFunction("AgsImGui::TextDisabled^1", (void*)AgsImGui_TextDisabled);
