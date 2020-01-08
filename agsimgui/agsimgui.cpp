@@ -458,12 +458,38 @@ namespace agsimgui {
 " /// is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.\r\n"
 " import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
 "  \r\n"
+" // Layout \r\n"
+" // - By "cursor" we mean the current output position. \r\n"
+" // - The typical widget behavior is to output themselves at the current cursor position, then move the cursor one line down. \r\n"
+" // - You can call SameLine() between widgets to undo the last carriage return and output at the right of the preceeding widget. \r\n"
+"  \r\n"
+" /// separator, generally horizontal. inside a menu bar or in horizontal layout mode, this becomes a vertical separator. \r\n"
+" import static void Separator(); \r\n"
+"  \r\n"
+" /// call between widgets or groups to layout them horizontally. X position given in window coordinates. \r\n"
+" import static void SameLine(float offset_from_start_x = 0, float spacing=-1.0f); \r\n"
+"  \r\n"
+" /// undo a SameLine() or force a new line when in an horizontal-layout context. \r\n"
+" import static void NewLine(); \r\n"
+"  \r\n"
+" /// add vertical spacing. \r\n"
+" import static void Spacing(); \r\n"
+"  \r\n"
+" /// add a dummy item of given size. unlike InvisibleButton(), Dummy() won't take the mouse click or be navigable into. \r\n"
+" import static void Dummy(float width, float height); \r\n"
+"  \r\n"
+" /// move content position toward the right, by style.IndentSpacing or indent_w if != 0 \r\n"
+" import static void Indent(float indent_w = 0); \r\n"
+"  \r\n"
+" /// move content position back to the left, by style.IndentSpacing or indent_w if != 0 \r\n"
+" import static void Unindent(float indent_w = 0); \r\n"
+"  \r\n"
 " // ID stack/scopes \r\n"
 " // - Read the FAQ for more details about how ID are handled in dear imgui. If you are creating widgets in a loop you most \r\n"
 " //   likely want to push a unique identifier (e.g. object pointer, loop index) to uniquely differentiate them. \r\n"
 " // - The resulting ID are hashes of the entire stack. \r\n"
-" // - You can also use the "Label##foobar" syntax within widget label to distinguish them from each others. \r\n"
-" // - In this header file we use the "label"/"name" terminology to denote a string that will be displayed and used as an ID, \r\n"
+" // - You can also use the `Label##foobar` syntax within widget label to distinguish them from each others. \r\n"
+" // - In this header file we use the `label`/`name` terminology to denote a string that will be displayed and used as an ID, \r\n"
 " //   whereas "str_id" denote a string that is only used as an ID and not normally displayed. \r\n"
 "  \r\n"
 " /// push string into the ID stack (will hash string). \r\n"
@@ -980,6 +1006,40 @@ int AgsImGui_IsAnyItemActive(){
 
 int AgsImGui_IsAnyItemFocused(){
     return ToAgsBool(ImGui::IsAnyItemFocused());
+}
+
+void AgsImGui_Separator () {
+    ImGui::Separator();
+}
+
+void AgsImGui_SameLine (uint32_t offset_from_start_x, uint32_t spacing) {
+    float f_offset_from_start_x = ToNormalFloat(offset_from_start_x);
+    float f_spacing = ToNormalFloat(spacing);
+    ImGui::SameLine(f_offset_from_start_x,f_spacing);
+}
+
+void AgsImGui_NewLine () {
+    ImGui::NewLine();
+}
+
+void AgsImGui_Spacing () {
+    ImGui::Spacing();
+}
+
+void AgsImGui_Dummy (uint32_t width, uint32_t height) {
+    float f_width = ToNormalFloat(width);
+    float f_height = ToNormalFloat(height);
+    ImGui::Dummy(ImVec2(f_width,f_height));
+}
+
+void AgsImGui_Indent (uint32_t indent_w) {
+    float f_indent_w = ToNormalFloat(indent_w);
+    ImGui::Indent(f_indent_w);
+}
+
+void AgsImGui_Unindent (uint32_t indent_w) {
+    float f_indent_w = ToNormalFloat(indent_w);
+    ImGui::Unindent(f_indent_w);
 }
 
 void AgsImGui_PushID(const char* str_id) {
@@ -1506,6 +1566,13 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
+        engine->RegisterScriptFunction("AgsImGui::Separator^0", (void*)AgsImGui_Separator);
+        engine->RegisterScriptFunction("AgsImGui::SameLine^2", (void*)AgsImGui_SameLine);
+        engine->RegisterScriptFunction("AgsImGui::NewLine^0", (void*)AgsImGui_NewLine);
+        engine->RegisterScriptFunction("AgsImGui::Spacing^0", (void*)AgsImGui_Spacing);
+        engine->RegisterScriptFunction("AgsImGui::Dummy^2", (void*)AgsImGui_Dummy);
+        engine->RegisterScriptFunction("AgsImGui::Indent^1", (void*)AgsImGui_Indent);
+        engine->RegisterScriptFunction("AgsImGui::Unindent^1", (void*)AgsImGui_Unindent);
         engine->RegisterScriptFunction("AgsImGui::PushID^1", (void*)AgsImGui_PushID);
         engine->RegisterScriptFunction("AgsImGui::PopID^0", (void*)AgsImGui_PopID);
         engine->RegisterScriptFunction("AgsImGui::Text^1", (void*)AgsImGui_Text);
