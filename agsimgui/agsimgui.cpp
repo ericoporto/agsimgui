@@ -826,10 +826,10 @@ const char* AgsImGui_GetVersion(){
 
 int AgsImGui_BeginWindow(const char* name, int has_close_button, int32 flags = 0){
     bool p_open = true;
-    bool not_collapsed = ImGui::Begin(name, (has_close_button != 0 ? &p_open : NULL), flags);
+    bool not_collapsed = ImGui::Begin(name, (has_close_button != 0 ? &p_open : nullptr), flags);
 
     if(p_open && !not_collapsed) return 4;
-    else if(p_open && not_collapsed) return 3;
+    else if(!p_open && not_collapsed) return 3;
     else if(!p_open && !not_collapsed) return 2;
     return 1;
 }
