@@ -490,7 +490,7 @@ namespace agsimgui {
 " // - The resulting ID are hashes of the entire stack. \r\n"
 " // - You can also use the `Label##foobar` syntax within widget label to distinguish them from each others. \r\n"
 " // - In this header file we use the `label`/`name` terminology to denote a string that will be displayed and used as an ID, \r\n"
-" //   whereas "str_id" denote a string that is only used as an ID and not normally displayed. \r\n"
+" //   whereas `str_id` denote a string that is only used as an ID and not normally displayed. \r\n"
 "  \r\n"
 " /// push string into the ID stack (will hash string). \r\n"
 " import static void PushID(String str_id); \r\n"
