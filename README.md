@@ -574,9 +574,9 @@ Then, in some script, add the code below. Note: If the script is a Room script, 
 ```AGS Script
 void on_mouse_click (int btn){
   if(btn == eMouseWheelNorth){
-    AgsImGui.DoMouseWheel(eImGuiDir_Up);
+    AgsImGui.DoMouseWheel(eImGuiDir_Down);
   } else if(btn == eMouseWheelSouth){
-    AgsImGui.DoMouseWheel(eImGuiDir_Down);    
+    AgsImGui.DoMouseWheel(eImGuiDir_Up);    
   }  
 }
 ```
