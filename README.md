@@ -474,6 +474,50 @@ Set a text-only tooltip, typically use with AgsImGui.IsItemHovered(). Override a
 
 ---
 
+### Popups and Modals
+
+#### `AgsImGui.OpenPopup`
+
+`static void AgsImGui.OpenPopup(String str_id)`
+
+call to mark popup as open (don't call every frame!). Popups are closed when user click outside, or if CloseCurrentPopup() is called within a BeginPopup()/EndPopup() block. 
+
+Popup identifiers are relative to the current ID-stack.
+
+Example:
+
+```AGS Script
+    // If the button is in the Window, this code goes inside the window.
+    if(AgsImGui.BeginPopup("my_popup")){
+      AgsImGui.Text("This is a popup");
+      AgsImGui.EndPopup();  
+    }
+    if(AgsImGui.Button("open popup"))
+    {
+      AgsImGui.OpenPopup("my_popup");
+    }
+```
+
+#### `AgsImGui.BeginPopup`
+
+`static bool AgsImGui.BeginPopup(String str_id, ImGuiWindowFlags flags = 0)`
+
+Return true if the popup is open, and you can start outputting to it. 
+Only call EndPopup() if BeginPopup() returns true!
+
+Generally you will want to run this on every frame, and it will return true once the popup has been made open, 
+and return false again once it's closed.
+
+#### `AgsImGui.BeginPopupModal`
+
+`static bool AgsImGui.BeginPopupModal(String name, bool has_close_button = 0, ImGuiWindowFlags flags = 0)`
+
+ Modal dialog, a regular window with title bar, block interactions behind the modal window, and you can't close the 
+ modal window by clicking outside. 
+
+
+---
+
 ### Tab Bars, Tabs
 
 #### `AgsImGui.BeginTabBar`
@@ -600,7 +644,7 @@ In any cases below, you still have to call `AgsImGui.EndWindow()`.
 
 - `eImGuiBeginWindow_Collapsed`, the window is collapsed (using the arrow at top left).
 
-- `eImGuiBeginWindow_OK_Closed` the window is closed.
+- `eImGuiBeginWindow_OK_Closed` the window is closed. This value is only returned at mouse release frame, after clicking on close button!
 
 - `eImGuiBeginWindow_Collapsed_Closed` the window is both collapsed and closed, rare but theoretically possible.
 
