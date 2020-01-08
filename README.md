@@ -402,7 +402,7 @@ The BeginCombo()/EndCombo() allows to manage your contents and selection state h
 
 Example:
 
-```
+```AGS Script
 bool option1;
 bool option2;
 if(AgsImGui.BeginCombo("My combo","click me!")){
@@ -430,7 +430,7 @@ The BeginListBox()/EndListBox() allows to manage your contents and selection sta
 
 Example:
 
-```
+```AGS Script
 bool option1;
 bool option2;
 if(AgsImGui.BeginListBox("My ListBox",2)){
