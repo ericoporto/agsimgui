@@ -459,7 +459,7 @@ namespace agsimgui {
 " import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
 "  \r\n"
 " // Layout \r\n"
-" // - By "cursor" we mean the current output position. \r\n"
+" // - By cursor we mean the current output position. \r\n"
 " // - The typical widget behavior is to output themselves at the current cursor position, then move the cursor one line down. \r\n"
 " // - You can call SameLine() between widgets to undo the last carriage return and output at the right of the preceeding widget. \r\n"
 "  \r\n"
