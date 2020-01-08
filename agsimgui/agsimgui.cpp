@@ -467,7 +467,7 @@ namespace agsimgui {
 " import static void Separator(); \r\n"
 "  \r\n"
 " /// call between widgets or groups to layout them horizontally. X position given in window coordinates. \r\n"
-" import static void SameLine(float offset_from_start_x = 0, float spacing=-1.0f); \r\n"
+" import static void SameLine(float offset_from_start_x = 0, float spacing=0); \r\n"
 "  \r\n"
 " /// undo a SameLine() or force a new line when in an horizontal-layout context. \r\n"
 " import static void NewLine(); \r\n"
