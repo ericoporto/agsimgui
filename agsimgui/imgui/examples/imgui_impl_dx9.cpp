@@ -36,6 +36,8 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #endif
 
 #include "plugin/agsplugin.h"
+#include <map>
+#include <vector>
 
 IAGSEngine* _Engine = nullptr;
 
@@ -54,6 +56,36 @@ struct CUSTOMVERTEX
     float    uv[2];
 };
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1)
+
+struct CachedTexture
+{
+    IDirect3DTexture9* tx;
+    int sprw;
+    int sprh;
+    bool alpha;
+    int life_count;
+};
+
+std::map<int, CachedTexture> _Dx9_TextureCache;
+
+void _RemoveTextureFromCache(int sprite_id) {
+    _Dx9_TextureCache[sprite_id].tx->Release();
+    _Dx9_TextureCache.erase(sprite_id);
+}
+
+void _SubtractLifeAndEraseFromCacheIfPossible() {
+    std::map<int, CachedTexture>::iterator it = _Dx9_TextureCache.begin();
+    while (it != _Dx9_TextureCache.end()) {
+        if (it->second.life_count-- <= 0) {
+            it->second.tx->Release();
+            it = _Dx9_TextureCache.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
 
 static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
 {
@@ -225,6 +257,8 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
     // Restore the DX9 state
     d3d9_state_block->Apply();
     d3d9_state_block->Release();
+
+    _SubtractLifeAndEraseFromCacheIfPossible();
 }
 
 bool ImGui_ImplDX9_Init(IDirect3DDevice9* device)
@@ -338,18 +372,52 @@ IDirect3DTexture9* CreateTexture(unsigned char const* const* data, int width, in
     return texture;
 }
 
-IDirect3DTexture9* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id){
-
-    BITMAP *engineSprite = _Engine->GetSpriteGraphic(sprite_id);
+IDirect3DTexture9* _internal_SpriteIDToTexture(int sprite_id) {
+    BITMAP* engineSprite = _Engine->GetSpriteGraphic(sprite_id);
     int sprite_width = _Engine->GetSpriteWidth(sprite_id);
     int sprite_height = _Engine->GetSpriteHeight(sprite_id);
     bool has_alpha = _Engine->IsSpriteAlphaBlended(sprite_id) != 0;
 
-    unsigned char **charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
+    unsigned char** charbuffer = _Engine->GetRawBitmapSurface(engineSprite);
 
     IDirect3DTexture9* texture = CreateTexture(charbuffer, sprite_width, sprite_height, has_alpha);
 
     _Engine->ReleaseBitmapSurface(engineSprite);
+    return texture;
+}
+
+
+
+IDirect3DTexture9* ImGui_ImplDX9_SpriteIDToTexture(int sprite_id){
+    IDirect3DTexture9* texture = nullptr;
+    int sprite_width = _Engine->GetSpriteWidth(sprite_id);
+    int sprite_height = _Engine->GetSpriteHeight(sprite_id);
+    bool has_alpha = _Engine->IsSpriteAlphaBlended(sprite_id) != 0;
+
+    if (_Dx9_TextureCache.count(sprite_id) == 0) {
+        texture = _internal_SpriteIDToTexture(sprite_id);
+        CachedTexture cached_texture;
+        cached_texture.tx = texture;
+        cached_texture.sprw = sprite_width;
+        cached_texture.sprh = sprite_height;
+        cached_texture.alpha = has_alpha;
+        cached_texture.life_count = 4;
+        _Dx9_TextureCache[sprite_id] = cached_texture;
+        texture->AddRef();
+    }
+    else {
+        if (_Dx9_TextureCache[sprite_id].alpha == has_alpha &&
+            _Dx9_TextureCache[sprite_id].sprh == sprite_height &&
+            _Dx9_TextureCache[sprite_id].sprw == sprite_width) {
+            texture = _Dx9_TextureCache[sprite_id].tx;
+            _Dx9_TextureCache[sprite_id].life_count = 4;
+        }
+        else {
+            _RemoveTextureFromCache(sprite_id);
+            return ImGui_ImplDX9_SpriteIDToTexture(sprite_id);
+        }
+    }
+
     return texture;
 }
 
