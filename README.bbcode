@@ -684,6 +684,33 @@ In any cases below, you still have to call [tt]AgsImGui.EndWindow()[/tt].
 [*] [tt]eImGuiWindowFlags_NoDecoration[/tt], Disable decoration.
 [*] [tt]eImGuiWindowFlags_NoInputs[/tt], Disable inputs.
 [/list]
+
+[code]enum ImGuiInputTextFlags[/code]
+
+The enums of this type can be combined with bitwise operators.
+
+[list]
+[*] [tt]eImGuiInputTextFlags_None[/tt], (=0) default
+[*] [tt]eImGuiInputTextFlags_CharsDecimal[/tt], Allow 0123456789.+-*/
+[*] [tt]eImGuiInputTextFlags_CharsHexadecimal[/tt], Allow 0123456789ABCDEFabcdef
+[*] [tt]eImGuiInputTextFlags_CharsUppercase[/tt], Turn a..z into A..Z
+[*] [tt]eImGuiInputTextFlags_CharsNoBlank[/tt], Filter out spaces, tabs
+[*] [tt]eImGuiInputTextFlags_AutoSelectAll[/tt], Select entire text when first taking mouse focus
+[*] [tt]eImGuiInputTextFlags_EnterReturnsTrue[/tt], Return 'true' when Enter is pressed (as opposed to every time the value was modified).
+[*] [tt]eImGuiInputTextFlags_CallbackCompletion[/tt], Callback on pressing TAB (for completion handling)
+[*] [tt]eImGuiInputTextFlags_CallbackHistory[/tt], Callback on pressing Up/Down arrows (for history handling)
+[*] [tt]eImGuiInputTextFlags_CallbackAlways[/tt], Callback on each iteration. User tt may query cursor position, modify text buffer.
+[*] [tt]eImGuiInputTextFlags_CallbackCharFilter[/tt], Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
+[*] [tt]eImGuiInputTextFlags_AllowTabInput[/tt], Pressing TAB input a 't' character into the text field
+[*] [tt]eImGuiInputTextFlags_CtrlEnterForNewLine[/tt], In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter).
+[*] [tt]eImGuiInputTextFlags_NoHorizontalScroll[/tt], Disable following the cursor horizontally
+[*] [tt]eImGuiInputTextFlags_AlwaysInsertMode[/tt], Insert mode
+[*] [tt]eImGuiInputTextFlags_ReadOnly[/tt], Read-only mode
+[*] [tt]eImGuiInputTextFlags_Password[/tt], Password mode, display all characters as '*'
+[[/cur]] [tt]eImGuiInputTextFlags_NoUndoRedo[/tt], Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
+[*] [tt]eImGuiInputTextFlags_CharsScientific[/tt], Allow 0123456789.+-*/eE (Scientific notation input)
+[*] [tt]eImGuiInputTextFlags_CallbackResize[/tt], Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
+[/list]
 [/spoiler]
 
 [b][size=12pt]FAQ[/size][/b]
