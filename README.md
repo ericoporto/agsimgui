@@ -723,6 +723,49 @@ In any cases below, you still have to call `AgsImGui.EndWindow()`.
 
 - `eImGuiWindowFlags_NoInputs`,
 
+#### `enum ImGuiInputTextFlags`
+
+The enums of this type can be combined with bitwise operators. 
+
+- `eImGuiInputTextFlags_None`, (=0) default
+
+- `eImGuiInputTextFlags_CharsDecimal`, Allow 0123456789.+-*/
+
+- `eImGuiInputTextFlags_CharsHexadecimal`, Allow 0123456789ABCDEFabcdef
+
+- `eImGuiInputTextFlags_CharsUppercase`, Turn a..z into A..Z
+
+- `eImGuiInputTextFlags_CharsNoBlank`, Filter out spaces, tabs
+
+- `eImGuiInputTextFlags_AutoSelectAll`, Select entire text when first taking mouse focus
+
+- `eImGuiInputTextFlags_EnterReturnsTrue`, Return 'true' when Enter is pressed (as opposed to every time the value was modified).
+
+- `eImGuiInputTextFlags_CallbackCompletion`, Callback on pressing TAB (for completion handling)
+
+- `eImGuiInputTextFlags_CallbackHistory`, Callback on pressing Up/Down arrows (for history handling)
+
+- `eImGuiInputTextFlags_CallbackAlways`, Callback on each iteration. User code may query cursor position, modify text buffer.
+
+- `eImGuiInputTextFlags_CallbackCharFilter`, Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
+
+- `eImGuiInputTextFlags_AllowTabInput`, Pressing TAB input a 't' character into the text field
+
+- `eImGuiInputTextFlags_CtrlEnterForNewLine`, In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter).
+
+- `eImGuiInputTextFlags_NoHorizontalScroll`, Disable following the cursor horizontally
+
+- `eImGuiInputTextFlags_AlwaysInsertMode`, Insert mode
+
+- `eImGuiInputTextFlags_ReadOnly`, Read-only mode
+
+- `eImGuiInputTextFlags_Password`, Password mode, display all characters as '*'
+
+- `eImGuiInputTextFlags_NoUndoRedo`, Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
+
+- `eImGuiInputTextFlags_CharsScientific`, Allow 0123456789.+-*/eE (Scientific notation input)
+
+- `eImGuiInputTextFlags_CallbackResize`, Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
 
 ## FAQ
 
