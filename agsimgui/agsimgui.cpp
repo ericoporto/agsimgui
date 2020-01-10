@@ -1113,8 +1113,9 @@ int AgsImGui_ArrowButton(const char* str_id, int32 dir){
     return ToAgsBool(ImGui::ArrowButton(str_id, dir));
 }
 
-int AgsImGui_Checkbox(const char* label, bool v){
-    return ToAgsBool(ImGui::Checkbox(label, &v));
+int AgsImGui_Checkbox(const char* label, int v){
+    bool value = v != 0;
+    return ToAgsBool(ImGui::Checkbox(label, &value));
 }
 
 int AgsImGui_RadioButton(const char* label, bool active){
