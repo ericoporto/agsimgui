@@ -570,11 +570,11 @@ namespace agsimgui {
 "  \r\n"
 " // Widgets: Input with Keyboard \r\n"
 "  \r\n"
-" import static String InputText(String label, String text_buffer, ImGuiInputTextFlags flags =0); \r\n"
+" import static bool InputText(String label, String text_buffer, String out_buffer, ImGuiInputTextFlags flags =0); \r\n"
 "  \r\n"
-" import static String InputTextMultiline(String label, String text_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0); \r\n"
+" import static bool InputTextMultiline(String label, String text_buffer, String out_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0); \r\n"
 "  \r\n"
-" import static String InputTextWithHint(String label, String hint, String text_buffer, ImGuiInputTextFlags flags = 0); \r\n"
+" import static bool InputTextWithHint(String label, String hint, String text_buffer, String out_buffer, ImGuiInputTextFlags flags = 0); \r\n"
 "  \r\n"
 " // Widgets: Combobox commands \r\n"
 "  \r\n"
@@ -1190,40 +1190,32 @@ int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const
     return ret_value;
 }
 
-const char* AgsImgui_InputText(const char* label, const char* buf, int flags) {
-    std::string* str_buf = new std::string(buf);
+int AgsImgui_InputText(const char* label, const char* buf, char* &out_buf, int flags) {
+    std::string str_buf = std::string(buf);
 
-    bool changed =  ImGui::InputText(label,str_buf,flags);
+    bool changed =  ImGui::InputText(label,&str_buf,flags);
     if(changed) {
-        const char* new_buf = engine->CreateScriptString(str_buf->c_str());
-        delete str_buf;
-        return new_buf;
+        out_buf = (char*)  engine->CreateScriptString(str_buf.c_str());
     }
-    return buf;
+    return ToAgsBool(changed);
 }
 
-const char* AgsImgui_InputTextMultiline(const char* label, const char* buf, int width, int height, int flags) {
-    std::string* str_buf = new std::string(buf);
-    bool changed =  ImGui::InputTextMultiline(label,str_buf, ImVec2((float) width, (float) height), flags);
+int AgsImgui_InputTextMultiline(const char* label, const char* buf, char* &out_buf, int width, int height, int flags) {
+    std::string str_buf = std::string(buf);
+    bool changed =  ImGui::InputTextMultiline(label,&str_buf, ImVec2((float) width, (float) height), flags);
     if(changed) {
-        const char* new_buf = engine->CreateScriptString(str_buf->c_str());
-        delete str_buf;
-        return new_buf;
+        out_buf = (char*) engine->CreateScriptString(str_buf.c_str());
     }
-    delete str_buf;
-    return buf;
+    return ToAgsBool(changed);
 }
 
-const char* AgsImgui_InputTextWithHint(const char* label, const char* hint, const char* buf, int flags) {
-    std::string* str_buf = new std::string(buf);
-    bool changed = ImGui::InputTextWithHint(label, hint, str_buf,flags);
+int AgsImgui_InputTextWithHint(const char* label, const char* hint, const char* buf, char* &out_buf, int flags) {
+    std::string str_buf = std::string(buf);
+    bool changed = ImGui::InputTextWithHint(label, hint, &str_buf,flags);
     if(changed) {
-        const char* new_buf = engine->CreateScriptString(str_buf->c_str());
-        delete str_buf;
-        return new_buf;
+        out_buf = (char*)  engine->CreateScriptString(str_buf.c_str());
     }
-    delete str_buf;
-    return buf;
+    return ToAgsBool(changed);
 }
 
 int AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
@@ -1596,9 +1588,9 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::DragInt^6", (void*)AgsImgui_DragInt);
         engine->RegisterScriptFunction("AgsImGui::SliderFloat^5", (void*)AgsImGui_SliderFloat);
         engine->RegisterScriptFunction("AgsImGui::SliderInt^5", (void*)AgsImgui_SliderInt);
-        engine->RegisterScriptFunction("AgsImGui::InputText^3", (void*)AgsImgui_InputText);
-        engine->RegisterScriptFunction("AgsImGui::InputTextMultiline^5", (void*)AgsImgui_InputTextMultiline);
-        engine->RegisterScriptFunction("AgsImGui::InputTextWithHint^4", (void*)AgsImgui_InputTextWithHint);
+        engine->RegisterScriptFunction("AgsImGui::InputText^4", (void*)AgsImgui_InputText);
+        engine->RegisterScriptFunction("AgsImGui::InputTextMultiline^6", (void*)AgsImgui_InputTextMultiline);
+        engine->RegisterScriptFunction("AgsImGui::InputTextWithHint^5", (void*)AgsImgui_InputTextWithHint);
         engine->RegisterScriptFunction("AgsImGui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
         engine->RegisterScriptFunction("AgsImGui::EndCombo^0", (void*)AgsImGui_EndCombo);
         engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
