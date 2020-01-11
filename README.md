@@ -380,15 +380,47 @@ Returns the current value of the slider. Format string uses regular `"%d"`, you 
 
 #### `AgsImGui.InputText`
 
-`static String AgsImGui.InputText(String label, String text_buffer, ImGuiInputTextFlags flags =0)`
+`static String AgsImGui.InputText(String label, String text_buffer, int buffer_size, ImGuiInputTextFlags flags =0)`
+
+Pass a string to identify the input field as label, this label is going to be used for ID and can't be empty.
+
+Remember that we don't save state between frames, so you have to do this yourself by reapplying the output to input as needed.
+
+This function returns `null` when the input hasn't changed, and returns a string with all the text, when it has been modified.
+
+This widget supports Ctrl+Z for undo, Ctrl+X for Cut, Ctrl+C for copy, Ctrl+V for pasting, mouse selection and cursor navigation with arrows. 
+Behavior can be modified by passing flags, see the enums section. Flags can be combined with bitwise operations.
+
+Example:
+```AGS Script
+String input_string;
+function room_RepExec() {   
+  AgsImGui.NewFrame();  
+    // buff
+  String out_string = AgsImGui.InputText("type here!",input_string, 128);
+  if(out_string!=null) input_string = out_string;
+  
+  AgsImGui.Render();
+}
+
+
+function room_Load() {
+  input_string = "Hello String!";
+}
+```
+
 
 #### `AgsImGui.InputTextMultiline`
 
-`static String AgsImGui.InputTextMultiline(String label, String text_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0)`
+`static String AgsImGui.InputTextMultiline(String label, String text_buffer, int buffer_size, int width=0, int height=0, ImGuiInputTextFlags flags = 0)`
+
+Sama as InputText, but allows controlling the input size and supports multiline text.
 
 #### `AgsImGui.InputTextWithHint`
 
-`static String AgsImGui.InputTextWithHint(String label, String hint, String text_buffer, ImGuiInputTextFlags flags = 0)`
+`static String AgsImGui.InputTextWithHint(String label, String hint, String text_buffer, int buffer_size, ImGuiInputTextFlags flags = 0)`
+
+Same as InputText, but supports passing an input hint text.
 
 ---
 
