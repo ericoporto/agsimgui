@@ -1193,7 +1193,8 @@ int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const
 }
 
 const char* AgsImgui_InputText(const char* label, char* buf, int buf_size, int flags) {
-   if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
+    if(buf_size <= 1) engine->AbortGame("Buffer size can't be smaller than 2");
+    if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
 
     char * resized_buffer = new char [buf_size];
     std::strcpy(resized_buffer, buf);
@@ -1206,6 +1207,7 @@ const char* AgsImgui_InputText(const char* label, char* buf, int buf_size, int f
 }
 
 const char* AgsImgui_InputTextMultiline(const char* label, const char* buf, int buf_size, int width, int height, int flags) {
+    if(buf_size <= 1) engine->AbortGame("Buffer size can't be smaller than 2");
     if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
 
     char * resized_buffer = new char [buf_size];
@@ -1219,6 +1221,7 @@ const char* AgsImgui_InputTextMultiline(const char* label, const char* buf, int 
 }
 
 const char* AgsImgui_InputTextWithHint(const char* label, const char* hint, const char* buf, int buf_size, int flags) {
+    if(buf_size <= 1) engine->AbortGame("Buffer size can't be smaller than 2");
     if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
 
     char * resized_buffer = new char [buf_size];
