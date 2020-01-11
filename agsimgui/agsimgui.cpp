@@ -39,6 +39,8 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "Screen.h"
 #include "libs/clip/clip.h"
 
+#include <cstring>
+
 #if defined(BUILTIN_PLUGINS)
 namespace agsimgui {
 #endif
@@ -570,7 +572,7 @@ namespace agsimgui {
 "  \r\n"
 " // Widgets: Input with Keyboard \r\n"
 "  \r\n"
-" import static bool InputText(String label, String text_buffer, String out_buffer, ImGuiInputTextFlags flags =0); \r\n"
+" import static String InputText(String label, String text_buffer, int buffer_size, ImGuiInputTextFlags flags =0); \r\n"
 "  \r\n"
 " import static bool InputTextMultiline(String label, String text_buffer, String out_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0); \r\n"
 "  \r\n"
@@ -1190,31 +1192,35 @@ int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const
     return ret_value;
 }
 
-int AgsImgui_InputText(const char* label, const char* buf, char* &out_buf, int flags) {
-    std::string str_buf = std::string(buf);
+const char* AgsImgui_InputText(const char* label, char* buf, int buf_size, int flags) {
+   // std::string str_buf = std::string(buf);
+   if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
 
-    bool changed =  ImGui::InputText(label,&str_buf,flags);
+    char * resized_buffer = new char [buf_size];
+    std::strcpy(resized_buffer, buf);
+    bool changed =  ImGui::InputText(label,resized_buffer, buf_size,flags);
     if(changed) {
-        out_buf = (char*)  engine->CreateScriptString(str_buf.c_str());
+        return  engine->CreateScriptString(resized_buffer);
     }
-    return ToAgsBool(changed);
+    delete[] resized_buffer;
+    return nullptr;
 }
 
 int AgsImgui_InputTextMultiline(const char* label, const char* buf, char* &out_buf, int width, int height, int flags) {
     std::string str_buf = std::string(buf);
     bool changed =  ImGui::InputTextMultiline(label,&str_buf, ImVec2((float) width, (float) height), flags);
-    if(changed) {
-        out_buf = (char*) engine->CreateScriptString(str_buf.c_str());
-    }
+   // if(changed) {
+   //     out_buf = (char*) engine->CreateScriptString(str_buf.c_str());
+   // }
     return ToAgsBool(changed);
 }
 
 int AgsImgui_InputTextWithHint(const char* label, const char* hint, const char* buf, char* &out_buf, int flags) {
     std::string str_buf = std::string(buf);
     bool changed = ImGui::InputTextWithHint(label, hint, &str_buf,flags);
-    if(changed) {
-        out_buf = (char*)  engine->CreateScriptString(str_buf.c_str());
-    }
+  //  if(changed) {
+  //      out_buf = (char*)  engine->CreateScriptString(str_buf.c_str());
+   // }
     return ToAgsBool(changed);
 }
 
