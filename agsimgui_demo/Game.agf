@@ -2303,8 +2303,8 @@
             <ThinkingView>0</ThinkingView>
             <BlinkingView>0</BlinkingView>
             <StartingRoom>1</StartingRoom>
-            <StartX>127</StartX>
-            <StartY>142</StartY>
+            <StartX>110</StartX>
+            <StartY>147</StartY>
             <UniformMovementSpeed>True</UniformMovementSpeed>
             <MovementSpeed>4</MovementSpeed>
             <MovementSpeedX>3</MovementSpeedX>
@@ -2336,7 +2336,7 @@
           <Character>
             <ID>1</ID>
             <ScriptName>cNeutralBot</ScriptName>
-            <RealName xml:space="preserve">New character</RealName>
+            <RealName>NeutralBot</RealName>
             <NormalView>1</NormalView>
             <SpeechView>0</SpeechView>
             <IdleView>0</IdleView>
