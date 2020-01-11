@@ -414,7 +414,7 @@ function room_Load() {
 
 `static String AgsImGui.InputTextMultiline(String label, String text_buffer, int buffer_size, int width=0, int height=0, ImGuiInputTextFlags flags = 0)`
 
-Sama as InputText, but allows controlling the input size and supports multiline text.
+Same as InputText, but allows controlling the input size and supports multiline text.
 
 #### `AgsImGui.InputTextWithHint`
 
