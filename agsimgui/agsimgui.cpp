@@ -574,9 +574,9 @@ namespace agsimgui {
 "  \r\n"
 " import static String InputText(String label, String text_buffer, int buffer_size, ImGuiInputTextFlags flags =0); \r\n"
 "  \r\n"
-" import static bool InputTextMultiline(String label, String text_buffer, String out_buffer, int width=0, int height=0, ImGuiInputTextFlags flags = 0); \r\n"
+" import static String InputTextMultiline(String label, String text_buffer, int buffer_size, int width=0, int height=0, ImGuiInputTextFlags flags = 0); \r\n"
 "  \r\n"
-" import static bool InputTextWithHint(String label, String hint, String text_buffer, String out_buffer, ImGuiInputTextFlags flags = 0); \r\n"
+" import static String InputTextWithHint(String label, String hint, String text_buffer, int buffer_size, ImGuiInputTextFlags flags = 0); \r\n"
 "  \r\n"
 " // Widgets: Combobox commands \r\n"
 "  \r\n"
@@ -1193,7 +1193,6 @@ int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const
 }
 
 const char* AgsImgui_InputText(const char* label, char* buf, int buf_size, int flags) {
-   // std::string str_buf = std::string(buf);
    if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
 
     char * resized_buffer = new char [buf_size];
@@ -1206,22 +1205,30 @@ const char* AgsImgui_InputText(const char* label, char* buf, int buf_size, int f
     return nullptr;
 }
 
-int AgsImgui_InputTextMultiline(const char* label, const char* buf, char* &out_buf, int width, int height, int flags) {
-    std::string str_buf = std::string(buf);
-    bool changed =  ImGui::InputTextMultiline(label,&str_buf, ImVec2((float) width, (float) height), flags);
-   // if(changed) {
-   //     out_buf = (char*) engine->CreateScriptString(str_buf.c_str());
-   // }
-    return ToAgsBool(changed);
+const char* AgsImgui_InputTextMultiline(const char* label, const char* buf, int buf_size, int width, int height, int flags) {
+    if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
+
+    char * resized_buffer = new char [buf_size];
+    std::strcpy(resized_buffer, buf);
+    bool changed =  ImGui::InputTextMultiline(label,resized_buffer, buf_size, ImVec2((float) width, (float) height), flags);
+    if(changed) {
+        return  engine->CreateScriptString(resized_buffer);
+    }
+    delete[] resized_buffer;
+    return nullptr;
 }
 
-int AgsImgui_InputTextWithHint(const char* label, const char* hint, const char* buf, char* &out_buf, int flags) {
-    std::string str_buf = std::string(buf);
-    bool changed = ImGui::InputTextWithHint(label, hint, &str_buf,flags);
-  //  if(changed) {
-  //      out_buf = (char*)  engine->CreateScriptString(str_buf.c_str());
-   // }
-    return ToAgsBool(changed);
+const char* AgsImgui_InputTextWithHint(const char* label, const char* hint, const char* buf, int buf_size, int flags) {
+    if(strlen(buf) > buf_size) engine->AbortGame("Buffer size smaller than buffer string on Input Text");
+
+    char * resized_buffer = new char [buf_size];
+    std::strcpy(resized_buffer, buf);
+    bool changed =  ImGui::InputTextWithHint(label, hint, resized_buffer, buf_size,flags);
+    if(changed) {
+        return  engine->CreateScriptString(resized_buffer);
+    }
+    delete[] resized_buffer;
+    return nullptr;
 }
 
 int AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
