@@ -792,7 +792,7 @@ namespace agsimgui {
 		// User has chosen to view the Properties of the plugin
 		// We could load up an options dialog or something here instead
 /*	MessageBox(parent,
-			 L"agsimgui v0.1.0 By eri0o",
+			 L"agsimgui v0.2.0 By eri0o",
 			 L"About",
 		 MB_OK | MB_ICONINFORMATION);
  */
@@ -1808,7 +1808,7 @@ enum MouseButton {
 			//initialize debug
 			if (!screen.initialized) {
 				engine->GetScreenDimensions(&screen.width, &screen.height, &screen.colorDepth);
-				printf("\nagsimgui 0.1.0\n");
+				printf("\nagsimgui 0.2.0\n");
 
 				if (screen.driver == Screen::Driver::eOpenGL) {
 
