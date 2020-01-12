@@ -640,7 +640,7 @@ namespace agsimgui {
 " import static bool CollapsingHeader(String label, ImGuiTreeNodeFlags flags = 0); \r\n"
 "  \r\n"
 " /// set next TreeNode/CollapsingHeader open state. \r\n"
-" import static void SetNextItemOpen(bool is_open, ImGuiCond cond = 0); \r\n\"
+" import static void SetNextItemOpen(bool is_open, ImGuiCond cond = 0); \r\n"
 "  \r\n"
 " // Widgets: List Boxes \r\n"
 "  \r\n"
