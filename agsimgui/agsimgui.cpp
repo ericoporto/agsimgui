@@ -1737,7 +1737,7 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
         engine->RegisterScriptFunction("AgsImGui::SetItemDefaultFocus^0", (void*)AgsImGui_SetItemDefaultFocus);
-        engine->RegisterScriptFunction("AgsImGui::SetKeyboardFocusHere^0", (void*)AgsImGui_SetKeyboardFocusHere);
+        engine->RegisterScriptFunction("AgsImGui::SetKeyboardFocusHere^1", (void*)AgsImGui_SetKeyboardFocusHere);
         engine->RegisterScriptFunction("AgsImGui::Separator^0", (void*)AgsImGui_Separator);
         engine->RegisterScriptFunction("AgsImGui::SameLine^2", (void*)AgsImGui_SameLine);
         engine->RegisterScriptFunction("AgsImGui::NewLine^0", (void*)AgsImGui_NewLine);
