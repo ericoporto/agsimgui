@@ -738,6 +738,14 @@ namespace agsimgui {
 "  \r\n"
 " /// Override capture or not capture keyboard by ImGui for next frame. Keyboard will still be captured by AGS. \r\n"
 " import static void DoMouseWheel(ImGuiDir wheel_direction); \r\n"
+"  \r\n"
+" // Activation \r\n"
+"  \r\n"
+" ///make last item the default focused item of a window.  \r\n"
+" import static void SetItemDefaultFocus();  \r\n"
+"  \r\n"
+" ///focus keyboard on the next widget. Use positive 'offset' to access sub components of a multiple component widget. Use -1 to access previous widget.\r\n"
+" import static void SetKeyboardFocusHere(int offset = 0); \r\n"
 " }; \r\n"
 "  \r\n"
 " struct AgsImGuiHelper { \r\n"
@@ -1064,6 +1072,14 @@ int AgsImGui_IsAnyItemActive(){
 
 int AgsImGui_IsAnyItemFocused(){
     return ToAgsBool(ImGui::IsAnyItemFocused());
+}
+
+void AgsImGui_SetKeyboardFocusHere(int offset){
+    ImGui::SetKeyboardFocusHere(offset);
+}
+
+void AgsImGui_SetItemDefaultFocus(){
+    ImGui::SetItemDefaultFocus();
 }
 
 void AgsImGui_Separator () {
@@ -1676,6 +1692,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
+        engine->RegisterScriptFunction("AgsImGui::SetItemDefaultFocus^0", (void*)AgsImGui_SetItemDefaultFocus);
+        engine->RegisterScriptFunction("AgsImGui::SetKeyboardFocusHere^0", (void*)AgsImGui_SetKeyboardFocusHere);
         engine->RegisterScriptFunction("AgsImGui::Separator^0", (void*)AgsImGui_Separator);
         engine->RegisterScriptFunction("AgsImGui::SameLine^2", (void*)AgsImGui_SameLine);
         engine->RegisterScriptFunction("AgsImGui::NewLine^0", (void*)AgsImGui_NewLine);
