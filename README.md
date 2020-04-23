@@ -480,6 +480,78 @@ Only call EndListBox() if BeginListBox() returns true!
 
 ---
 
+### Widgets: Trees
+
+TreeNode functions return true when the node is open, in which case you need to also call TreePop() when you are finished displaying the tree node contents.
+
+#### `AgsImGui.TreeNode`
+
+`static bool AgsImGui.TreeNode(String label)`
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+#### `AgsImGui.TreeNodeWithID`
+
+`static bool AgsImGui.TreeNodeWithID(String str_id, String text)`
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+#### `AgsImGui.TreeNodeV`
+
+`static bool AgsImGui.TreeNodeV(String str_id, String text)`
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+#### `AgsImGui.TreeNodeEx`
+
+`static bool AgsImGui.TreeNodeEx(String label, ImGuiTreeNodeFlags flags = 0)`
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+#### `AgsImGui.TreeNodeExWithID`
+
+`static bool AgsImGui.TreeNodeExWithID(String str_id, ImGuiTreeNodeFlags flags, String text)`
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+#### `AgsImGui.TreeNodeExV`
+
+`static bool AgsImGui.TreeNodeExV(String str_id, ImGuiTreeNodeFlags flags, String text)`
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+#### `AgsImGui.TreePush`
+
+`static void AgsImGui.TreePush(String str_id)`
+
+~ Indent()+PushId(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
+
+#### `AgsImGui.TreePop`
+
+`static void AgsImGuiTreePop()`
+
+~ Unindent()+PopId().
+
+#### `AgsImGui.GetTreeNodeToLabelSpacing`
+
+`static float AgsImGui.GetTreeNodeToLabelSpacing()`
+
+Horizontal distance preceding label when using TreeNode*() or Bullet() == (g.FontSize + style.FramePadding.x*2) for a regular unframed TreeNode.
+
+#### `AgsImGui.CollapsingHeader`
+
+`static bool AgsImGui.CollapsingHeader(String label, ImGuiTreeNodeFlags flags = 0)`
+
+If returning 'true' the header is open. doesn't indent nor push on ID stack. user doesn't have to call TreePop().
+
+#### `AgsImGui.SetNextItemOpen`
+
+`static void AgsImGui.SetNextItemOpen(bool is_open, ImGuiCond cond = 0)`
+
+Set next TreeNode/CollapsingHeader open state.
+
+---
+
 ### Tooltips
 
 Tooltip are windows following the mouse which do not take focus away.
@@ -798,6 +870,44 @@ The enums of this type can be combined with bitwise operators.
 - `eImGuiInputTextFlags_CharsScientific`, Allow 0123456789.+-*/eE (Scientific notation input)
 
 - `eImGuiInputTextFlags_CallbackResize`, Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
+
+#### `enum ImGuiTreeNodeFlags`
+
+Flags for AgsImGui.TreeNodeEx(), AgsImGui.CollapsingHeader().
+
+-`ImGuiTreeNodeFlags_None`, (=0) default
+
+-`ImGuiTreeNodeFlags_Selected`, Draw as selected
+
+-`ImGuiTreeNodeFlags_Framed`, Full colored frame (e.g. for CollapsingHeader)
+
+-`ImGuiTreeNodeFlags_AllowItemOverlap`, Hit testing to allow subsequent widgets to overlap this one
+
+-`ImGuiTreeNodeFlags_NoTreePushOnOpen`, Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
+
+-`ImGuiTreeNodeFlags_NoAutoOpenOnLog`, Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
+
+-`ImGuiTreeNodeFlags_DefaultOpen`, Default node to be open
+
+-`ImGuiTreeNodeFlags_OpenOnDoubleClick`, Need double-click to open node
+
+-`ImGuiTreeNodeFlags_OpenOnArrow`, Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
+
+-`ImGuiTreeNodeFlags_Leaf`, No collapsing, no arrow (use as a convenience for leaf nodes).
+
+-`ImGuiTreeNodeFlags_Bullet`, Display a bullet instead of arrow
+
+-`ImGuiTreeNodeFlags_FramePadding`, Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
+
+-`ImGuiTreeNodeFlags_SpanAvailWidth`, Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
+
+-`ImGuiTreeNodeFlags_SpanFullWidth`, Extend hit box to the left-most and right-most edges (bypass the indented area).
+
+-`ImGuiTreeNodeFlags_NavLeftJumpsBackHere`, (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
+
+-`ImGuiTreeNodeFlags_NoScrollOnOpen`, FIXME: TODO: Disable automatic scroll on TreePop() if node got just open and contents is not visible
+
+-`ImGuiTreeNodeFlags_CollapsingHeader`, Framed, NoTreePushOpen and NoAutoOpenOnLog.
 
 ## FAQ
 

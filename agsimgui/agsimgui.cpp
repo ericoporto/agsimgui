@@ -332,6 +332,26 @@ namespace agsimgui {
 "   ImGuiCond_Appearing    = 8, // Set the variable if the object/window is appearing after being hidden/inactive (or the first time) \r\n"
 " }; \r\n"
 "  \r\n"
+" enum ImGuiTreeNodeFlags \r\n"
+" { \r\n"
+"   ImGuiTreeNodeFlags_None               = 0, \r\n"
+"   ImGuiTreeNodeFlags_Selected           = 1,   // Draw as selected \r\n"
+"   ImGuiTreeNodeFlags_Framed             = 2,   // Full colored frame (e.g. for CollapsingHeader) \r\n"
+"   ImGuiTreeNodeFlags_AllowItemOverlap   = 4,   // Hit testing to allow subsequent widgets to overlap this one \r\n"
+"   ImGuiTreeNodeFlags_NoTreePushOnOpen   = 8,   // Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack \r\n"
+"   ImGuiTreeNodeFlags_NoAutoOpenOnLog    = 16,   // Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes) \r\n"
+"   ImGuiTreeNodeFlags_DefaultOpen        = 32,   // Default node to be open \r\n"
+"   ImGuiTreeNodeFlags_OpenOnDoubleClick  = 64,   // Need double-click to open node \r\n"
+"   ImGuiTreeNodeFlags_OpenOnArrow        = 128,   // Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open. \r\n"
+"   ImGuiTreeNodeFlags_Leaf               = 256,   // No collapsing, no arrow (use as a convenience for leaf nodes). \r\n"
+"   ImGuiTreeNodeFlags_Bullet             = 512,   // Display a bullet instead of arrow \r\n"
+"   ImGuiTreeNodeFlags_FramePadding       = 1024,  // Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height.  \r\n"
+"   ImGuiTreeNodeFlags_SpanAvailWidth     = 2048,  // Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line.  \r\n"
+"   ImGuiTreeNodeFlags_SpanFullWidth      = 4096,  // Extend hit box to the left-most and right-most edges (bypass the indented area). \r\n"
+"   ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 8192,  // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop) \r\n"
+"   ImGuiTreeNodeFlags_CollapsingHeader   = 26, \r\n"
+" }; \r\n"
+"  \r\n"
 " struct AgsImGui{ \r\n"
 " // Main \r\n"
 "  \r\n"
@@ -586,6 +606,42 @@ namespace agsimgui {
 " /// Only call EndCombo() if BeginCombo() returns true! \r\n"
 " import static void EndCombo(); \r\n"
 "  \r\n"
+" // Widgets: Trees \r\n"
+" // - TreeNode functions return true when the node is open, in which case you need to also call TreePop() when you are finished displaying the tree node contents. \r\n"
+"  \r\n"
+" /// show the contents and call TreePop() if this returns true. \r\n"
+" import static bool TreeNode(String label); \r\n"
+"  \r\n"
+" /// helper variation to easily decorelate the id from the displayed string. Read the FAQ about why and how to use ID. To align arbitrary text at the same level as a TreeNode() you can use Bullet(). \r\n"
+" import static bool TreeNodeWithID(String str_id, String text); \r\n"
+"  \r\n"
+" /// show the contents and call TreePop() if this returns true. \r\n"
+" import static bool TreeNodeV(String str_id, String text); \r\n"
+"  \r\n"
+" /// show the contents and call TreePop() if this returns true. \r\n"
+" import static bool TreeNodeEx(String label, ImGuiTreeNodeFlags flags = 0); \r\n"
+"  \r\n"
+" /// show the contents and call TreePop() if this returns true. \r\n"
+" import static bool TreeNodeExWithID(String str_id, ImGuiTreeNodeFlags flags, String text); \r\n"
+"  \r\n"
+" /// show the contents and call TreePop() if this returns true. \r\n"
+" import static bool TreeNodeExV(String str_id, ImGuiTreeNodeFlags flags, String text); \r\n"
+"  \r\n"
+" /// ~ Indent()+PushId(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired. \r\n"
+" import static void TreePush(String str_id); \r\n"
+"  \r\n"
+" /// ~ Unindent()+PopId() \r\n"
+" import static void TreePop(); \r\n"
+"  \r\n"
+" /// horizontal distance preceding label when using TreeNode*() or Bullet() == (g.FontSize + style.FramePadding.x*2) for a regular unframed TreeNode \r\n"
+" import static float GetTreeNodeToLabelSpacing(); \r\n"
+"  \r\n"
+" /// if returning 'true' the header is open. doesn't indent nor push on ID stack. user doesn't have to call TreePop(). \r\n"
+" import static bool CollapsingHeader(String label, ImGuiTreeNodeFlags flags = 0); \r\n"
+"  \r\n"
+" /// set next TreeNode/CollapsingHeader open state. \r\n"
+" import static void SetNextItemOpen(bool is_open, ImGuiCond cond = 0); \r\n"
+"  \r\n"
 " // Widgets: List Boxes \r\n"
 "  \r\n"
 " /// If the function return true, you can output elements then call EndListBox() afterwards. \r\n"
@@ -682,6 +738,14 @@ namespace agsimgui {
 "  \r\n"
 " /// Override capture or not capture keyboard by ImGui for next frame. Keyboard will still be captured by AGS. \r\n"
 " import static void DoMouseWheel(ImGuiDir wheel_direction); \r\n"
+"  \r\n"
+" // Activation \r\n"
+"  \r\n"
+" ///make last item the default focused item of a window.  \r\n"
+" import static void SetItemDefaultFocus();  \r\n"
+"  \r\n"
+" ///focus keyboard on the next widget. Use positive 'offset' to access sub components of a multiple component widget. Use -1 to access previous widget.\r\n"
+" import static void SetKeyboardFocusHere(int offset = 0); \r\n"
 " }; \r\n"
 "  \r\n"
 " struct AgsImGuiHelper { \r\n"
@@ -736,7 +800,7 @@ namespace agsimgui {
 		// User has chosen to view the Properties of the plugin
 		// We could load up an options dialog or something here instead
 /*	MessageBox(parent,
-			 L"agsimgui v0.1.0 By eri0o",
+			 L"agsimgui v0.2.0 By eri0o",
 			 L"About",
 		 MB_OK | MB_ICONINFORMATION);
  */
@@ -1010,6 +1074,14 @@ int AgsImGui_IsAnyItemFocused(){
     return ToAgsBool(ImGui::IsAnyItemFocused());
 }
 
+void AgsImGui_SetKeyboardFocusHere(int offset){
+    ImGui::SetKeyboardFocusHere(offset);
+}
+
+void AgsImGui_SetItemDefaultFocus(){
+    ImGui::SetItemDefaultFocus();
+}
+
 void AgsImGui_Separator () {
     ImGui::Separator();
 }
@@ -1232,6 +1304,50 @@ const char* AgsImgui_InputTextWithHint(const char* label, const char* hint, cons
     }
     delete[] resized_buffer;
     return nullptr;
+}
+
+int AgsImGui_TreeNode(const char* label) {
+    return ToAgsBool(ImGui::TreeNode(label));
+}
+
+int AgsImGui_TreeNodeWithID(const char* str_id, const char* text) {
+    return ToAgsBool(ImGui::TreeNode(str_id,text));
+}
+
+int AgsImGui_TreeNodeV(const char* str_id, const char* text) {
+    return ToAgsBool(ImGui::TreeNodeV(str_id,text,0));
+}
+
+int AgsImGui_TreeNodeEx(const char* label, int flags) {
+    return ToAgsBool(ImGui::TreeNodeEx(label,flags));
+}
+
+int AgsImGui_TreeNodeExWithID(const char* str_id, int flags, const char* text) {
+    return ToAgsBool(ImGui::TreeNodeEx(str_id,flags,text,0));
+}
+
+int AgsImGui_TreeNodeExV(const char* str_id, int flags, const char* text) {
+    return ToAgsBool(ImGui::TreeNodeExV(str_id,flags,text,0));
+}
+
+void AgsImGui_TreePush(const char* str_id) {
+    ImGui::TreePush(str_id);
+}
+
+void AgsImGui_TreePop() {
+    ImGui::TreePop();
+}
+
+uint32_t AgsImGui_GetTreeNodeToLabelSpacing() {
+    return ToAgsFloat(ImGui::GetTreeNodeToLabelSpacing());
+}
+
+int AgsImGui_CollapsingHeader(const char* label, int flags) {
+    return ToAgsBool( ImGui::CollapsingHeader(label, flags));
+}
+
+void AgsImGui_SetNextItemOpen(int is_open, int cond) {
+    ImGui::SetNextItemOpen(is_open != 0, cond);
 }
 
 int AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
@@ -1576,6 +1692,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
+        engine->RegisterScriptFunction("AgsImGui::SetItemDefaultFocus^0", (void*)AgsImGui_SetItemDefaultFocus);
+        engine->RegisterScriptFunction("AgsImGui::SetKeyboardFocusHere^0", (void*)AgsImGui_SetKeyboardFocusHere);
         engine->RegisterScriptFunction("AgsImGui::Separator^0", (void*)AgsImGui_Separator);
         engine->RegisterScriptFunction("AgsImGui::SameLine^2", (void*)AgsImGui_SameLine);
         engine->RegisterScriptFunction("AgsImGui::NewLine^0", (void*)AgsImGui_NewLine);
@@ -1609,6 +1727,17 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::InputTextWithHint^5", (void*)AgsImgui_InputTextWithHint);
         engine->RegisterScriptFunction("AgsImGui::BeginCombo^3", (void*)AgsImGui_BeginCombo);
         engine->RegisterScriptFunction("AgsImGui::EndCombo^0", (void*)AgsImGui_EndCombo);
+        engine->RegisterScriptFunction("AgsImGui::TreeNode^1", (void*)AgsImGui_TreeNode);
+        engine->RegisterScriptFunction("AgsImGui::TreeNodeWithID^2", (void*)AgsImGui_TreeNodeWithID);
+        engine->RegisterScriptFunction("AgsImGui::TreeNodeV^2", (void*)AgsImGui_TreeNodeV);
+        engine->RegisterScriptFunction("AgsImGui::TreeNodeEx^2", (void*)AgsImGui_TreeNodeEx);
+        engine->RegisterScriptFunction("AgsImGui::TreeNodeExWithID^3", (void*)AgsImGui_TreeNodeExWithID);
+        engine->RegisterScriptFunction("AgsImGui::TreeNodeExV^3", (void*)AgsImGui_TreeNodeExV);
+        engine->RegisterScriptFunction("AgsImGui::TreePush^1", (void*)AgsImGui_TreePush);
+        engine->RegisterScriptFunction("AgsImGui::TreePop^0", (void*)AgsImGui_TreePop);
+        engine->RegisterScriptFunction("AgsImGui::GetTreeNodeToLabelSpacing^0", (void*)AgsImGui_GetTreeNodeToLabelSpacing);
+        engine->RegisterScriptFunction("AgsImGui::CollapsingHeader^2", (void*)AgsImGui_CollapsingHeader);
+        engine->RegisterScriptFunction("AgsImGui::SetNextItemOpen^2", (void*)AgsImGui_SetNextItemOpen);
         engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
         engine->RegisterScriptFunction("AgsImGui::EndListBox^0", (void*)AgsImGui_EndListBox);
         engine->RegisterScriptFunction("AgsImGui::BeginTooltip^0", (void*)AgsImGui_BeginTooltip);
@@ -1697,7 +1826,7 @@ enum MouseButton {
 			//initialize debug
 			if (!screen.initialized) {
 				engine->GetScreenDimensions(&screen.width, &screen.height, &screen.colorDepth);
-				printf("\nagsimgui 0.1.0\n");
+				printf("\nagsimgui 0.2.0\n");
 
 				if (screen.driver == Screen::Driver::eOpenGL) {
 

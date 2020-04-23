@@ -1,8 +1,8 @@
-[b][size=14pt]agsimgui[/size][/b]  [color=gray][b] version 0.1.0 [/b][/color]
+[b][size=14pt]agsimgui[/size][/b]  [color=gray][b] version 0.2.0 [/b][/color]
 
 [img]https://dev.azure.com/ericoporto/agsimgui/_apis/build/status/ericoporto.agsimgui?branchName=master[/img]
 
-[url=https://github.com/ericoporto/agsimgui/releases/download/0.1.0/agsimgui.dll]Get Latest Release [b]agsimgui.dll[/b][/url] | [url=https://github.com/ericoporto/agsimgui/releases/download/0.1.0/libagsimgui.so][b]libagsimgui.so[/b][/url] | [url=https://github.com/ericoporto/agsimgui/releases/download/0.1.0/libagsimgui.dylib][b]libagsimgui.dylib[/b][/url] | [url=https://github.com/ericoporto/agsimgui]GitHub Repo[/url] | [b][url=https://github.com/ericoporto/agsimgui/releases/download/0.1.0/agsimgui_demo_windows.zip]Demo Windows[/url][/b] | [b][url=https://github.com/ericoporto/agsimgui/releases/download/0.1.0/agsimgui_demo_linux.tar.xz]Demo Linux[/url][/b]
+[url=https://github.com/ericoporto/agsimgui/releases/download/0.2.0/agsimgui.dll]Get Latest Release [b]agsimgui.dll[/b][/url] | [url=https://github.com/ericoporto/agsimgui/releases/download/0.2.0/libagsimgui.so][b]libagsimgui.so[/b][/url] | [url=https://github.com/ericoporto/agsimgui/releases/download/0.2.0/libagsimgui.dylib][b]libagsimgui.dylib[/b][/url] | [url=https://github.com/ericoporto/agsimgui]GitHub Repo[/url] | [b][url=https://github.com/ericoporto/agsimgui/releases/download/0.2.0/agsimgui_demo_windows.zip]Demo Windows[/url][/b] | [b][url=https://github.com/ericoporto/agsimgui/releases/download/0.2.0/agsimgui_demo_linux.tar.xz]Demo Linux[/url][/b]
 
 Dear ImGui plugin for Adventure Game Studio
 
@@ -466,6 +466,72 @@ if(AgsImGui.BeginListBox("My ListBox",2)){
 [code]static void AgsImGui.EndListBox()[/code]
 
 Only call EndListBox() if BeginListBox() returns true!
+
+[hr]
+
+[i][b]Widgets: Trees[/b][/i]
+
+TreeNode functions return true when the node is open, in which case you need to also call TreePop() when you are finished displaying the tree node contents.
+
+[*] [b][tt]AgsImGui.TreeNode[/tt][/b]
+
+[code]static bool AgsImGui.TreeNode(String label)[/code]
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+[*] [b][tt]AgsImGui.TreeNodeWithID[/tt][/b]
+
+[code]static bool AgsImGui.TreeNodeWithID(String str_id, String text)[/code]
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+[*] [b][tt]AgsImGui.TreeNodeV[/tt][/b]
+
+[code]static bool AgsImGui.TreeNodeV(String str_id, String text)[/code]
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+[*] [b][tt]AgsImGui.TreeNodeEx[/tt][/b]
+
+[code]static bool AgsImGui.TreeNodeEx(String label, ImGuiTreeNodeFlags flags = 0)[/code]
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+[*] [b][tt]AgsImGui.TreeNodeExWithID[/tt][/b]
+
+[code]static bool AgsImGui.TreeNodeExWithID(String str_id, ImGuiTreeNodeFlags flags, String text)[/code]
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+[*] [b][tt]AgsImGui.TreeNodeExV[/tt][/b]
+
+[code]static bool AgsImGui.TreeNodeExV(String str_id, ImGuiTreeNodeFlags flags, String text)[/code]
+
+Show the contents and call TreePop() at the end, if this returns true.
+
+[*] [b][tt]AgsImGui.TreePush[/tt][/b]
+
+[code]static void AgsImGui.TreePush(String str_id)[/code]
+
+~ Indent()+PushId(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
+
+[*] [b][tt]AgsImGui.TreePop[/tt][/b]
+
+[code]static void AgsImGuiTreePop()[/code]
+
+~ Unindent()+PopId().
+
+[*] [b][tt]AgsImGui.GetTreeNodeToLabelSpacing[/tt][/b]
+
+[code]static float AgsImGui.GetTreeNodeToLabelSpacing()[/code]
+
+Horizontal distance preceding label when using TreeNode*() or Bullet() == (g.FontSize + style.FramePadding.x*2) for a regular unframed TreeNode.
+
+[*] [b][tt]AgsImGui.CollapsingHeader[/tt][/b]
+
+[code]static bool AgsImGui.CollapsingHeader(String label, ImGuiTreeNodeFlags flags = 0)[/code]
+
+If returning 'true' the header is open. doesn't indent nor push on ID stack. user doesn't have to call TreePop().
 
 [hr]
 
