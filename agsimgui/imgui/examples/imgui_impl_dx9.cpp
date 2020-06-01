@@ -24,7 +24,6 @@
 
 struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
 #include "core/platform.h"
-#include "../imgui.h"
 #include "imgui_impl_dx9.h"
 
 #if AGS_PLATFORM_OS_WINDOWS
@@ -102,16 +101,16 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
     g_pd3dDevice->SetPixelShader(NULL);
     g_pd3dDevice->SetVertexShader(NULL);
     g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-    g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, false);
-    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, false);
-    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
-    g_pd3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+    g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    g_pd3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     g_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     g_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-    g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, true);
+    g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
     g_pd3dDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-    g_pd3dDevice->SetRenderState(D3DRS_FOGENABLE, false);
+    g_pd3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     g_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
     g_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
     g_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);

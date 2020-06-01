@@ -9,6 +9,8 @@ Dear ImGui plugin for Adventure Game Studio
 
 Using ocornut Dear ImGui, and also using software renderer with modifications from LAK132, and using other changes to ensure AGS compatibility.
 
+ImGui reference commit is 3f26a07ee1813cecaa87253436149e28fc11dc4e.
+
 Additionally using David Cappelo clip library for providing clipboard integration.
 
 ## Usage
