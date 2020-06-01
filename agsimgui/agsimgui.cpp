@@ -39,6 +39,8 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "Screen.h"
 #include "libs/clip/clip.h"
 
+#include "AgsImVec2.h"
+
 #include <cstring>
 
 #if defined(BUILTIN_PLUGINS)
@@ -1577,6 +1579,8 @@ int AgsImGuiHelper_GetClipboarImage() {
 		// Make sure it's got the version with the features we need
 		if (engine->version < MIN_ENGINE_VERSION)
 			engine->AbortGame("Plugin needs engine version " STRINGIFY(MIN_ENGINE_VERSION) " or newer.");
+
+        engine->AddManagedObjectReader(AgsImVec2Interface::name, &AgsImVec2_Reader);
 
 		//register functions
         if(screen.driver == Screen::Driver::eOpenGL) {
