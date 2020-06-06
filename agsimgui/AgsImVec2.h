@@ -11,27 +11,28 @@
 #define _AGSIMVEC2_H
 
 #include "plugin/agsplugin.h"
+#include "imgui/imgui.h"
 
-class AgsImVec2
-{
-    float _x = 0.0;
-    float _y = 0.0;
-public:
-    AgsImVec2(float x, float y);
-    ~AgsImVec2(void);
-    void SetX(float x);
-    float GetX();
-    void SetY(float y);
-    float GetY();
+struct AgsImVec2 : ImVec2 {
+    public :
+    int id;
+        AgsImVec2(float x, float y)
+            : ImVec2(x,y){
+        id = -1;
+    }
 
-    AgsImVec2* Scale(float scale);
-    float Length();
+        AgsImVec2(float x, float y, int _id)
+            : ImVec2(x,y){
+        id = _id;
+    }
+    float Length() ;
     float SquaredLength();
-    AgsImVec2* Add(AgsImVec2* AgsImVec2);
-    AgsImVec2* Sub(AgsImVec2* AgsImVec2);
+    AgsImVec2* Scale(float scale) ;
+
+    AgsImVec2 *Add(AgsImVec2 *agsImVec2);
+
+    AgsImVec2 *Sub(AgsImVec2 *agsImVec2);
 };
-
-
 
 //------------------------------------------------------------------------------
 // AGS interface instances

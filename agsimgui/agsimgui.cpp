@@ -353,6 +353,34 @@ namespace agsimgui {
 "   ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 8192,  // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop) \r\n"
 "   ImGuiTreeNodeFlags_CollapsingHeader   = 26, \r\n"
 " }; \r\n"
+" \r\n"
+"builtin managed struct ImVec2 { \r\n"
+"  \r\n"
+"  /// Creates a ImVec2 with float X and Y coordinates. \r\n"
+"  import static ImVec2* Create(float x, float y); // $AUTOCOMPLETESTATICONLY$ \r\n"
+"  \r\n"
+"  /// Float X coordinate of the ImVec2. \r\n"
+"  import attribute float X; \r\n"
+"  \r\n"
+"  /// Float Y coordinate of the ImVec2. \r\n"
+"  import attribute float Y; \r\n"
+"  \r\n"
+"  /// Multiplies x and y coordinates by a scalar and returns a new ImVec2 with the result. \r\n"
+"  import ImVec2* Scale(float scale); \r\n"
+"  \r\n"
+"  /// Returns length from ImVec2 (distance from 0,0 origin). \r\n"
+"  import float Length(); \r\n"
+"  \r\n"
+"  ///  Returns squared length from ImVec2 (distance from 0,0 origin). Faster than length. \r\n"
+"  import float SquaredLength(); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec2 with the sum of this with imVec2. \r\n"
+"  import ImVec2* Add(ImVec2* imVec2); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec2 with the subtraction of imVec2 from this. \r\n"
+"  import ImVec2* Sub(ImVec2* imVec2); \r\n"
+"  \r\n"
+"}; \r\n"
 "  \r\n"
 " struct AgsImGui{ \r\n"
 " // Main \r\n"
@@ -895,6 +923,68 @@ typedef int (*SCAPI_MOUSE_ISBUTTONDOWN) (int button);
 SCAPI_MOUSE_ISBUTTONDOWN Mouse_IsButtonDown = NULL;
 bool has_new_render = false;
 bool has_new_frame = false;
+
+
+// -- begin AgsImVec2
+
+AgsImVec2* AgsImVec2_Create(uint32_t x, uint32_t y){
+    float fx = ToNormalFloat(x);
+    float fy = ToNormalFloat(y);
+    AgsImVec2* agsImVec2 = new AgsImVec2(fx, fy);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+int32 AgsImVec2_GetY(AgsImVec2* self) {
+    return ToAgsFloat(self->y);
+}
+
+void AgsImVec2_SetX(AgsImVec2* self, uint32_t x) {
+    float fx = ToNormalFloat(x);
+
+    self->x = fx;
+}
+
+uint32_t AgsImVec2_GetX(AgsImVec2* self) {
+    return ToAgsFloat(self->x);
+}
+
+void AgsImVec2_SetY(AgsImVec2* self, uint32_t y) {
+    float fy = ToNormalFloat(y);
+
+    self->y = fy;
+}
+
+uint32_t AgsImVec2_Length(AgsImVec2* self) {
+    return ToAgsFloat(self->Length());
+}
+
+uint32_t AgsImVec2_SquaredLength(AgsImVec2* self) {
+    return ToAgsFloat(self->SquaredLength());
+}
+
+AgsImVec2* AgsImVec2_Add(AgsImVec2* self, AgsImVec2* other){
+    AgsImVec2* agsImVec2 = self->Add(other);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+AgsImVec2* AgsImVec2_Sub(AgsImVec2* self, AgsImVec2* other){
+    AgsImVec2* agsImVec2 = self->Sub(other);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+
+AgsImVec2* AgsImVec2_Scale(AgsImVec2* self, uint32_t scale){
+    float f_scale = ToNormalFloat(scale);
+    AgsImVec2* agsImVec2 = self->Scale(f_scale);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+// -- end AgsImVec2
+
 void AgsImGui_NewFrame(){
 	if (!screen.initialized) return;
 
@@ -1656,6 +1746,19 @@ int AgsImGuiHelper_GetClipboarImage() {
         io.ClipboardUserData = NULL;
 
         Mouse_IsButtonDown = (SCAPI_MOUSE_ISBUTTONDOWN) engine->GetScriptFunctionAddress("Mouse::IsButtonDown^1");
+
+
+        engine->RegisterScriptFunction("ImVec2::Create^2", (void*)AgsImVec2_Create);
+        engine->RegisterScriptFunction("ImVec2::set_X", (void*)AgsImVec2_SetX);
+        engine->RegisterScriptFunction("ImVec2::get_X", (void*)AgsImVec2_GetX);
+        engine->RegisterScriptFunction("ImVec2::set_Y", (void*)AgsImVec2_SetY);
+        engine->RegisterScriptFunction("ImVec2::get_Y", (void*)AgsImVec2_GetY);
+        engine->RegisterScriptFunction("ImVec2::Length^0", (void*)AgsImVec2_Length);
+        engine->RegisterScriptFunction("ImVec2::SquaredLength^0", (void*)AgsImVec2_SquaredLength);
+        engine->RegisterScriptFunction("ImVec2::Add^1", (void*)AgsImVec2_Add);
+        engine->RegisterScriptFunction("ImVec2::Sub^1", (void*)AgsImVec2_Sub);
+        engine->RegisterScriptFunction("ImVec2::Scale^1", (void*)AgsImVec2_Scale);
+
 
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
