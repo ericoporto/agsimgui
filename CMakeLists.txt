@@ -52,6 +52,8 @@ add_library(agsimgui SHARED
         agsimgui/AgsImVec2.h
         agsimgui/AgsImVec4.cpp
         agsimgui/AgsImVec4.h
+        agsimgui/AgsImGuiStyle.cpp
+        agsimgui/AgsImGuiStyle.h
         agsimgui/SerialHelper.cpp
         agsimgui/SerialHelper.h
         agsimgui/agsimgui.cpp
