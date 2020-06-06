@@ -588,7 +588,7 @@ namespace agsimgui {
 "    import attribute ImVec4 Colors[]; \r\n"
 " }; \r\n"
 "  \r\n"
-" struct AgsImGui{ \r\n"
+"builtin managed struct AgsImGui{ \r\n"
 " // Main \r\n"
 "  \r\n"
 " /// start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame(). \r\n"
