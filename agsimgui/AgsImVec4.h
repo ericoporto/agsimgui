@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020  Érico Vieira Porto
+ * Copyright (C) 4040  Érico Vieira Porto
  *
  * This program is free software. You can use and redistribute it
  *  under the terms and conditions of the MIT License (see LICENCE).
@@ -7,42 +7,42 @@
 
 #pragma once
 
-#ifndef _AGSIMVEC2_H
-#define _AGSIMVEC2_H
+#ifndef _AGSIMVEC4_H
+#define _AGSIMVEC4_H
 
 #include "plugin/agsplugin.h"
 #include "imgui/imgui.h"
 
-struct AgsImVec2 : ImVec2 {
+struct AgsImVec4 : ImVec4 {
     public :
     int id;
-        AgsImVec2(float _x, float _y)
-            : ImVec2(_x,_y){
+        AgsImVec4(float _x, float _y, float _z, float _w)
+            : ImVec4(_x,_y,_z,_w){
         id = -1;
     }
 
-        AgsImVec2(float _x, float _y, int _id)
-            : ImVec2(_x,_y){
+        AgsImVec4(float _x, float _y,  float _z, float _w, int _id)
+            : ImVec4(_x,_y,_z,_w){
         id = _id;
     }
     float Length() ;
     float SquaredLength();
-    AgsImVec2* Scale(float scale) ;
+    AgsImVec4* Scale(float scale) ;
 
-    AgsImVec2 *Add(AgsImVec2 *agsImVec2);
+    AgsImVec4 *Add(AgsImVec4 *agsImVec4);
 
-    AgsImVec2 *Sub(AgsImVec2 *agsImVec2);
+    AgsImVec4 *Sub(AgsImVec4 *agsImVec4);
 };
 
 //------------------------------------------------------------------------------
 // AGS interface instances
 
-class AgsImVec2Interface : public IAGSScriptManagedObject
+class AgsImVec4Interface : public IAGSScriptManagedObject
 {
 public:
     static const char* name;
 
-    AgsImVec2Interface() {};
+    AgsImVec4Interface() {};
 
     virtual int Dispose(const char* address, bool force);
     virtual const char* GetType() { return (name); }
@@ -52,11 +52,11 @@ public:
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-class AgsImVec2Reader : public IAGSManagedObjectReader
+class AgsImVec4Reader : public IAGSManagedObjectReader
 {
 public:
 
-    AgsImVec2Reader() {}
+    AgsImVec4Reader() {}
 
     virtual void Unserialize(int key, const char* serializedData, int dataSize);
 
@@ -64,11 +64,11 @@ public:
 
 //------------------------------------------------------------------------------
 
-extern AgsImVec2Interface AgsImVec2_Interface;
-extern AgsImVec2Reader AgsImVec2_Reader;
+extern AgsImVec4Interface AgsImVec4_Interface;
+extern AgsImVec4Reader AgsImVec4_Reader;
 
 //------------------------------------------------------------------------------
 
-#endif /* _AGSIMVEC2_H */
+#endif /* _AGSIMVEC4_H */
 
 //............

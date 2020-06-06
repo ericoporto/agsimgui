@@ -57,12 +57,12 @@ int AgsImVec2Interface::Dispose(const char* address, bool force)
 
 int AgsImVec2Interface::Serialize(const char* address, char* buffer, int bufsize)
 {
-    AgsImVec2* imvec2 = (AgsImVec2*)address;
+    AgsImVec2* agsImVec2 = (AgsImVec2*)address;
     char* ptr = buffer;
     char* end = buffer + bufsize;
 
-    ptr = FloatToChar(imvec2->x, ptr, end);
-    ptr = FloatToChar(imvec2->y, ptr, end);
+    ptr = FloatToChar(agsImVec2->x, ptr, end);
+    ptr = FloatToChar(agsImVec2->y, ptr, end);
 
     return (ptr - buffer);
 }
@@ -79,9 +79,9 @@ void AgsImVec2Reader::Unserialize(int key, const char* serializedData, int dataS
     ptr = CharToFloat( val_x, ptr);
     ptr = CharToFloat( val_y, ptr);
 
-    AgsImVec2* imvec2 = new AgsImVec2(val_x, val_y, key);
+    AgsImVec2* agsImVec2 = new AgsImVec2(val_x, val_y, key);
 
-    engine->RegisterUnserializedObject(key, imvec2, &AgsImVec2_Interface);
+    engine->RegisterUnserializedObject(key, agsImVec2, &AgsImVec2_Interface);
 }
 
 //..............................................................................

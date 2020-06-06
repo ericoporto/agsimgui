@@ -40,6 +40,7 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "libs/clip/clip.h"
 
 #include "AgsImVec2.h"
+#include "AgsImVec4.h"
 
 #include <cstring>
 
@@ -354,6 +355,40 @@ namespace agsimgui {
 "   ImGuiTreeNodeFlags_CollapsingHeader   = 26, \r\n"
 " }; \r\n"
 " \r\n"
+"builtin managed struct ImVec4 { \r\n"
+"  \r\n"
+"  /// Creates a ImVec4 with float X and Y coordinates. \r\n"
+"  import static ImVec4* Create(float x, float y); // $AUTOCOMPLETESTATICONLY$ \r\n"
+"  \r\n"
+"  /// Float X coordinate of the ImVec4. \r\n"
+"  import attribute float X; \r\n"
+"  \r\n"
+"  /// Float Y coordinate of the ImVec4. \r\n"
+"  import attribute float Y; \r\n"
+"  \r\n"
+"  /// Float X coordinate of the ImVec4. \r\n"
+"  import attribute float Z; \r\n"
+"  \r\n"
+"  /// Float Y coordinate of the ImVec4. \r\n"
+"  import attribute float W; \r\n"
+"  \r\n"
+"  /// Multiplies x and y coordinates by a scalar and returns a new ImVec4 with the result. \r\n"
+"  import ImVec4* Scale(float scale); \r\n"
+"  \r\n"
+"  /// Returns length from ImVec4 (distance from 0,0 origin). \r\n"
+"  import float Length(); \r\n"
+"  \r\n"
+"  ///  Returns squared length from ImVec4 (distance from 0,0 origin). Faster than length. \r\n"
+"  import float SquaredLength(); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec4 with the sum of this with imVec4. \r\n"
+"  import ImVec4* Add(ImVec4* imVec4); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec4 with the subtraction of imVec4 from this. \r\n"
+"  import ImVec4* Sub(ImVec4* imVec4); \r\n"
+"  \r\n"
+"}; \r\n"
+"  \r\n"
 "builtin managed struct ImVec2 { \r\n"
 "  \r\n"
 "  /// Creates a ImVec2 with float X and Y coordinates. \r\n"
@@ -984,6 +1019,90 @@ AgsImVec2* AgsImVec2_Scale(AgsImVec2* self, uint32_t scale){
 }
 
 // -- end AgsImVec2
+
+
+// -- begin AgsImVec4
+
+AgsImVec4* AgsImVec4_Create(uint32_t x, uint32_t y, uint32_t z, uint32_t w){
+    float fx = ToNormalFloat(x);
+    float fy = ToNormalFloat(y);
+    float fz = ToNormalFloat(z);
+    float fw = ToNormalFloat(w);
+    AgsImVec4* agsImVec4 = new AgsImVec4(fx, fy, fz, fw);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+int32 AgsImVec4_GetY(AgsImVec4* self) {
+    return ToAgsFloat(self->y);
+}
+
+void AgsImVec4_SetX(AgsImVec4* self, uint32_t x) {
+    float fx = ToNormalFloat(x);
+
+    self->x = fx;
+}
+
+uint32_t AgsImVec4_GetX(AgsImVec4* self) {
+    return ToAgsFloat(self->x);
+}
+
+void AgsImVec4_SetY(AgsImVec4* self, uint32_t y) {
+    float fy = ToNormalFloat(y);
+
+    self->y = fy;
+}
+
+int32 AgsImVec4_GetZ(AgsImVec4* self) {
+    return ToAgsFloat(self->z);
+}
+
+void AgsImVec4_SetZ(AgsImVec4* self, uint32_t z) {
+    float fz = ToNormalFloat(z);
+
+    self->z = fz;
+}
+
+uint32_t AgsImVec4_GetW(AgsImVec4* self) {
+    return ToAgsFloat(self->w);
+}
+
+void AgsImVec4_SetW(AgsImVec4* self, uint32_t w) {
+    float fw = ToNormalFloat(w);
+
+    self->w = fw;
+}
+
+uint32_t AgsImVec4_Length(AgsImVec4* self) {
+    return ToAgsFloat(self->Length());
+}
+
+uint32_t AgsImVec4_SquaredLength(AgsImVec4* self) {
+    return ToAgsFloat(self->SquaredLength());
+}
+
+AgsImVec4* AgsImVec4_Add(AgsImVec4* self, AgsImVec4* other){
+    AgsImVec4* agsImVec4 = self->Add(other);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+AgsImVec4* AgsImVec4_Sub(AgsImVec4* self, AgsImVec4* other){
+    AgsImVec4* agsImVec4 = self->Sub(other);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+
+AgsImVec4* AgsImVec4_Scale(AgsImVec4* self, uint32_t scale){
+    float f_scale = ToNormalFloat(scale);
+    AgsImVec4* agsImVec4 = self->Scale(f_scale);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+// -- end AgsImVec4
+
 
 void AgsImGui_NewFrame(){
 	if (!screen.initialized) return;
@@ -1671,6 +1790,7 @@ int AgsImGuiHelper_GetClipboarImage() {
 			engine->AbortGame("Plugin needs engine version " STRINGIFY(MIN_ENGINE_VERSION) " or newer.");
 
         engine->AddManagedObjectReader(AgsImVec2Interface::name, &AgsImVec2_Reader);
+        engine->AddManagedObjectReader(AgsImVec4Interface::name, &AgsImVec4_Reader);
 
 		//register functions
         if(screen.driver == Screen::Driver::eOpenGL) {
@@ -1747,6 +1867,20 @@ int AgsImGuiHelper_GetClipboarImage() {
 
         Mouse_IsButtonDown = (SCAPI_MOUSE_ISBUTTONDOWN) engine->GetScriptFunctionAddress("Mouse::IsButtonDown^1");
 
+        engine->RegisterScriptFunction("ImVec4::Create^4", (void*)AgsImVec4_Create);
+        engine->RegisterScriptFunction("ImVec4::set_X", (void*)AgsImVec4_SetX);
+        engine->RegisterScriptFunction("ImVec4::get_X", (void*)AgsImVec4_GetX);
+        engine->RegisterScriptFunction("ImVec4::set_Y", (void*)AgsImVec4_SetY);
+        engine->RegisterScriptFunction("ImVec4::get_Y", (void*)AgsImVec4_GetY);
+        engine->RegisterScriptFunction("ImVec4::set_Z", (void*)AgsImVec4_SetZ);
+        engine->RegisterScriptFunction("ImVec4::get_Z", (void*)AgsImVec4_GetZ);
+        engine->RegisterScriptFunction("ImVec4::set_W", (void*)AgsImVec4_SetW);
+        engine->RegisterScriptFunction("ImVec4::get_W", (void*)AgsImVec4_GetW);
+        engine->RegisterScriptFunction("ImVec4::Length^0", (void*)AgsImVec4_Length);
+        engine->RegisterScriptFunction("ImVec4::SquaredLength^0", (void*)AgsImVec4_SquaredLength);
+        engine->RegisterScriptFunction("ImVec4::Add^1", (void*)AgsImVec4_Add);
+        engine->RegisterScriptFunction("ImVec4::Sub^1", (void*)AgsImVec4_Sub);
+        engine->RegisterScriptFunction("ImVec4::Scale^1", (void*)AgsImVec4_Scale);
 
         engine->RegisterScriptFunction("ImVec2::Create^2", (void*)AgsImVec2_Create);
         engine->RegisterScriptFunction("ImVec2::set_X", (void*)AgsImVec2_SetX);
@@ -1758,7 +1892,6 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImVec2::Add^1", (void*)AgsImVec2_Add);
         engine->RegisterScriptFunction("ImVec2::Sub^1", (void*)AgsImVec2_Sub);
         engine->RegisterScriptFunction("ImVec2::Scale^1", (void*)AgsImVec2_Scale);
-
 
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
