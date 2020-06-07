@@ -171,6 +171,7 @@
     <ClCompile Include="AgsImGuiStyle.cpp" />
     <ClCompile Include="AgsImVec2.cpp" />
     <ClCompile Include="AgsImVec4.cpp" />
+    <ClCompile Include="SerialHelper.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_dx9.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_softraster.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="AgsImGuiStyle.h" />
     <ClInclude Include="AgsImVec2.h" />
     <ClInclude Include="AgsImVec4.h" />
+    <ClInclude Include="SerialHelper.h" />
     <ClInclude Include="imgui\examples\imgui_impl_dx9.h" />
     <ClInclude Include="imgui\examples\imgui_impl_softraster.h" />
     <ClInclude Include="imgui\imconfig.h" />
