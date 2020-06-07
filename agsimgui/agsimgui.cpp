@@ -589,6 +589,10 @@ namespace agsimgui {
 " }; \r\n"
 "  \r\n"
 "builtin managed struct AgsImGui{ \r\n"
+"  \r\n"
+" /// Gets or Sets the Style customization use in AgsImGui \r\n"
+" import static attribute ImGuiStyle* Style; \r\n"
+"  \r\n"
 " // Main \r\n"
 "  \r\n"
 " /// start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame(). \r\n"
@@ -1304,6 +1308,16 @@ void SetAgsImVec4(ImVec4 &imVec4, AgsImVec4* agsImVec4){
     imVec4.w = agsImVec4->w;
 }
 
+AgsImGuiStyle* NewAgsImGuiStyle(ImGuiStyle &imGuiStyle) {
+    AgsImGuiStyle *agsImGuiStyle = new AgsImGuiStyle(imGuiStyle);
+    agsImGuiStyle->id = engine->RegisterManagedObject(agsImGuiStyle, &AgsImGuiStyle_Interface);
+    return agsImGuiStyle;
+}
+
+void SetAgsImGuiStyle(ImGuiStyle &imGuiStyle, AgsImGuiStyle* agsImGuiStyle){
+    AgsImGuiStyle::SetAgsImGuiStyle(imGuiStyle, agsImGuiStyle);
+}
+
 void AgsImGuiStyle_SetAlpha(AgsImGuiStyle* self, uint32_t alpha){
     float f_alpha = ToNormalFloat(alpha);
     self->Alpha = f_alpha;
@@ -1666,6 +1680,16 @@ AgsImVec4* AgsImGuiStyle_GetColors(AgsImGuiStyle* self, int i){
 
 
 // -- end AgsImGuiStyle
+
+AgsImGuiStyle* AgsImGui_GetStyle(){
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+    return NewAgsImGuiStyle(imGuiStyle);
+}
+
+void AgsImGui_SetStyle(AgsImGuiStyle* agsImGuiStyle){
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+    SetAgsImGuiStyle(imGuiStyle, agsImGuiStyle);
+}
 
 void AgsImGui_NewFrame(){
 	if (!screen.initialized) return;
@@ -2531,6 +2555,9 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_CircleSegmentMaxError", (void*)AgsImGuiStyle_GetCircleSegmentMaxError);
         engine->RegisterScriptFunction("ImGuiStyle::seti_Colors", (void*)AgsImGuiStyle_SetColors);
         engine->RegisterScriptFunction("ImGuiStyle::geti_Colors", (void*)AgsImGuiStyle_GetColors);
+
+        engine->RegisterScriptFunction("AgsImGui::get_Style", (void*)AgsImGui_GetStyle);
+        engine->RegisterScriptFunction("AgsImGui::set_Style", (void*)AgsImGui_SetStyle);
 
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
