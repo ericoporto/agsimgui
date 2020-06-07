@@ -590,8 +590,11 @@ namespace agsimgui {
 "  \r\n"
 "builtin managed struct AgsImGui{ \r\n"
 "  \r\n"
-" /// Gets or Sets the Style customization use in AgsImGui \r\n"
-" import static attribute ImGuiStyle* Style; \r\n"
+" /// Gets the Style customization use in AgsImGui \r\n"
+" import static ImGuiStyle* GetStyle(); \r\n"
+"  \r\n"
+" /// Sets the Style customization use in AgsImGui \r\n"
+" import static void SetStyle(ImGuiStyle* imGuiStyle); \r\n"
 "  \r\n"
 " // Main \r\n"
 "  \r\n"
@@ -2556,8 +2559,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::seti_Colors", (void*)AgsImGuiStyle_SetColors);
         engine->RegisterScriptFunction("ImGuiStyle::geti_Colors", (void*)AgsImGuiStyle_GetColors);
 
-        engine->RegisterScriptFunction("AgsImGui::get_Style", (void*)AgsImGui_GetStyle);
-        engine->RegisterScriptFunction("AgsImGui::set_Style", (void*)AgsImGui_SetStyle);
+        engine->RegisterScriptFunction("AgsImGui::GetStyle^0", (void*)AgsImGui_GetStyle);
+        engine->RegisterScriptFunction("AgsImGui::SetStyle^1", (void*)AgsImGui_SetStyle);
 
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
