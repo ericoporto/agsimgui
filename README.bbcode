@@ -49,6 +49,7 @@ AgsImGui.Render(); // This will generate drawing instructions.
 Note ImGui will save a [tt]imgui.ini[/tt] file to allow window positions and some more data to persist between sections when no guidance is given.
 
 
+
 [b][size=12pt]AGS Script API[/size][/b]
 [spoiler]
 [i][b]Main[/b][/i]
@@ -59,17 +60,42 @@ Note ImGui will save a [tt]imgui.ini[/tt] file to allow window positions and som
 
 Call this before calling any AgsImGui commands.
 
+
 [*] [b][tt]AgsImGui.EndFrame[/tt][/b]
 
 [code]static void AgsImGui.EndFrame()[/code]
 
 We don't need this if we are using Render, since it will automatically call [tt]AgsImGui.EndFrame()[/tt] too.
 
+
 [*] [b][tt]AgsImGui.Render[/tt][/b]
 
 [code]static void AgsImGui.Render()[/code]
 
 This will EndFrame and proceed to generate drawing instructions.
+
+
+[*] [b][tt]AgsImGui.GetStyle[/tt][/b]
+
+[code]static ImGuiStyle* AgsImGui.GetStyle()[/code]
+
+Gets the Style customization use in AgsImGui. Check [tt]ImGuiStyle[/tt] for more information.
+
+
+[*] [b][tt]AgsImGui.SetStyle[/tt][/b]
+
+[code]static void AgsImGui.SetStyle(ImGuiStyle* imGuiStyle)[/code]
+
+Sets the Style customization use in AgsImGui. Check [tt]ImGuiStyle[/tt] for more information.
+
+[code=AGS]
+ImGuiStyle* style = AgsImGui.GetStyle();
+style.Alpha = 0.5
+style.Colors[eImGuiCol_PopupBg] = ImVec4.Create(1.00, 1.00, 1.00, 1.00); //white
+AgsImGui.SetStyle(style);
+[/code]
+
+
 
 [i][b]Demo, Debug, Information[/b][/i]
 

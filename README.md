@@ -60,13 +60,13 @@ no guidance is given.
 
 #### `AgsImGui.GetStyle`
 
-`static ImGuiStyle* GetStyle()`
+`static ImGuiStyle* AgsImGui.GetStyle()`
 
 Gets the Style customization use in AgsImGui. Check [`ImGuiStyle`](#imguistyle) for more information.
 
 #### `AgsImGui.SetStyle`
 
-`static void SetStyle(ImGuiStyle* imGuiStyle)`
+`static void AgsImGui.SetStyle(ImGuiStyle* imGuiStyle)`
 
 Sets the Style customization use in AgsImGui. Check [`ImGuiStyle`](#imguistyle) for more information.
 
