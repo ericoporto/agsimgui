@@ -479,8 +479,8 @@ namespace agsimgui {
 "    /// Global alpha applies to everything in Dear ImGui. \r\n"
 "    import attribute float Alpha; \r\n"
 "     \r\n"
-"    /// Padding within a window.
-"    import attribute ImVec2 WindowPadding;
+"    /// Padding within a window. \r\n"
+"    import attribute ImVec2 WindowPadding; \r\n"
 "     \r\n"
 "    /// Radius of window corners rounding. Set to 0.0f to have rectangular windows. \r\n"
 "    import attribute float WindowRounding; \r\n"
