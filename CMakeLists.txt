@@ -48,6 +48,14 @@ add_library(agsimgui SHARED
         agsimgui/imgui/examples/imgui_impl_dx9.cpp
         agsimgui/imgui/examples/imgui_impl_dx9.h
         agsimgui/agsimgui.h
+        agsimgui/AgsImVec2.cpp
+        agsimgui/AgsImVec2.h
+        agsimgui/AgsImVec4.cpp
+        agsimgui/AgsImVec4.h
+        agsimgui/AgsImGuiStyle.cpp
+        agsimgui/AgsImGuiStyle.h
+        agsimgui/SerialHelper.cpp
+        agsimgui/SerialHelper.h
         agsimgui/agsimgui.cpp
         agsimgui/Screen.cpp
         agsimgui/Screen.h)

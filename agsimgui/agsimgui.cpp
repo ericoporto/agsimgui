@@ -39,6 +39,10 @@ struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error
 #include "Screen.h"
 #include "libs/clip/clip.h"
 
+#include "AgsImVec2.h"
+#include "AgsImVec4.h"
+#include "AgsImGuiStyle.h"
+
 #include <cstring>
 
 #if defined(BUILTIN_PLUGINS)
@@ -78,6 +82,10 @@ namespace agsimgui {
 		return TRUE;
 	}
 #endif
+
+const unsigned int Magic = 0xCAFE0000;
+const unsigned int Version = 3;
+const unsigned int SaveMagic = Magic + Version;
 
 	//define engine
 	IAGSEngine *engine;
@@ -184,13 +192,66 @@ namespace agsimgui {
 	const char *ourScriptHeader =
 " // ags imgui module header \r\n"
 "  \r\n"
+" enum ImGuiCol_ \r\n"
+" { \r\n"
+"     eImGuiCol_Text, \r\n"
+"     eImGuiCol_TextDisabled, \r\n"
+"     eImGuiCol_WindowBg,              // Background of normal windows \r\n"
+"     eImGuiCol_ChildBg,               // Background of child windows \r\n"
+"     eImGuiCol_PopupBg,               // Background of popups, menus, tooltips windows \r\n"
+"     eImGuiCol_Border, \r\n"
+"     eImGuiCol_BorderShadow, \r\n"
+"     eImGuiCol_FrameBg,               // Background of checkbox, radio button, plot, slider, text input \r\n"
+"     eImGuiCol_FrameBgHovered, \r\n"
+"     eImGuiCol_FrameBgActive, \r\n"
+"     eImGuiCol_TitleBg, \r\n"
+"     eImGuiCol_TitleBgActive, \r\n"
+"     eImGuiCol_TitleBgCollapsed, \r\n"
+"     eImGuiCol_MenuBarBg, \r\n"
+"     eImGuiCol_ScrollbarBg, \r\n"
+"     eImGuiCol_ScrollbarGrab, \r\n"
+"     eImGuiCol_ScrollbarGrabHovered, \r\n"
+"     eImGuiCol_ScrollbarGrabActive, \r\n"
+"     eImGuiCol_CheckMark, \r\n"
+"     eImGuiCol_SliderGrab, \r\n"
+"     eImGuiCol_SliderGrabActive, \r\n"
+"     eImGuiCol_Button, \r\n"
+"     eImGuiCol_ButtonHovered, \r\n"
+"     eImGuiCol_ButtonActive, \r\n"
+"     eImGuiCol_Header,                // Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem \r\n"
+"     eImGuiCol_HeaderHovered, \r\n"
+"     eImGuiCol_HeaderActive, \r\n"
+"     eImGuiCol_Separator, \r\n"
+"     eImGuiCol_SeparatorHovered, \r\n"
+"     eImGuiCol_SeparatorActive, \r\n"
+"     eImGuiCol_ResizeGrip, \r\n"
+"     eImGuiCol_ResizeGripHovered, \r\n"
+"     eImGuiCol_ResizeGripActive, \r\n"
+"     eImGuiCol_Tab, \r\n"
+"     eImGuiCol_TabHovered, \r\n"
+"     eImGuiCol_TabActive, \r\n"
+"     eImGuiCol_TabUnfocused, \r\n"
+"     eImGuiCol_TabUnfocusedActive, \r\n"
+"     eImGuiCol_PlotLines, \r\n"
+"     eImGuiCol_PlotLinesHovered, \r\n"
+"     eImGuiCol_PlotHistogram, \r\n"
+"     eImGuiCol_PlotHistogramHovered, \r\n"
+"     eImGuiCol_TextSelectedBg, \r\n"
+"     eImGuiCol_DragDropTarget, \r\n"
+"     eImGuiCol_NavHighlight,          // Gamepad/keyboard: current highlighted item \r\n"
+"     eImGuiCol_NavWindowingHighlight, // Highlight window when using CTRL+TAB \r\n"
+"     eImGuiCol_NavWindowingDimBg,     // Darken/colorize entire screen behind the CTRL+TAB window list, when active \r\n"
+"     eImGuiCol_ModalWindowDimBg,      // Darken/colorize entire screen behind a modal window, when one is active \r\n"
+"     eImGuiCol_COUNT \r\n"
+" }; \r\n"
+"  \r\n"
 " enum ImGuiFocusedFlags \r\n"
 " { \r\n"
-"   ImGuiFocusedFlags_None = 0, \r\n"
-"   ImGuiFocusedFlags_ChildWindows = 1,   // IsWindowFocused(): Return true if any children of the window is focused \r\n"
-"   ImGuiFocusedFlags_RootWindow = 2,   // IsWindowFocused(): Test from root window (top most parent of the current hierarchy) \r\n"
-"   ImGuiFocusedFlags_AnyWindow = 4,   // IsWindowFocused(): Return true if any window is focused.  \r\n"
-"   ImGuiFocusedFlags_RootAndChildWindows  = 3 \r\n"
+"   eImGuiFocusedFlags_None = 0, \r\n"
+"   eImGuiFocusedFlags_ChildWindows = 1,   // IsWindowFocused(): Return true if any children of the window is focused \r\n"
+"   eImGuiFocusedFlags_RootWindow = 2,   // IsWindowFocused(): Test from root window (top most parent of the current hierarchy) \r\n"
+"   eImGuiFocusedFlags_AnyWindow = 4,   // IsWindowFocused(): Return true if any window is focused.  \r\n"
+"   eImGuiFocusedFlags_RootAndChildWindows  = 3 \r\n"
 " }; \r\n"
 "  \r\n"
 " enum ImGuiHoveredFlags \r\n"
@@ -351,8 +412,194 @@ namespace agsimgui {
 "   ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 8192,  // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop) \r\n"
 "   ImGuiTreeNodeFlags_CollapsingHeader   = 26, \r\n"
 " }; \r\n"
+" \r\n"
+"builtin managed struct ImVec4 { \r\n"
 "  \r\n"
-" struct AgsImGui{ \r\n"
+"  /// Creates a ImVec4 with float X and Y coordinates. \r\n"
+"  import static ImVec4* Create(float x=0, float y=0, float z=0, float w=0); // $AUTOCOMPLETESTATICONLY$ \r\n"
+"  \r\n"
+"  /// Float X coordinate of the ImVec4. \r\n"
+"  import attribute float X; \r\n"
+"  \r\n"
+"  /// Float Y coordinate of the ImVec4. \r\n"
+"  import attribute float Y; \r\n"
+"  \r\n"
+"  /// Float X coordinate of the ImVec4. \r\n"
+"  import attribute float Z; \r\n"
+"  \r\n"
+"  /// Float Y coordinate of the ImVec4. \r\n"
+"  import attribute float W; \r\n"
+"  \r\n"
+"  /// Multiplies x and y coordinates by a scalar and returns a new ImVec4 with the result. \r\n"
+"  import ImVec4* Scale(float scale); \r\n"
+"  \r\n"
+"  /// Returns length from ImVec4 (distance from 0,0 origin). \r\n"
+"  import float Length(); \r\n"
+"  \r\n"
+"  ///  Returns squared length from ImVec4 (distance from 0,0 origin). Faster than length. \r\n"
+"  import float SquaredLength(); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec4 with the sum of this with imVec4. \r\n"
+"  import ImVec4* Add(ImVec4* imVec4); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec4 with the subtraction of imVec4 from this. \r\n"
+"  import ImVec4* Sub(ImVec4* imVec4); \r\n"
+"  \r\n"
+"}; \r\n"
+"  \r\n"
+"builtin managed struct ImVec2 { \r\n"
+"  \r\n"
+"  /// Creates a ImVec2 with float X and Y coordinates. \r\n"
+"  import static ImVec2* Create(float x=0, float y=0); // $AUTOCOMPLETESTATICONLY$ \r\n"
+"  \r\n"
+"  /// Float X coordinate of the ImVec2. \r\n"
+"  import attribute float X; \r\n"
+"  \r\n"
+"  /// Float Y coordinate of the ImVec2. \r\n"
+"  import attribute float Y; \r\n"
+"  \r\n"
+"  /// Multiplies x and y coordinates by a scalar and returns a new ImVec2 with the result. \r\n"
+"  import ImVec2* Scale(float scale); \r\n"
+"  \r\n"
+"  /// Returns length from ImVec2 (distance from 0,0 origin). \r\n"
+"  import float Length(); \r\n"
+"  \r\n"
+"  ///  Returns squared length from ImVec2 (distance from 0,0 origin). Faster than length. \r\n"
+"  import float SquaredLength(); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec2 with the sum of this with imVec2. \r\n"
+"  import ImVec2* Add(ImVec2* imVec2); \r\n"
+"  \r\n"
+"  /// Returns a new ImVec2 with the subtraction of imVec2 from this. \r\n"
+"  import ImVec2* Sub(ImVec2* imVec2); \r\n"
+"  \r\n"
+"}; \r\n"
+"  \r\n"
+"builtin managed struct ImGuiStyle \r\n"
+" { \r\n"
+"    /// Creates an empty ImGuiStyle. \r\n"
+"    import static ImGuiStyle* Create(); // $AUTOCOMPLETESTATICONLY$ \r\n"
+"     \r\n"
+"    /// Global alpha applies to everything in Dear ImGui. \r\n"
+"    import attribute float Alpha; \r\n"
+"     \r\n"
+"    /// Padding within a window. \r\n"
+"    import attribute ImVec2* WindowPadding; \r\n"
+"     \r\n"
+"    /// Radius of window corners rounding. Set to 0.0f to have rectangular windows. \r\n"
+"    import attribute float WindowRounding; \r\n"
+"     \r\n"
+"    /// Thickness of border around windows. Generally set to 0.0f or 1.0f. \r\n"
+"    import attribute float WindowBorderSize; \r\n"
+"     \r\n"
+"    /// Minimum window size. This is a global setting. For individual windows, use SetNextWindowSizeConstraints(). \r\n"
+"    import attribute ImVec2* WindowMinSize; \r\n"
+"     \r\n"
+"    /// Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered. \r\n"
+"    import attribute ImVec2* WindowTitleAlign; \r\n"
+"     \r\n"
+"    /// Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left. \r\n"
+"    import attribute ImGuiDir WindowMenuButtonPosition; \r\n"
+"     \r\n"
+"    /// Radius of child window corners rounding. Set to 0.0f to have rectangular windows. \r\n"
+"    import attribute float ChildRounding; \r\n"
+"     \r\n"
+"    /// Thickness of border around child windows. Generally set to 0.0f or 1.0f. \r\n"
+"    import attribute float ChildBorderSize; \r\n"
+"     \r\n"
+"    /// Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding) \r\n"
+"    import attribute float PopupRounding; \r\n"
+"     \r\n"
+"    /// Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. \r\n"
+"    import attribute float PopupBorderSize; \r\n"
+"     \r\n"
+"    /// Padding within a framed rectangle (used by most widgets). \r\n"
+"    import attribute ImVec2* FramePadding; \r\n"
+"     \r\n"
+"    /// Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets). \r\n"
+"    import attribute float FrameRounding; \r\n"
+"     \r\n"
+"    /// Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly). \r\n"
+"    import attribute float FrameBorderSize; \r\n"
+"     \r\n"
+"    /// Horizontal and vertical spacing between widgets/lines. \r\n"
+"    import attribute ImVec2* ItemSpacing; \r\n"
+"     \r\n"
+"    /// Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label). \r\n"
+"    import attribute ImVec2* ItemInnerSpacing; \r\n"
+"     \r\n"
+"    /// Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. Don't grow this too much! \r\n"
+"    import attribute ImVec2* TouchExtraPadding; \r\n"
+"     \r\n"
+"    /// Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2). \r\n"
+"    import attribute float IndentSpacing; \r\n"
+"     \r\n"
+"    /// Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1). \r\n"
+"    import attribute float ColumnsMinSpacing; \r\n"
+"     \r\n"
+"    /// Width of the vertical scrollbar, Height of the horizontal scrollbar. \r\n"
+"    import attribute float ScrollbarSize; \r\n"
+"     \r\n"
+"    /// Radius of grab corners for scrollbar. \r\n"
+"    import attribute float ScrollbarRounding; \r\n"
+"     \r\n"
+"    /// Minimum width/height of a grab box for slider/scrollbar. \r\n"
+"    import attribute float GrabMinSize; \r\n"
+"     \r\n"
+"    /// Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs. \r\n"
+"    import attribute float GrabRounding; \r\n"
+"     \r\n"
+"    /// Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs. \r\n"
+"    import attribute float TabRounding; \r\n"
+"     \r\n"
+"    /// Thickness of border around tabs. \r\n"
+"    import attribute float TabBorderSize; \r\n"
+"     \r\n"
+"    /// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected. \r\n"
+"    import attribute float TabMinWidthForUnselectedCloseButton; \r\n"
+"     \r\n"
+"    /// Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right. \r\n"
+"    import attribute ImGuiDir ColorButtonPosition; \r\n"
+"     \r\n"
+"    /// Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered). \r\n"
+"    import attribute ImVec2* ButtonTextAlign; \r\n"
+"     \r\n"
+"    /// Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line. \r\n"
+"    import attribute ImVec2* SelectableTextAlign; \r\n"
+"     \r\n"
+"    /// Window position are clamped to be visible within the display area by at least this amount. Only applies to regular windows. \r\n"
+"    import attribute ImVec2* DisplayWindowPadding; \r\n"
+"     \r\n"
+"    /// If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly! \r\n"
+"    import attribute ImVec2* DisplaySafeAreaPadding; \r\n"
+"     \r\n"
+"    /// Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later. \r\n"
+"    import attribute float MouseCursorScale; \r\n"
+"     \r\n"
+"    /// Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU. \r\n"
+"    import attribute bool AntiAliasedLines; \r\n"
+"     \r\n"
+"    /// Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.) \r\n"
+"    import attribute bool AntiAliasedFill; \r\n"
+"     \r\n"
+"    /// Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality. \r\n"
+"    import attribute float CurveTessellationTol; \r\n"
+"     \r\n"
+"    /// Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry. \r\n"
+"    import attribute float CircleSegmentMaxError; \r\n"
+"     \r\n"
+"    /// Colors \r\n"
+"    import attribute ImVec4* Colors[]; \r\n"
+" }; \r\n"
+"  \r\n"
+"builtin managed struct AgsImGui{ \r\n"
+"  \r\n"
+" /// Gets the Style customization use in AgsImGui \r\n"
+" import static ImGuiStyle* GetStyle(); \r\n"
+"  \r\n"
+" /// Sets the Style customization use in AgsImGui \r\n"
+" import static void SetStyle(ImGuiStyle* imGuiStyle); \r\n"
+"  \r\n"
 " // Main \r\n"
 "  \r\n"
 " /// start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame(). \r\n"
@@ -865,6 +1112,10 @@ int inline ToAgsBool(bool b){
     return b ? 1 : 0;
 }
 
+bool inline ToNormalBool(int bi){
+    return bi!=0 ? true : false;
+}
+
 std::string g_ClipboardTextData = "";
 
 static const char* ImGui_ImplClip_GetClipboardText(void*)
@@ -893,6 +1144,560 @@ typedef int (*SCAPI_MOUSE_ISBUTTONDOWN) (int button);
 SCAPI_MOUSE_ISBUTTONDOWN Mouse_IsButtonDown = NULL;
 bool has_new_render = false;
 bool has_new_frame = false;
+
+
+// -- begin AgsImVec2
+
+AgsImVec2* AgsImVec2_Create(uint32_t x, uint32_t y){
+    float fx = ToNormalFloat(x);
+    float fy = ToNormalFloat(y);
+    AgsImVec2* agsImVec2 = new AgsImVec2(fx, fy);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+int32 AgsImVec2_GetY(AgsImVec2* self) {
+    return ToAgsFloat(self->y);
+}
+
+void AgsImVec2_SetX(AgsImVec2* self, uint32_t x) {
+    float fx = ToNormalFloat(x);
+
+    self->x = fx;
+}
+
+uint32_t AgsImVec2_GetX(AgsImVec2* self) {
+    return ToAgsFloat(self->x);
+}
+
+void AgsImVec2_SetY(AgsImVec2* self, uint32_t y) {
+    float fy = ToNormalFloat(y);
+
+    self->y = fy;
+}
+
+uint32_t AgsImVec2_Length(AgsImVec2* self) {
+    return ToAgsFloat(self->Length());
+}
+
+uint32_t AgsImVec2_SquaredLength(AgsImVec2* self) {
+    return ToAgsFloat(self->SquaredLength());
+}
+
+AgsImVec2* AgsImVec2_Add(AgsImVec2* self, AgsImVec2* other){
+    AgsImVec2* agsImVec2 = self->Add(other);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+AgsImVec2* AgsImVec2_Sub(AgsImVec2* self, AgsImVec2* other){
+    AgsImVec2* agsImVec2 = self->Sub(other);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+
+AgsImVec2* AgsImVec2_Scale(AgsImVec2* self, uint32_t scale){
+    float f_scale = ToNormalFloat(scale);
+    AgsImVec2* agsImVec2 = self->Scale(f_scale);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return  agsImVec2;
+}
+
+// -- end AgsImVec2
+
+
+// -- begin AgsImVec4
+
+AgsImVec4* AgsImVec4_Create(uint32_t x, uint32_t y, uint32_t z, uint32_t w){
+    float fx = ToNormalFloat(x);
+    float fy = ToNormalFloat(y);
+    float fz = ToNormalFloat(z);
+    float fw = ToNormalFloat(w);
+    AgsImVec4* agsImVec4 = new AgsImVec4(fx, fy, fz, fw);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+int32 AgsImVec4_GetY(AgsImVec4* self) {
+    return ToAgsFloat(self->y);
+}
+
+void AgsImVec4_SetX(AgsImVec4* self, uint32_t x) {
+    float fx = ToNormalFloat(x);
+
+    self->x = fx;
+}
+
+uint32_t AgsImVec4_GetX(AgsImVec4* self) {
+    return ToAgsFloat(self->x);
+}
+
+void AgsImVec4_SetY(AgsImVec4* self, uint32_t y) {
+    float fy = ToNormalFloat(y);
+
+    self->y = fy;
+}
+
+int32 AgsImVec4_GetZ(AgsImVec4* self) {
+    return ToAgsFloat(self->z);
+}
+
+void AgsImVec4_SetZ(AgsImVec4* self, uint32_t z) {
+    float fz = ToNormalFloat(z);
+
+    self->z = fz;
+}
+
+uint32_t AgsImVec4_GetW(AgsImVec4* self) {
+    return ToAgsFloat(self->w);
+}
+
+void AgsImVec4_SetW(AgsImVec4* self, uint32_t w) {
+    float fw = ToNormalFloat(w);
+
+    self->w = fw;
+}
+
+uint32_t AgsImVec4_Length(AgsImVec4* self) {
+    return ToAgsFloat(self->Length());
+}
+
+uint32_t AgsImVec4_SquaredLength(AgsImVec4* self) {
+    return ToAgsFloat(self->SquaredLength());
+}
+
+AgsImVec4* AgsImVec4_Add(AgsImVec4* self, AgsImVec4* other){
+    AgsImVec4* agsImVec4 = self->Add(other);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+AgsImVec4* AgsImVec4_Sub(AgsImVec4* self, AgsImVec4* other){
+    AgsImVec4* agsImVec4 = self->Sub(other);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+
+AgsImVec4* AgsImVec4_Scale(AgsImVec4* self, uint32_t scale){
+    float f_scale = ToNormalFloat(scale);
+    AgsImVec4* agsImVec4 = self->Scale(f_scale);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return  agsImVec4;
+}
+
+// -- end AgsImVec4
+
+// -- being AgsImGuiStyle
+
+AgsImVec2* NewAgsImVec2(ImVec2 &imVec2) {
+    AgsImVec2 *agsImVec2 = new AgsImVec2(imVec2.x,imVec2.y);
+    agsImVec2->id = engine->RegisterManagedObject(agsImVec2, &AgsImVec2_Interface);
+    return agsImVec2;
+}
+
+AgsImVec4* NewAgsImVec4(ImVec4 &imVec4) {
+    AgsImVec4 *agsImVec4 = new AgsImVec4(imVec4.x,imVec4.y, imVec4.z, imVec4.w);
+    agsImVec4->id = engine->RegisterManagedObject(agsImVec4, &AgsImVec4_Interface);
+    return agsImVec4;
+}
+
+void SetAgsImVec2(ImVec2 &imVec2, AgsImVec2* agsImVec2){
+    imVec2.x = agsImVec2->x;
+    imVec2.y = agsImVec2->y;
+}
+
+void SetAgsImVec4(ImVec4 &imVec4, AgsImVec4* agsImVec4){
+    imVec4.x = agsImVec4->x;
+    imVec4.y = agsImVec4->y;
+    imVec4.z = agsImVec4->z;
+    imVec4.w = agsImVec4->w;
+}
+
+AgsImGuiStyle* NewAgsImGuiStyle(ImGuiStyle &imGuiStyle) {
+    AgsImGuiStyle *agsImGuiStyle = new AgsImGuiStyle(imGuiStyle);
+    agsImGuiStyle->id = engine->RegisterManagedObject(agsImGuiStyle, &AgsImGuiStyle_Interface);
+    return agsImGuiStyle;
+}
+
+void SetAgsImGuiStyle(ImGuiStyle &imGuiStyle, AgsImGuiStyle* agsImGuiStyle){
+    AgsImGuiStyle::SetAgsImGuiStyle(imGuiStyle, agsImGuiStyle);
+}
+
+void AgsImGuiStyle_SetAlpha(AgsImGuiStyle* self, uint32_t alpha){
+    float f_alpha = ToNormalFloat(alpha);
+    self->Alpha = f_alpha;
+}
+
+uint32_t AgsImGuiStyle_GetAlpha(AgsImGuiStyle* self){
+    return ToAgsFloat(self->Alpha);
+}
+
+
+void AgsImGuiStyle_SetWindowPadding(AgsImGuiStyle* self, AgsImVec2* windowPadding){
+    SetAgsImVec2(self->WindowPadding, windowPadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetWindowPadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->WindowPadding);
+}
+
+
+void AgsImGuiStyle_SetWindowRounding(AgsImGuiStyle* self, uint32_t windowRounding){
+    float f_windowRounding = ToNormalFloat(windowRounding);
+    self->WindowRounding = f_windowRounding;
+}
+
+uint32_t AgsImGuiStyle_GetWindowRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->WindowRounding);
+}
+
+
+void AgsImGuiStyle_SetWindowBorderSize(AgsImGuiStyle* self, uint32_t windowBorderSize){
+    float f_windowBorderSize = ToNormalFloat(windowBorderSize);
+    self->WindowBorderSize = f_windowBorderSize;
+}
+
+uint32_t AgsImGuiStyle_GetWindowBorderSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->WindowBorderSize);
+}
+
+
+void AgsImGuiStyle_SetWindowMinSize(AgsImGuiStyle* self, AgsImVec2* windowMinSize){
+    SetAgsImVec2(self->WindowMinSize, windowMinSize);
+}
+
+AgsImVec2* AgsImGuiStyle_GetWindowMinSize(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->WindowMinSize);
+}
+
+
+void AgsImGuiStyle_SetWindowTitleAlign(AgsImGuiStyle* self, AgsImVec2* windowTitleAlign){
+    SetAgsImVec2(self->WindowTitleAlign, windowTitleAlign);
+}
+
+AgsImVec2* AgsImGuiStyle_GetWindowTitleAlign(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->WindowTitleAlign);
+}
+
+
+void AgsImGuiStyle_SetWindowMenuButtonPosition(AgsImGuiStyle* self, int windowMenuButtonPosition){
+    self->WindowMenuButtonPosition = windowMenuButtonPosition;
+}
+
+int AgsImGuiStyle_GetWindowMenuButtonPosition(AgsImGuiStyle* self){
+    return self->WindowMenuButtonPosition;
+}
+
+
+void AgsImGuiStyle_SetChildRounding(AgsImGuiStyle* self, uint32_t childRounding){
+    float f_childRounding = ToNormalFloat(childRounding);
+    self->ChildRounding = f_childRounding;
+}
+
+uint32_t AgsImGuiStyle_GetChildRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->ChildRounding);
+}
+
+
+void AgsImGuiStyle_SetChildBorderSize(AgsImGuiStyle* self, uint32_t childBorderSize){
+    float f_childBorderSize = ToNormalFloat(childBorderSize);
+    self->ChildBorderSize = f_childBorderSize;
+}
+
+uint32_t AgsImGuiStyle_GetChildBorderSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->ChildBorderSize);
+}
+
+
+void AgsImGuiStyle_SetPopupRounding(AgsImGuiStyle* self, uint32_t popupRounding){
+    float f_popupRounding = ToNormalFloat(popupRounding);
+    self->PopupRounding = f_popupRounding;
+}
+
+uint32_t AgsImGuiStyle_GetPopupRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->PopupRounding);
+}
+
+
+void AgsImGuiStyle_SetPopupBorderSize(AgsImGuiStyle* self, uint32_t popupBorderSize){
+    float f_popupBorderSize = ToNormalFloat(popupBorderSize);
+    self->PopupBorderSize = f_popupBorderSize;
+}
+
+uint32_t AgsImGuiStyle_GetPopupBorderSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->PopupBorderSize);
+}
+
+
+void AgsImGuiStyle_SetFramePadding(AgsImGuiStyle* self, AgsImVec2* framePadding){
+    SetAgsImVec2(self->FramePadding, framePadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetFramePadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->FramePadding);
+}
+
+
+void AgsImGuiStyle_SetFrameRounding(AgsImGuiStyle* self, uint32_t frameRounding){
+    float f_frameRounding = ToNormalFloat(frameRounding);
+    self->FrameRounding = f_frameRounding;
+}
+
+uint32_t AgsImGuiStyle_GetFrameRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->FrameRounding);
+}
+
+
+void AgsImGuiStyle_SetFrameBorderSize(AgsImGuiStyle* self, uint32_t frameBorderSize){
+    float f_frameBorderSize = ToNormalFloat(frameBorderSize);
+    self->FrameBorderSize = f_frameBorderSize;
+}
+
+uint32_t AgsImGuiStyle_GetFrameBorderSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->FrameBorderSize);
+}
+
+
+void AgsImGuiStyle_SetItemSpacing(AgsImGuiStyle* self, AgsImVec2* itemSpacing){
+    SetAgsImVec2(self->ItemSpacing, itemSpacing);
+}
+
+AgsImVec2* AgsImGuiStyle_GetItemSpacing(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->ItemSpacing);
+}
+
+
+void AgsImGuiStyle_SetItemInnerSpacing(AgsImGuiStyle* self, AgsImVec2* itemInnerSpacing){
+    SetAgsImVec2(self->ItemInnerSpacing, itemInnerSpacing);
+}
+
+AgsImVec2* AgsImGuiStyle_GetItemInnerSpacing(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->ItemInnerSpacing);
+}
+
+
+void AgsImGuiStyle_SetTouchExtraPadding(AgsImGuiStyle* self, AgsImVec2* touchExtraPadding){
+    SetAgsImVec2(self->TouchExtraPadding, touchExtraPadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetTouchExtraPadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->TouchExtraPadding);
+}
+
+
+void AgsImGuiStyle_SetIndentSpacing(AgsImGuiStyle* self, uint32_t indentSpacing){
+    float f_indentSpacing = ToNormalFloat(indentSpacing);
+    self->IndentSpacing = f_indentSpacing;
+}
+
+uint32_t AgsImGuiStyle_GetIndentSpacing(AgsImGuiStyle* self){
+    return ToAgsFloat(self->IndentSpacing);
+}
+
+
+void AgsImGuiStyle_SetColumnsMinSpacing(AgsImGuiStyle* self, uint32_t columnsMinSpacing){
+    float f_columnsMinSpacing = ToNormalFloat(columnsMinSpacing);
+    self->ColumnsMinSpacing = f_columnsMinSpacing;
+}
+
+uint32_t AgsImGuiStyle_GetColumnsMinSpacing(AgsImGuiStyle* self){
+    return ToAgsFloat(self->ColumnsMinSpacing);
+}
+
+
+void AgsImGuiStyle_SetScrollbarSize(AgsImGuiStyle* self, uint32_t scrollbarSize){
+    float f_scrollbarSize = ToNormalFloat(scrollbarSize);
+    self->ScrollbarSize = f_scrollbarSize;
+}
+
+uint32_t AgsImGuiStyle_GetScrollbarSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->ScrollbarSize);
+}
+
+
+void AgsImGuiStyle_SetScrollbarRounding(AgsImGuiStyle* self, uint32_t scrollbarRounding){
+    float f_scrollbarRounding = ToNormalFloat(scrollbarRounding);
+    self->ScrollbarRounding = f_scrollbarRounding;
+}
+
+uint32_t AgsImGuiStyle_GetScrollbarRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->ScrollbarRounding);
+}
+
+
+void AgsImGuiStyle_SetGrabMinSize(AgsImGuiStyle* self, uint32_t grabMinSize){
+    float f_grabMinSize = ToNormalFloat(grabMinSize);
+    self->GrabMinSize = f_grabMinSize;
+}
+
+uint32_t AgsImGuiStyle_GetGrabMinSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->GrabMinSize);
+}
+
+
+void AgsImGuiStyle_SetGrabRounding(AgsImGuiStyle* self, uint32_t grabRounding){
+    float f_grabRounding = ToNormalFloat(grabRounding);
+    self->GrabRounding = f_grabRounding;
+}
+
+uint32_t AgsImGuiStyle_GetGrabRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->GrabRounding);
+}
+
+
+void AgsImGuiStyle_SetTabRounding(AgsImGuiStyle* self, uint32_t tabRounding){
+    float f_tabRounding = ToNormalFloat(tabRounding);
+    self->TabRounding = f_tabRounding;
+}
+
+uint32_t AgsImGuiStyle_GetTabRounding(AgsImGuiStyle* self){
+    return ToAgsFloat(self->TabRounding);
+}
+
+
+void AgsImGuiStyle_SetTabBorderSize(AgsImGuiStyle* self, uint32_t tabBorderSize){
+    float f_tabBorderSize = ToNormalFloat(tabBorderSize);
+    self->TabBorderSize = f_tabBorderSize;
+}
+
+uint32_t AgsImGuiStyle_GetTabBorderSize(AgsImGuiStyle* self){
+    return ToAgsFloat(self->TabBorderSize);
+}
+
+
+void AgsImGuiStyle_SetTabMinWidthForUnselectedCloseButton(AgsImGuiStyle* self, uint32_t tabMinWidthForUnselectedCloseButton){
+    float f_tabMinWidthForUnselectedCloseButton = ToNormalFloat(tabMinWidthForUnselectedCloseButton);
+    self->TabMinWidthForUnselectedCloseButton = f_tabMinWidthForUnselectedCloseButton;
+}
+
+uint32_t AgsImGuiStyle_GetTabMinWidthForUnselectedCloseButton(AgsImGuiStyle* self){
+    return ToAgsFloat(self->TabMinWidthForUnselectedCloseButton);
+}
+
+
+void AgsImGuiStyle_SetColorButtonPosition(AgsImGuiStyle* self, int colorButtonPosition){
+    self->ColorButtonPosition = colorButtonPosition;
+}
+
+int AgsImGuiStyle_GetColorButtonPosition(AgsImGuiStyle* self){
+    return  self->ColorButtonPosition;
+}
+
+
+void AgsImGuiStyle_SetButtonTextAlign(AgsImGuiStyle* self, AgsImVec2* buttonTextAlign){
+    SetAgsImVec2(self->ButtonTextAlign, buttonTextAlign);
+}
+
+AgsImVec2* AgsImGuiStyle_GetButtonTextAlign(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->ButtonTextAlign);
+}
+
+
+void AgsImGuiStyle_SetSelectableTextAlign(AgsImGuiStyle* self, AgsImVec2* selectableTextAlign){
+    SetAgsImVec2(self->SelectableTextAlign, selectableTextAlign);
+}
+
+AgsImVec2* AgsImGuiStyle_GetSelectableTextAlign(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->SelectableTextAlign);
+}
+
+
+void AgsImGuiStyle_SetDisplayWindowPadding(AgsImGuiStyle* self, AgsImVec2* displayWindowPadding){
+    SetAgsImVec2(self->DisplayWindowPadding, displayWindowPadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetDisplayWindowPadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->DisplayWindowPadding);
+}
+
+
+void AgsImGuiStyle_SetDisplaySafeAreaPadding(AgsImGuiStyle* self, AgsImVec2* displaySafeAreaPadding){
+    SetAgsImVec2(self->DisplaySafeAreaPadding, displaySafeAreaPadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetDisplaySafeAreaPadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->DisplaySafeAreaPadding);
+}
+
+
+void AgsImGuiStyle_SetMouseCursorScale(AgsImGuiStyle* self, uint32_t mouseCursorScale){
+    float f_mouseCursorScale = ToNormalFloat(mouseCursorScale);
+    self->MouseCursorScale = f_mouseCursorScale;
+}
+
+uint32_t AgsImGuiStyle_GetMouseCursorScale(AgsImGuiStyle* self){
+    return ToAgsFloat(self->MouseCursorScale);
+}
+
+
+void AgsImGuiStyle_SetAntiAliasedLines(AgsImGuiStyle* self, int antiAliasedLines){
+    self->AntiAliasedLines = ToNormalBool(antiAliasedLines);
+}
+
+int AgsImGuiStyle_GetAntiAliasedLines(AgsImGuiStyle* self){
+    return ToAgsBool(self->AntiAliasedLines);
+}
+
+
+void AgsImGuiStyle_SetAntiAliasedFill(AgsImGuiStyle* self, int antiAliasedFill){
+    self->AntiAliasedFill = ToNormalBool(antiAliasedFill);
+}
+
+int AgsImGuiStyle_GetAntiAliasedFill(AgsImGuiStyle* self){
+    return ToAgsBool(self->AntiAliasedFill);
+}
+
+
+void AgsImGuiStyle_SetCurveTessellationTol(AgsImGuiStyle* self, uint32_t curveTessellationTol){
+    float f_curveTessellationTol = ToNormalFloat(curveTessellationTol);
+    self->CurveTessellationTol = f_curveTessellationTol;
+}
+
+uint32_t AgsImGuiStyle_GetCurveTessellationTol(AgsImGuiStyle* self){
+    return ToAgsFloat(self->CurveTessellationTol);
+}
+
+
+void AgsImGuiStyle_SetCircleSegmentMaxError(AgsImGuiStyle* self, uint32_t circleSegmentMaxError){
+    float f_circleSegmentMaxError= ToNormalFloat(circleSegmentMaxError);
+    self->CircleSegmentMaxError = f_circleSegmentMaxError;
+}
+
+uint32_t AgsImGuiStyle_GetCircleSegmentMaxError(AgsImGuiStyle* self){
+    return ToAgsFloat(self->CircleSegmentMaxError);
+}
+
+
+void AgsImGuiStyle_SetColors(AgsImGuiStyle* self, int i, AgsImVec4* color){
+    if ((i < 0) || (i >= ImGuiCol_COUNT))
+        return;
+
+    SetAgsImVec4(self->Colors[i], color);
+}
+
+AgsImVec4* AgsImGuiStyle_GetColors(AgsImGuiStyle* self, int i){
+    if ((i < 0) || (i >= ImGuiCol_COUNT))
+        return nullptr;
+
+    return NewAgsImVec4(self->Colors[i]);
+}
+
+
+
+// -- end AgsImGuiStyle
+
+AgsImGuiStyle* AgsImGui_GetStyle(){
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+    return NewAgsImGuiStyle(imGuiStyle);
+}
+
+void AgsImGui_SetStyle(AgsImGuiStyle* agsImGuiStyle){
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+    SetAgsImGuiStyle(imGuiStyle, agsImGuiStyle);
+}
+
 void AgsImGui_NewFrame(){
 	if (!screen.initialized) return;
 
@@ -1578,6 +2383,10 @@ int AgsImGuiHelper_GetClipboarImage() {
 		if (engine->version < MIN_ENGINE_VERSION)
 			engine->AbortGame("Plugin needs engine version " STRINGIFY(MIN_ENGINE_VERSION) " or newer.");
 
+        engine->AddManagedObjectReader(AgsImVec2Interface::name, &AgsImVec2_Reader);
+        engine->AddManagedObjectReader(AgsImVec4Interface::name, &AgsImVec4_Reader);
+        engine->AddManagedObjectReader(AgsImGuiStyleInterface::name, &AgsImGuiStyle_Reader);
+
 		//register functions
         if(screen.driver == Screen::Driver::eOpenGL) {
 
@@ -1652,6 +2461,110 @@ int AgsImGuiHelper_GetClipboarImage() {
         io.ClipboardUserData = NULL;
 
         Mouse_IsButtonDown = (SCAPI_MOUSE_ISBUTTONDOWN) engine->GetScriptFunctionAddress("Mouse::IsButtonDown^1");
+
+        engine->RegisterScriptFunction("ImVec4::Create^4", (void*)AgsImVec4_Create);
+        engine->RegisterScriptFunction("ImVec4::set_X", (void*)AgsImVec4_SetX);
+        engine->RegisterScriptFunction("ImVec4::get_X", (void*)AgsImVec4_GetX);
+        engine->RegisterScriptFunction("ImVec4::set_Y", (void*)AgsImVec4_SetY);
+        engine->RegisterScriptFunction("ImVec4::get_Y", (void*)AgsImVec4_GetY);
+        engine->RegisterScriptFunction("ImVec4::set_Z", (void*)AgsImVec4_SetZ);
+        engine->RegisterScriptFunction("ImVec4::get_Z", (void*)AgsImVec4_GetZ);
+        engine->RegisterScriptFunction("ImVec4::set_W", (void*)AgsImVec4_SetW);
+        engine->RegisterScriptFunction("ImVec4::get_W", (void*)AgsImVec4_GetW);
+        engine->RegisterScriptFunction("ImVec4::Length^0", (void*)AgsImVec4_Length);
+        engine->RegisterScriptFunction("ImVec4::SquaredLength^0", (void*)AgsImVec4_SquaredLength);
+        engine->RegisterScriptFunction("ImVec4::Add^1", (void*)AgsImVec4_Add);
+        engine->RegisterScriptFunction("ImVec4::Sub^1", (void*)AgsImVec4_Sub);
+        engine->RegisterScriptFunction("ImVec4::Scale^1", (void*)AgsImVec4_Scale);
+
+        engine->RegisterScriptFunction("ImVec2::Create^2", (void*)AgsImVec2_Create);
+        engine->RegisterScriptFunction("ImVec2::set_X", (void*)AgsImVec2_SetX);
+        engine->RegisterScriptFunction("ImVec2::get_X", (void*)AgsImVec2_GetX);
+        engine->RegisterScriptFunction("ImVec2::set_Y", (void*)AgsImVec2_SetY);
+        engine->RegisterScriptFunction("ImVec2::get_Y", (void*)AgsImVec2_GetY);
+        engine->RegisterScriptFunction("ImVec2::Length^0", (void*)AgsImVec2_Length);
+        engine->RegisterScriptFunction("ImVec2::SquaredLength^0", (void*)AgsImVec2_SquaredLength);
+        engine->RegisterScriptFunction("ImVec2::Add^1", (void*)AgsImVec2_Add);
+        engine->RegisterScriptFunction("ImVec2::Sub^1", (void*)AgsImVec2_Sub);
+        engine->RegisterScriptFunction("ImVec2::Scale^1", (void*)AgsImVec2_Scale);
+
+        engine->RegisterScriptFunction("ImGuiStyle::set_Alpha", (void*)AgsImGuiStyle_SetAlpha);
+        engine->RegisterScriptFunction("ImGuiStyle::get_Alpha", (void*)AgsImGuiStyle_GetAlpha);
+        engine->RegisterScriptFunction("ImGuiStyle::set_WindowPadding", (void*)AgsImGuiStyle_SetWindowPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_WindowPadding", (void*)AgsImGuiStyle_GetWindowPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_WindowRounding", (void*)AgsImGuiStyle_SetWindowRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_WindowRounding", (void*)AgsImGuiStyle_GetWindowRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_WindowBorderSize", (void*)AgsImGuiStyle_SetWindowBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_WindowBorderSize", (void*)AgsImGuiStyle_GetWindowBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_WindowMinSize", (void*)AgsImGuiStyle_SetWindowMinSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_WindowMinSize", (void*)AgsImGuiStyle_GetWindowMinSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_WindowTitleAlign", (void*)AgsImGuiStyle_SetWindowTitleAlign);
+        engine->RegisterScriptFunction("ImGuiStyle::get_WindowTitleAlign", (void*)AgsImGuiStyle_GetWindowTitleAlign);
+        engine->RegisterScriptFunction("ImGuiStyle::set_WindowMenuButtonPosition", (void*)AgsImGuiStyle_SetWindowMenuButtonPosition);
+        engine->RegisterScriptFunction("ImGuiStyle::get_WindowMenuButtonPosition", (void*)AgsImGuiStyle_GetWindowMenuButtonPosition);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ChildRounding", (void*)AgsImGuiStyle_SetChildRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ChildRounding", (void*)AgsImGuiStyle_GetChildRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ChildBorderSize", (void*)AgsImGuiStyle_SetChildBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ChildBorderSize", (void*)AgsImGuiStyle_GetChildBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_PopupRounding", (void*)AgsImGuiStyle_SetPopupRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_PopupRounding", (void*)AgsImGuiStyle_GetPopupRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_PopupBorderSize", (void*)AgsImGuiStyle_SetPopupBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_PopupBorderSize", (void*)AgsImGuiStyle_GetPopupBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_FramePadding", (void*)AgsImGuiStyle_SetFramePadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_FramePadding", (void*)AgsImGuiStyle_GetFramePadding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_FrameRounding", (void*)AgsImGuiStyle_SetFrameRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_FrameRounding", (void*)AgsImGuiStyle_GetFrameRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_FrameBorderSize", (void*)AgsImGuiStyle_SetFrameBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_FrameBorderSize", (void*)AgsImGuiStyle_GetFrameBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ItemSpacing", (void*)AgsImGuiStyle_SetItemSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ItemSpacing", (void*)AgsImGuiStyle_GetItemSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ItemInnerSpacing", (void*)AgsImGuiStyle_SetItemInnerSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ItemInnerSpacing", (void*)AgsImGuiStyle_GetItemInnerSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::set_TouchExtraPadding", (void*)AgsImGuiStyle_SetTouchExtraPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_TouchExtraPadding", (void*)AgsImGuiStyle_GetTouchExtraPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_IndentSpacing", (void*)AgsImGuiStyle_SetIndentSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::get_IndentSpacing", (void*)AgsImGuiStyle_GetIndentSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ColumnsMinSpacing", (void*)AgsImGuiStyle_SetColumnsMinSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ColumnsMinSpacing", (void*)AgsImGuiStyle_GetColumnsMinSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ScrollbarSize", (void*)AgsImGuiStyle_SetScrollbarSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ScrollbarSize", (void*)AgsImGuiStyle_GetScrollbarSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ScrollbarRounding", (void*)AgsImGuiStyle_SetScrollbarRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ScrollbarRounding", (void*)AgsImGuiStyle_GetScrollbarRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_GrabMinSize", (void*)AgsImGuiStyle_SetGrabMinSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_GrabMinSize", (void*)AgsImGuiStyle_GetGrabMinSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_GrabRounding", (void*)AgsImGuiStyle_SetGrabRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_GrabRounding", (void*)AgsImGuiStyle_GetGrabRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_TabRounding", (void*)AgsImGuiStyle_SetTabRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_TabRounding", (void*)AgsImGuiStyle_GetTabRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_TabBorderSize", (void*)AgsImGuiStyle_SetTabBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::get_TabBorderSize", (void*)AgsImGuiStyle_GetTabBorderSize);
+        engine->RegisterScriptFunction("ImGuiStyle::set_TabMinWidthForUnselectedCloseButton", (void*)AgsImGuiStyle_SetTabMinWidthForUnselectedCloseButton);
+        engine->RegisterScriptFunction("ImGuiStyle::get_TabMinWidthForUnselectedCloseButton", (void*)AgsImGuiStyle_GetTabMinWidthForUnselectedCloseButton);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ColorButtonPosition", (void*)AgsImGuiStyle_SetColorButtonPosition);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ColorButtonPosition", (void*)AgsImGuiStyle_GetColorButtonPosition);
+        engine->RegisterScriptFunction("ImGuiStyle::set_ButtonTextAlign", (void*)AgsImGuiStyle_SetButtonTextAlign);
+        engine->RegisterScriptFunction("ImGuiStyle::get_ButtonTextAlign", (void*)AgsImGuiStyle_GetButtonTextAlign);
+        engine->RegisterScriptFunction("ImGuiStyle::set_SelectableTextAlign", (void*)AgsImGuiStyle_SetSelectableTextAlign);
+        engine->RegisterScriptFunction("ImGuiStyle::get_SelectableTextAlign", (void*)AgsImGuiStyle_GetSelectableTextAlign);
+        engine->RegisterScriptFunction("ImGuiStyle::set_DisplayWindowPadding", (void*)AgsImGuiStyle_SetDisplayWindowPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_DisplayWindowPadding", (void*)AgsImGuiStyle_GetDisplayWindowPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_DisplaySafeAreaPadding", (void*)AgsImGuiStyle_SetDisplaySafeAreaPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_DisplaySafeAreaPadding", (void*)AgsImGuiStyle_GetDisplaySafeAreaPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_MouseCursorScale", (void*)AgsImGuiStyle_SetMouseCursorScale);
+        engine->RegisterScriptFunction("ImGuiStyle::get_MouseCursorScale", (void*)AgsImGuiStyle_GetMouseCursorScale);
+        engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedLines", (void*)AgsImGuiStyle_SetAntiAliasedLines);
+        engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedLines", (void*)AgsImGuiStyle_GetAntiAliasedLines);
+        engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedFill", (void*)AgsImGuiStyle_SetAntiAliasedFill);
+        engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedFill", (void*)AgsImGuiStyle_GetAntiAliasedFill);
+        engine->RegisterScriptFunction("ImGuiStyle::set_CurveTessellationTol", (void*)AgsImGuiStyle_SetCurveTessellationTol);
+        engine->RegisterScriptFunction("ImGuiStyle::get_CurveTessellationTol", (void*)AgsImGuiStyle_GetCurveTessellationTol);
+        engine->RegisterScriptFunction("ImGuiStyle::set_CircleSegmentMaxError", (void*)AgsImGuiStyle_SetCircleSegmentMaxError);
+        engine->RegisterScriptFunction("ImGuiStyle::get_CircleSegmentMaxError", (void*)AgsImGuiStyle_GetCircleSegmentMaxError);
+        engine->RegisterScriptFunction("ImGuiStyle::seti_Colors", (void*)AgsImGuiStyle_SetColors);
+        engine->RegisterScriptFunction("ImGuiStyle::geti_Colors", (void*)AgsImGuiStyle_GetColors);
+
+        engine->RegisterScriptFunction("AgsImGui::GetStyle^0", (void*)AgsImGui_GetStyle);
+        engine->RegisterScriptFunction("AgsImGui::SetStyle^1", (void*)AgsImGui_SetStyle);
 
         engine->RegisterScriptFunction("AgsImGui::NewFrame^0", (void*)AgsImGui_NewFrame);
         engine->RegisterScriptFunction("AgsImGui::EndFrame^0", (void*)AgsImGui_EndFrame);
@@ -1777,6 +2690,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RequestEventHook(AGSE_KEYPRESS);
 		engine->RequestEventHook(AGSE_POSTSCREENDRAW);
 		engine->RequestEventHook(AGSE_MOUSECLICK);
+        engine->RequestEventHook(AGSE_SAVEGAME);
+        engine->RequestEventHook(AGSE_RESTOREGAME);
 	}
 
 	//------------------------------------------------------------------------------
@@ -1796,6 +2711,247 @@ int AgsImGuiHelper_GetClipboarImage() {
 			ImGui_ImplSoftraster_Shutdown();
 		}
 	}
+
+	//------------------------------------------------------------------------------
+
+static size_t engineFileRead(void * ptr, size_t size, size_t count, long fileHandle) {
+    auto totalBytes = engine->FRead(ptr, size*count, fileHandle);
+    return totalBytes/size;
+}
+
+static size_t engineFileWrite(const void *ptr, size_t size, size_t count, long fileHandle) {
+    auto totalBytes = engine->FWrite(const_cast<void *>(ptr), size*count, fileHandle);
+    return totalBytes/size;
+}
+
+void EngineReadFloat(float &f, long fileHandle){
+    engine->FRead(&f, sizeof(float), fileHandle);
+}
+
+void EngineWriteFloat(float &f, long fileHandle){
+    engine->FWrite(&f, sizeof(float), fileHandle);
+}
+
+void EngineReadInt(int &i, long fileHandle){
+    engine->FRead(&i, sizeof(int), fileHandle);
+}
+
+void EngineWriteInt(int &i, long fileHandle){
+    engine->FWrite(&i, sizeof(int), fileHandle);
+}
+
+void EngineReadBool(bool &b, long fileHandle){
+    engine->FRead(&b, sizeof(bool), fileHandle);
+}
+
+void EngineWriteBool(bool &b, long fileHandle){
+    engine->FWrite(&b, sizeof(bool), fileHandle);
+}
+
+void EngineReadImVec2(ImVec2 &imVec2, long fileHandle){
+    EngineReadFloat(imVec2.x, fileHandle);
+    EngineReadFloat(imVec2.y, fileHandle);
+}
+
+void EngineWriteImVec2(ImVec2 &imVec2, long fileHandle){
+    EngineWriteFloat(imVec2.x, fileHandle);
+    EngineWriteFloat(imVec2.y, fileHandle);
+}
+
+void EngineReadImVec4(ImVec4 &imVec4, long fileHandle){
+    EngineReadFloat(imVec4.x, fileHandle);
+    EngineReadFloat(imVec4.y, fileHandle);
+    EngineReadFloat(imVec4.z, fileHandle);
+    EngineReadFloat(imVec4.w, fileHandle);
+}
+
+void EngineWriteImVec4(ImVec4 &imVec4, long fileHandle){
+    EngineWriteFloat(imVec4.x, fileHandle);
+    EngineWriteFloat(imVec4.y, fileHandle);
+    EngineWriteFloat(imVec4.z, fileHandle);
+    EngineWriteFloat(imVec4.w, fileHandle);
+}
+
+
+void RestoreGame(long fileHandle)
+{
+    unsigned int SaveVersion = 0;
+    engineFileRead(&SaveVersion, sizeof(SaveVersion), 1, fileHandle);
+
+    if (SaveVersion != SaveMagic) {
+        engine->AbortGame("agsimgui: bad save.");
+    }
+
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+
+    float _Alpha;
+    ImVec2 _WindowPadding;
+    float _WindowRounding;
+    float _WindowBorderSize;
+    ImVec2 _WindowMinSize;
+    ImVec2 _WindowTitleAlign;
+    int _WindowMenuButtonPosition;
+    float _ChildRounding;
+    float _ChildBorderSize;
+    float _PopupRounding;
+    float _PopupBorderSize;
+    ImVec2 _FramePadding;
+    float _FrameRounding;
+    float _FrameBorderSize;
+    ImVec2 _ItemSpacing;
+    ImVec2 _ItemInnerSpacing;
+    ImVec2 _TouchExtraPadding;
+    float _IndentSpacing;
+    float _ColumnsMinSpacing;
+    float _ScrollbarSize;
+    float _ScrollbarRounding;
+    float _GrabMinSize;
+    float _GrabRounding;
+    float _TabRounding;
+    float _TabBorderSize;
+    float _TabMinWidthForUnselectedCloseButton;
+    int _ColorButtonPosition;
+    ImVec2 _ButtonTextAlign;
+    ImVec2 _SelectableTextAlign;
+    ImVec2 _DisplayWindowPadding;
+    ImVec2 _DisplaySafeAreaPadding;
+    float _MouseCursorScale;
+    bool _AntiAliasedLines;
+    bool _AntiAliasedFill;
+    float _CurveTessellationTol;
+    float _CircleSegmentMaxError;
+    ImVec4 _Colors[ImGuiCol_COUNT];
+
+    EngineReadFloat( _Alpha, fileHandle);
+    EngineReadImVec2( _WindowPadding, fileHandle);
+    EngineReadFloat( _WindowRounding, fileHandle);
+    EngineReadFloat( _WindowBorderSize, fileHandle);
+    EngineReadImVec2( _WindowMinSize, fileHandle);
+    EngineReadImVec2( _WindowTitleAlign, fileHandle);
+    EngineReadInt( _WindowMenuButtonPosition, fileHandle);
+    EngineReadFloat( _ChildRounding, fileHandle);
+    EngineReadFloat( _ChildBorderSize, fileHandle);
+    EngineReadFloat( _PopupRounding, fileHandle);
+    EngineReadFloat( _PopupBorderSize, fileHandle);
+    EngineReadImVec2( _FramePadding, fileHandle);
+    EngineReadFloat( _FrameRounding, fileHandle);
+    EngineReadFloat( _FrameBorderSize, fileHandle);
+    EngineReadImVec2( _ItemSpacing, fileHandle);
+    EngineReadImVec2( _ItemInnerSpacing, fileHandle);
+    EngineReadImVec2( _TouchExtraPadding, fileHandle);
+    EngineReadFloat( _IndentSpacing, fileHandle);
+    EngineReadFloat( _ColumnsMinSpacing, fileHandle);
+    EngineReadFloat( _ScrollbarSize, fileHandle);
+    EngineReadFloat( _ScrollbarRounding, fileHandle);
+    EngineReadFloat( _GrabMinSize, fileHandle);
+    EngineReadFloat( _GrabRounding, fileHandle);
+    EngineReadFloat( _TabRounding, fileHandle);
+    EngineReadFloat( _TabBorderSize, fileHandle);
+    EngineReadFloat( _TabMinWidthForUnselectedCloseButton, fileHandle);
+    EngineReadInt( _ColorButtonPosition, fileHandle);
+    EngineReadImVec2( _ButtonTextAlign, fileHandle);
+    EngineReadImVec2( _SelectableTextAlign, fileHandle);
+    EngineReadImVec2( _DisplayWindowPadding, fileHandle);
+    EngineReadImVec2( _DisplaySafeAreaPadding, fileHandle);
+    EngineReadFloat( _MouseCursorScale, fileHandle);
+    EngineReadBool(_AntiAliasedLines, fileHandle);
+    EngineReadBool(_AntiAliasedFill, fileHandle);
+    EngineReadFloat( _CurveTessellationTol, fileHandle);
+    EngineReadFloat( _CircleSegmentMaxError, fileHandle);
+
+    for(int i=0; i<ImGuiCol_COUNT; i++){
+        EngineReadImVec4(  _Colors[i], fileHandle);
+    }
+
+    imGuiStyle.Alpha = _Alpha;
+    imGuiStyle.WindowPadding = _WindowPadding;
+    imGuiStyle.WindowRounding = _WindowRounding;
+    imGuiStyle.WindowBorderSize = _WindowBorderSize;
+    imGuiStyle.WindowMinSize = _WindowMinSize;
+    imGuiStyle.WindowTitleAlign = _WindowTitleAlign;
+    imGuiStyle.WindowMenuButtonPosition = _WindowMenuButtonPosition;
+    imGuiStyle.ChildRounding = _ChildRounding;
+    imGuiStyle.ChildBorderSize = _ChildBorderSize;
+    imGuiStyle.PopupRounding = _PopupRounding;
+    imGuiStyle.PopupBorderSize = _PopupBorderSize;
+    imGuiStyle.FramePadding = _FramePadding;
+    imGuiStyle.FrameRounding = _FrameRounding;
+    imGuiStyle.FrameBorderSize = _FrameBorderSize;
+    imGuiStyle.ItemSpacing = _ItemSpacing;
+    imGuiStyle.ItemInnerSpacing = _ItemInnerSpacing;
+    imGuiStyle.TouchExtraPadding = _TouchExtraPadding;
+    imGuiStyle.IndentSpacing = _IndentSpacing;
+    imGuiStyle.ColumnsMinSpacing = _ColumnsMinSpacing;
+    imGuiStyle.ScrollbarSize = _ScrollbarSize;
+    imGuiStyle.ScrollbarRounding = _ScrollbarRounding;
+    imGuiStyle.GrabMinSize = _GrabMinSize;
+    imGuiStyle.GrabRounding = _GrabRounding;
+    imGuiStyle.TabRounding = _TabRounding;
+    imGuiStyle.TabBorderSize = _TabBorderSize;
+    imGuiStyle.TabMinWidthForUnselectedCloseButton = _TabMinWidthForUnselectedCloseButton;
+    imGuiStyle.ColorButtonPosition = _ColorButtonPosition;
+    imGuiStyle.ButtonTextAlign = _ButtonTextAlign;
+    imGuiStyle.SelectableTextAlign = _SelectableTextAlign;
+    imGuiStyle.DisplayWindowPadding = _DisplayWindowPadding;
+    imGuiStyle.DisplaySafeAreaPadding = _DisplaySafeAreaPadding;
+    imGuiStyle.MouseCursorScale = _MouseCursorScale;
+    imGuiStyle.AntiAliasedLines = _AntiAliasedLines;
+    imGuiStyle.AntiAliasedFill = _AntiAliasedFill;
+    imGuiStyle.CurveTessellationTol = _CurveTessellationTol;
+    imGuiStyle.CircleSegmentMaxError = _CircleSegmentMaxError;
+
+    for(int i=0; i<ImGuiCol_COUNT; i++){
+        imGuiStyle.Colors[i] = _Colors[i];
+    }
+}
+
+void SaveGame(long file)
+{
+    engineFileWrite(&SaveMagic, sizeof(SaveMagic), 1, file);
+
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+
+    EngineWriteFloat(imGuiStyle.Alpha, file);
+    EngineWriteImVec2(imGuiStyle.WindowPadding, file);
+    EngineWriteFloat(imGuiStyle.WindowRounding, file);
+    EngineWriteFloat(imGuiStyle.WindowBorderSize, file);
+    EngineWriteImVec2(imGuiStyle.WindowMinSize, file);
+    EngineWriteImVec2(imGuiStyle.WindowTitleAlign, file);
+    EngineWriteInt(imGuiStyle.WindowMenuButtonPosition, file);
+    EngineWriteFloat(imGuiStyle.ChildRounding, file);
+    EngineWriteFloat(imGuiStyle.ChildBorderSize, file);
+    EngineWriteFloat(imGuiStyle.PopupRounding, file);
+    EngineWriteFloat(imGuiStyle.PopupBorderSize, file);
+    EngineWriteImVec2(imGuiStyle.FramePadding, file);
+    EngineWriteFloat(imGuiStyle.FrameRounding, file);
+    EngineWriteFloat(imGuiStyle.FrameBorderSize, file);
+    EngineWriteImVec2(imGuiStyle.ItemSpacing, file);
+    EngineWriteImVec2(imGuiStyle.ItemInnerSpacing, file);
+    EngineWriteImVec2(imGuiStyle.TouchExtraPadding, file);
+    EngineWriteFloat(imGuiStyle.IndentSpacing, file);
+    EngineWriteFloat(imGuiStyle.ColumnsMinSpacing, file);
+    EngineWriteFloat(imGuiStyle.ScrollbarSize, file);
+    EngineWriteFloat(imGuiStyle.ScrollbarRounding, file);
+    EngineWriteFloat(imGuiStyle.GrabMinSize, file);
+    EngineWriteFloat(imGuiStyle.GrabRounding, file);
+    EngineWriteFloat(imGuiStyle.TabRounding, file);
+    EngineWriteFloat(imGuiStyle.TabBorderSize, file);
+    EngineWriteFloat(imGuiStyle.TabMinWidthForUnselectedCloseButton, file);
+    EngineWriteInt(imGuiStyle.ColorButtonPosition, file);
+    EngineWriteImVec2(imGuiStyle.ButtonTextAlign, file);
+    EngineWriteImVec2(imGuiStyle.SelectableTextAlign, file);
+    EngineWriteImVec2(imGuiStyle.DisplayWindowPadding, file);
+    EngineWriteImVec2(imGuiStyle.DisplaySafeAreaPadding, file);
+    EngineWriteFloat(imGuiStyle.MouseCursorScale, file);
+    EngineWriteBool(imGuiStyle.AntiAliasedLines, file);
+    EngineWriteBool(imGuiStyle.AntiAliasedFill, file);
+    EngineWriteFloat(imGuiStyle.CurveTessellationTol, file);
+    EngineWriteFloat(imGuiStyle.CircleSegmentMaxError, file);
+
+    for(int i=0; i<ImGuiCol_COUNT; i++){
+        EngineWriteImVec4(imGuiStyle.Colors[i], file);
+    }
+}
 
 	//------------------------------------------------------------------------------
 
@@ -1895,8 +3051,8 @@ enum MouseButton {
             io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
 
         }
-
-        if(event==AGSE_KEYPRESS){
+        else  if(event==AGSE_KEYPRESS)
+        {
 			ImGuiIO& io = ImGui::GetIO();
 
 			if( data == eAGSKeyCodeCtrlC ){
@@ -1934,8 +3090,8 @@ enum MouseButton {
                 io.AddInputCharacter(data);
             }
         }
-
-		if (event == AGSE_POSTSCREENDRAW) {
+        else if (event == AGSE_POSTSCREENDRAW)
+        {
 			if (screen.driver == Screen::Driver::eDirectx9) {
 				if (has_new_frame && has_new_render) {
 					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
@@ -1950,8 +3106,8 @@ enum MouseButton {
             has_new_frame = false;
             has_new_render = false;
 		}
-
-        if(event==AGSE_MOUSECLICK){
+        else if(event==AGSE_MOUSECLICK)
+		{
 			ImGuiIO& io = ImGui::GetIO();
 
 			io.MouseDown[ImGuiMouseButton_Left] |= eMouseLeft == data;
@@ -1959,7 +3115,14 @@ enum MouseButton {
 			io.MouseDown[ImGuiMouseButton_Middle] |= eMouseMiddle == data;
 			
         }
-
+        else if(event==AGSE_SAVEGAME)
+        {
+            SaveGame(data);
+        }
+        else if(event==AGSE_RESTOREGAME)
+        {
+            RestoreGame(data);
+        }
         /*
         switch (event)
         {
