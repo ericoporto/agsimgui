@@ -10,6 +10,8 @@ Dear ImGui plugin for Adventure Game Studio
 
 Supports Directx9 and Software renderer. Using OpenGL will default to Software renderer for ImGui only (it has it's own renderer), but OpenGL support will be provided in the future.
 
+A more complete documentation [url=https://github.com/ericoporto/agsimgui/blob/master/README.md]is available here[/url].
+
 [b][size=12pt]Usage example[/size][/b]
 
 Run a simple demo window to see what's possible with Dear ImGui.
@@ -718,6 +720,24 @@ return true when activated. shortcuts are displayed for convenience but not proc
 
 [hr]
 
+
+[i][b]ImVec2[/b][/i]
+
+This is a format used to describe either x,y points or zero origin rectangles and other things that can be described as vectors.
+It's used more in the attributes of a [tt]ImGuiStyle[/tt] object.
+
+
+[i][b]ImVec4[/b][/i]
+
+This is a format used to describe either x,y,w,z points or any origin rectangles and other things that can be described as vectors with 4 coordinates.
+It's the preferable format for ImGui Colors, and used a lot for this! It's used more in the attributes of a [tt]ImGuiStyle[/tt] object.
+
+
+[i][b]ImGuiStyle[/b][/i]
+
+A big object used to describe the theme in ImGui.
+
+
 [i][b]Enums[/b][/i]
 
 [code]ImGuiCond[/code]
@@ -806,6 +826,73 @@ The enums of this type can be combined with bitwise operators.
 [[/cur]] [tt]eImGuiInputTextFlags_NoUndoRedo[/tt], Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
 [*] [tt]eImGuiInputTextFlags_CharsScientific[/tt], Allow 0123456789.+-*/eE (Scientific notation input)
 [*] [tt]eImGuiInputTextFlags_CallbackResize[/tt], Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
+[/list]
+
+[code]enum ImGuiCol_[/code]
+
+The enums of this type can be combined with bitwise operators.
+
+Used for selecting a specific color from the [tt]ImGuiStyle.Colors[][/tt] property. An example usage would be:
+
+[code=AGS]
+ImGuiStyle* style = ImGui.GetStyle();
+style.Colors[eImGuiCol_WindowBg] = ImVec4.Create(1.0, 0.0, 0.0, 0.0);
+ImGui.SetStyle(style);
+[/code]
+
+This would use the enum [tt]eImGuiCol_WindowBg[/tt] to access the desired color you want to modify,
+which in the example sets to a red color.
+
+[list]
+[*] [tt]eImGuiCol_Text[/tt],
+[*] [tt]eImGuiCol_TextDisabled[/tt],
+[*] [tt]eImGuiCol_WindowBg[/tt], Background of normal windows
+[*] [tt]eImGuiCol_ChildBg[/tt], Background of child windows
+[*] [tt]eImGuiCol_PopupBg[/tt], Background of popups, menus, tooltips windows
+[*] [tt]eImGuiCol_Border[/tt],
+[*] [tt]eImGuiCol_BorderShadow[/tt],
+[*] [tt]eImGuiCol_FrameBg[/tt], Background of checkbox, radio button, plot, slider, text input
+[*] [tt]eImGuiCol_FrameBgHovered[/tt],
+[*] [tt]eImGuiCol_FrameBgActive[/tt],
+[*] [tt]eImGuiCol_TitleBg[/tt],
+[*] [tt]eImGuiCol_TitleBgActive[/tt],
+[*] [tt]eImGuiCol_TitleBgCollapsed[/tt],
+[*] [tt]eImGuiCol_MenuBarBg[/tt],
+[*] [tt]eImGuiCol_ScrollbarBg[/tt],
+[*] [tt]eImGuiCol_ScrollbarGrab[/tt],
+[*] [tt]eImGuiCol_ScrollbarGrabHovered[/tt],
+[*] [tt]eImGuiCol_ScrollbarGrabActive[/tt],
+[*] [tt]eImGuiCol_CheckMark[/tt],
+[*] [tt]eImGuiCol_SliderGrab[/tt],
+[*] [tt]eImGuiCol_SliderGrabActive[/tt],
+[*] [tt]eImGuiCol_Button[/tt],
+[*] [tt]eImGuiCol_ButtonHovered[/tt],
+[*] [tt]eImGuiCol_ButtonActive[/tt],
+[*] [tt]eImGuiCol_Header[/tt], Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
+[*] [tt]eImGuiCol_HeaderHovered[/tt],
+[*] [tt]eImGuiCol_HeaderActive[/tt],
+[*] [tt]eImGuiCol_Separator[/tt],
+[*] [tt]eImGuiCol_SeparatorHovered[/tt],
+[*] [tt]eImGuiCol_SeparatorActive[/tt],
+[*] [tt]eImGuiCol_ResizeGrip[/tt],
+[*] [tt]eImGuiCol_ResizeGripHovered[/tt],
+[*] [tt]eImGuiCol_ResizeGripActive[/tt],
+[*] [tt]eImGuiCol_Tab[/tt],
+[*] [tt]eImGuiCol_TabHovered[/tt],
+[*] [tt]eImGuiCol_TabActive[/tt],
+[*] [tt]eImGuiCol_TabUnfocused[/tt],
+[*] [tt]eImGuiCol_TabUnfocusedActive[/tt],
+[*] [tt]eImGuiCol_PlotLines[/tt],
+[*] [tt]eImGuiCol_PlotLinesHovered[/tt],
+[*] [tt]eImGuiCol_PlotHistogram[/tt],
+[*] [tt]eImGuiCol_PlotHistogramHovered[/tt],
+[*] [tt]eImGuiCol_TextSelectedBg[/tt],
+[*] [tt]eImGuiCol_DragDropTarget[/tt],
+[*] [tt]eImGuiCol_NavHighlight[/tt], Gamepad/keyboard: current highlighted item;
+[*] [tt]eImGuiCol_NavWindowingHighlight[/tt], Highlight window when using CTRL+TAB;
+[*] [tt]eImGuiCol_NavWindowingDimBg[/tt], Darken/colorize entire screen behind the CTRL+TAB window list, when active;
+[*] [tt]eImGuiCol_ModalWindowDimBg[/tt], Darken/colorize entire screen behind a modal window, when one is active;
+[*] [tt]eImGuiCol_COUNT[/tt], The total numbers of items in ImGuiStyle.Colors attribute array. Useful for iterating all colors.
 [/list]
 [/spoiler]
 
