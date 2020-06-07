@@ -58,6 +58,25 @@ no guidance is given.
 
 ### Main
 
+#### `AgsImGui.GetStyle`
+
+`static ImGuiStyle* GetStyle()`
+
+Gets the Style customization use in AgsImGui. Check [`ImGuiStyle`](#imguistyle) for more information.
+
+#### `AgsImGui.SetStyle`
+
+`static void SetStyle(ImGuiStyle* imGuiStyle)`
+
+Sets the Style customization use in AgsImGui. Check [`ImGuiStyle`](#imguistyle) for more information.
+
+```AGS Script
+ImGuiStyle* style = AgsImGui.GetStyle();
+style.Alpha = 0.5
+style.Colors[eImGuiCol_PopupBg] = ImVec4.Create(1.00, 1.00, 1.00, 1.00); //white 
+AgsImGui.SetStyle(style);
+```
+
 #### `AgsImGui.NewFrame`
 
 `static void AgsImGui.NewFrame()`
@@ -834,7 +853,7 @@ When used for colors correspond to the color Blue.
 `attribute float ImVec4.W`
 
 It's the W attribute of a ImVec4 object. Usually represents the length in the vertical axis.
-When used for colors correspond to the alpha of the colors, where `1.0` is transparent and `0.0` is opaque.
+When used for colors correspond to the alpha of the colors, where `0.0` is transparent and `1.0` is opaque.
 
 #### `ImVec4.Scale`
 
