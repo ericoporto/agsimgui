@@ -248,6 +248,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
         agsImGuiStyle->Colors[i] = _Colors[i];
     }
 
+    agsImGuiStyle->id = key;
     engine->RegisterUnserializedObject(key, agsImGuiStyle, &AgsImGuiStyle_Interface);
 }
 

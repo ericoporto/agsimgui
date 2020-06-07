@@ -83,6 +83,10 @@ namespace agsimgui {
 	}
 #endif
 
+const unsigned int Magic = 0xCAFE0000;
+const unsigned int Version = 3;
+const unsigned int SaveMagic = Magic + Version;
+
 	//define engine
 	IAGSEngine *engine;
 
@@ -2686,6 +2690,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RequestEventHook(AGSE_KEYPRESS);
 		engine->RequestEventHook(AGSE_POSTSCREENDRAW);
 		engine->RequestEventHook(AGSE_MOUSECLICK);
+        engine->RequestEventHook(AGSE_SAVEGAME);
+        engine->RequestEventHook(AGSE_RESTOREGAME);
 	}
 
 	//------------------------------------------------------------------------------
@@ -2705,6 +2711,247 @@ int AgsImGuiHelper_GetClipboarImage() {
 			ImGui_ImplSoftraster_Shutdown();
 		}
 	}
+
+	//------------------------------------------------------------------------------
+
+static size_t engineFileRead(void * ptr, size_t size, size_t count, long fileHandle) {
+    auto totalBytes = engine->FRead(ptr, size*count, fileHandle);
+    return totalBytes/size;
+}
+
+static size_t engineFileWrite(const void *ptr, size_t size, size_t count, long fileHandle) {
+    auto totalBytes = engine->FWrite(const_cast<void *>(ptr), size*count, fileHandle);
+    return totalBytes/size;
+}
+
+void EngineReadFloat(float &f, long fileHandle){
+    engine->FRead(&f, sizeof(float), fileHandle);
+}
+
+void EngineWriteFloat(float &f, long fileHandle){
+    engine->FWrite(&f, sizeof(float), fileHandle);
+}
+
+void EngineReadInt(int &i, long fileHandle){
+    engine->FRead(&i, sizeof(int), fileHandle);
+}
+
+void EngineWriteInt(int &i, long fileHandle){
+    engine->FWrite(&i, sizeof(int), fileHandle);
+}
+
+void EngineReadBool(bool &b, long fileHandle){
+    engine->FRead(&b, sizeof(bool), fileHandle);
+}
+
+void EngineWriteBool(bool &b, long fileHandle){
+    engine->FWrite(&b, sizeof(bool), fileHandle);
+}
+
+void EngineReadImVec2(ImVec2 &imVec2, long fileHandle){
+    EngineReadFloat(imVec2.x, fileHandle);
+    EngineReadFloat(imVec2.y, fileHandle);
+}
+
+void EngineWriteImVec2(ImVec2 &imVec2, long fileHandle){
+    EngineWriteFloat(imVec2.x, fileHandle);
+    EngineWriteFloat(imVec2.y, fileHandle);
+}
+
+void EngineReadImVec4(ImVec4 &imVec4, long fileHandle){
+    EngineReadFloat(imVec4.x, fileHandle);
+    EngineReadFloat(imVec4.y, fileHandle);
+    EngineReadFloat(imVec4.z, fileHandle);
+    EngineReadFloat(imVec4.w, fileHandle);
+}
+
+void EngineWriteImVec4(ImVec4 &imVec4, long fileHandle){
+    EngineWriteFloat(imVec4.x, fileHandle);
+    EngineWriteFloat(imVec4.y, fileHandle);
+    EngineWriteFloat(imVec4.z, fileHandle);
+    EngineWriteFloat(imVec4.w, fileHandle);
+}
+
+
+void RestoreGame(long fileHandle)
+{
+    unsigned int SaveVersion = 0;
+    engineFileRead(&SaveVersion, sizeof(SaveVersion), 1, fileHandle);
+
+    if (SaveVersion != SaveMagic) {
+        engine->AbortGame("agsimgui: bad save.");
+    }
+
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+
+    float _Alpha;
+    ImVec2 _WindowPadding;
+    float _WindowRounding;
+    float _WindowBorderSize;
+    ImVec2 _WindowMinSize;
+    ImVec2 _WindowTitleAlign;
+    int _WindowMenuButtonPosition;
+    float _ChildRounding;
+    float _ChildBorderSize;
+    float _PopupRounding;
+    float _PopupBorderSize;
+    ImVec2 _FramePadding;
+    float _FrameRounding;
+    float _FrameBorderSize;
+    ImVec2 _ItemSpacing;
+    ImVec2 _ItemInnerSpacing;
+    ImVec2 _TouchExtraPadding;
+    float _IndentSpacing;
+    float _ColumnsMinSpacing;
+    float _ScrollbarSize;
+    float _ScrollbarRounding;
+    float _GrabMinSize;
+    float _GrabRounding;
+    float _TabRounding;
+    float _TabBorderSize;
+    float _TabMinWidthForUnselectedCloseButton;
+    int _ColorButtonPosition;
+    ImVec2 _ButtonTextAlign;
+    ImVec2 _SelectableTextAlign;
+    ImVec2 _DisplayWindowPadding;
+    ImVec2 _DisplaySafeAreaPadding;
+    float _MouseCursorScale;
+    bool _AntiAliasedLines;
+    bool _AntiAliasedFill;
+    float _CurveTessellationTol;
+    float _CircleSegmentMaxError;
+    ImVec4 _Colors[ImGuiCol_COUNT];
+
+    EngineReadFloat( _Alpha, fileHandle);
+    EngineReadImVec2( _WindowPadding, fileHandle);
+    EngineReadFloat( _WindowRounding, fileHandle);
+    EngineReadFloat( _WindowBorderSize, fileHandle);
+    EngineReadImVec2( _WindowMinSize, fileHandle);
+    EngineReadImVec2( _WindowTitleAlign, fileHandle);
+    EngineReadInt( _WindowMenuButtonPosition, fileHandle);
+    EngineReadFloat( _ChildRounding, fileHandle);
+    EngineReadFloat( _ChildBorderSize, fileHandle);
+    EngineReadFloat( _PopupRounding, fileHandle);
+    EngineReadFloat( _PopupBorderSize, fileHandle);
+    EngineReadImVec2( _FramePadding, fileHandle);
+    EngineReadFloat( _FrameRounding, fileHandle);
+    EngineReadFloat( _FrameBorderSize, fileHandle);
+    EngineReadImVec2( _ItemSpacing, fileHandle);
+    EngineReadImVec2( _ItemInnerSpacing, fileHandle);
+    EngineReadImVec2( _TouchExtraPadding, fileHandle);
+    EngineReadFloat( _IndentSpacing, fileHandle);
+    EngineReadFloat( _ColumnsMinSpacing, fileHandle);
+    EngineReadFloat( _ScrollbarSize, fileHandle);
+    EngineReadFloat( _ScrollbarRounding, fileHandle);
+    EngineReadFloat( _GrabMinSize, fileHandle);
+    EngineReadFloat( _GrabRounding, fileHandle);
+    EngineReadFloat( _TabRounding, fileHandle);
+    EngineReadFloat( _TabBorderSize, fileHandle);
+    EngineReadFloat( _TabMinWidthForUnselectedCloseButton, fileHandle);
+    EngineReadInt( _ColorButtonPosition, fileHandle);
+    EngineReadImVec2( _ButtonTextAlign, fileHandle);
+    EngineReadImVec2( _SelectableTextAlign, fileHandle);
+    EngineReadImVec2( _DisplayWindowPadding, fileHandle);
+    EngineReadImVec2( _DisplaySafeAreaPadding, fileHandle);
+    EngineReadFloat( _MouseCursorScale, fileHandle);
+    EngineReadBool(_AntiAliasedLines, fileHandle);
+    EngineReadBool(_AntiAliasedFill, fileHandle);
+    EngineReadFloat( _CurveTessellationTol, fileHandle);
+    EngineReadFloat( _CircleSegmentMaxError, fileHandle);
+
+    for(int i=0; i<ImGuiCol_COUNT; i++){
+        EngineReadImVec4(  _Colors[i], fileHandle);
+    }
+
+    imGuiStyle.Alpha = _Alpha;
+    imGuiStyle.WindowPadding = _WindowPadding;
+    imGuiStyle.WindowRounding = _WindowRounding;
+    imGuiStyle.WindowBorderSize = _WindowBorderSize;
+    imGuiStyle.WindowMinSize = _WindowMinSize;
+    imGuiStyle.WindowTitleAlign = _WindowTitleAlign;
+    imGuiStyle.WindowMenuButtonPosition = _WindowMenuButtonPosition;
+    imGuiStyle.ChildRounding = _ChildRounding;
+    imGuiStyle.ChildBorderSize = _ChildBorderSize;
+    imGuiStyle.PopupRounding = _PopupRounding;
+    imGuiStyle.PopupBorderSize = _PopupBorderSize;
+    imGuiStyle.FramePadding = _FramePadding;
+    imGuiStyle.FrameRounding = _FrameRounding;
+    imGuiStyle.FrameBorderSize = _FrameBorderSize;
+    imGuiStyle.ItemSpacing = _ItemSpacing;
+    imGuiStyle.ItemInnerSpacing = _ItemInnerSpacing;
+    imGuiStyle.TouchExtraPadding = _TouchExtraPadding;
+    imGuiStyle.IndentSpacing = _IndentSpacing;
+    imGuiStyle.ColumnsMinSpacing = _ColumnsMinSpacing;
+    imGuiStyle.ScrollbarSize = _ScrollbarSize;
+    imGuiStyle.ScrollbarRounding = _ScrollbarRounding;
+    imGuiStyle.GrabMinSize = _GrabMinSize;
+    imGuiStyle.GrabRounding = _GrabRounding;
+    imGuiStyle.TabRounding = _TabRounding;
+    imGuiStyle.TabBorderSize = _TabBorderSize;
+    imGuiStyle.TabMinWidthForUnselectedCloseButton = _TabMinWidthForUnselectedCloseButton;
+    imGuiStyle.ColorButtonPosition = _ColorButtonPosition;
+    imGuiStyle.ButtonTextAlign = _ButtonTextAlign;
+    imGuiStyle.SelectableTextAlign = _SelectableTextAlign;
+    imGuiStyle.DisplayWindowPadding = _DisplayWindowPadding;
+    imGuiStyle.DisplaySafeAreaPadding = _DisplaySafeAreaPadding;
+    imGuiStyle.MouseCursorScale = _MouseCursorScale;
+    imGuiStyle.AntiAliasedLines = _AntiAliasedLines;
+    imGuiStyle.AntiAliasedFill = _AntiAliasedFill;
+    imGuiStyle.CurveTessellationTol = _CurveTessellationTol;
+    imGuiStyle.CircleSegmentMaxError = _CircleSegmentMaxError;
+
+    for(int i=0; i<ImGuiCol_COUNT; i++){
+        imGuiStyle.Colors[i] = _Colors[i];
+    }
+}
+
+void SaveGame(long file)
+{
+    engineFileWrite(&SaveMagic, sizeof(SaveMagic), 1, file);
+
+    ImGuiStyle &imGuiStyle = ImGui::GetStyle();
+
+    EngineWriteFloat(imGuiStyle.Alpha, file);
+    EngineWriteImVec2(imGuiStyle.WindowPadding, file);
+    EngineWriteFloat(imGuiStyle.WindowRounding, file);
+    EngineWriteFloat(imGuiStyle.WindowBorderSize, file);
+    EngineWriteImVec2(imGuiStyle.WindowMinSize, file);
+    EngineWriteImVec2(imGuiStyle.WindowTitleAlign, file);
+    EngineWriteInt(imGuiStyle.WindowMenuButtonPosition, file);
+    EngineWriteFloat(imGuiStyle.ChildRounding, file);
+    EngineWriteFloat(imGuiStyle.ChildBorderSize, file);
+    EngineWriteFloat(imGuiStyle.PopupRounding, file);
+    EngineWriteFloat(imGuiStyle.PopupBorderSize, file);
+    EngineWriteImVec2(imGuiStyle.FramePadding, file);
+    EngineWriteFloat(imGuiStyle.FrameRounding, file);
+    EngineWriteFloat(imGuiStyle.FrameBorderSize, file);
+    EngineWriteImVec2(imGuiStyle.ItemSpacing, file);
+    EngineWriteImVec2(imGuiStyle.ItemInnerSpacing, file);
+    EngineWriteImVec2(imGuiStyle.TouchExtraPadding, file);
+    EngineWriteFloat(imGuiStyle.IndentSpacing, file);
+    EngineWriteFloat(imGuiStyle.ColumnsMinSpacing, file);
+    EngineWriteFloat(imGuiStyle.ScrollbarSize, file);
+    EngineWriteFloat(imGuiStyle.ScrollbarRounding, file);
+    EngineWriteFloat(imGuiStyle.GrabMinSize, file);
+    EngineWriteFloat(imGuiStyle.GrabRounding, file);
+    EngineWriteFloat(imGuiStyle.TabRounding, file);
+    EngineWriteFloat(imGuiStyle.TabBorderSize, file);
+    EngineWriteFloat(imGuiStyle.TabMinWidthForUnselectedCloseButton, file);
+    EngineWriteInt(imGuiStyle.ColorButtonPosition, file);
+    EngineWriteImVec2(imGuiStyle.ButtonTextAlign, file);
+    EngineWriteImVec2(imGuiStyle.SelectableTextAlign, file);
+    EngineWriteImVec2(imGuiStyle.DisplayWindowPadding, file);
+    EngineWriteImVec2(imGuiStyle.DisplaySafeAreaPadding, file);
+    EngineWriteFloat(imGuiStyle.MouseCursorScale, file);
+    EngineWriteBool(imGuiStyle.AntiAliasedLines, file);
+    EngineWriteBool(imGuiStyle.AntiAliasedFill, file);
+    EngineWriteFloat(imGuiStyle.CurveTessellationTol, file);
+    EngineWriteFloat(imGuiStyle.CircleSegmentMaxError, file);
+
+    for(int i=0; i<ImGuiCol_COUNT; i++){
+        EngineWriteImVec4(imGuiStyle.Colors[i], file);
+    }
+}
 
 	//------------------------------------------------------------------------------
 
@@ -2804,8 +3051,8 @@ enum MouseButton {
             io.MouseDown[ImGuiMouseButton_Middle] = Mouse_IsButtonDown(eMouseMiddle) != 0;
 
         }
-
-        if(event==AGSE_KEYPRESS){
+        else  if(event==AGSE_KEYPRESS)
+        {
 			ImGuiIO& io = ImGui::GetIO();
 
 			if( data == eAGSKeyCodeCtrlC ){
@@ -2843,8 +3090,8 @@ enum MouseButton {
                 io.AddInputCharacter(data);
             }
         }
-
-		if (event == AGSE_POSTSCREENDRAW) {
+        else if (event == AGSE_POSTSCREENDRAW)
+        {
 			if (screen.driver == Screen::Driver::eDirectx9) {
 				if (has_new_frame && has_new_render) {
 					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
@@ -2859,8 +3106,8 @@ enum MouseButton {
             has_new_frame = false;
             has_new_render = false;
 		}
-
-        if(event==AGSE_MOUSECLICK){
+        else if(event==AGSE_MOUSECLICK)
+		{
 			ImGuiIO& io = ImGui::GetIO();
 
 			io.MouseDown[ImGuiMouseButton_Left] |= eMouseLeft == data;
@@ -2868,7 +3115,14 @@ enum MouseButton {
 			io.MouseDown[ImGuiMouseButton_Middle] |= eMouseMiddle == data;
 			
         }
-
+        else if(event==AGSE_SAVEGAME)
+        {
+            SaveGame(data);
+        }
+        else if(event==AGSE_RESTOREGAME)
+        {
+            RestoreGame(data);
+        }
         /*
         switch (event)
         {
