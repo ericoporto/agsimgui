@@ -7,6 +7,7 @@
 
 #include "SerialHelper.h"
 #include <cassert>
+#include "imgui/imgui.h"
 
 namespace SerialHelper {
 
@@ -31,9 +32,51 @@ namespace SerialHelper {
 		return buf + sizeof(float);
 	}
 
+    char* ImVec2ToChar(ImVec2 imVec2, char * buf, char* end) {
+        assert(buf + 2*sizeof(float) < end);
+
+        buf = FloatToChar(imVec2.x, buf, end);
+        buf = FloatToChar(imVec2.y, buf, end);
+
+        return buf;
+    }
+
+    char* ImVec4ToChar(ImVec4 imVec4, char * buf, char* end) {
+        assert(buf + 4*sizeof(float) < end);
+
+        buf = FloatToChar(imVec4.x, buf, end);
+        buf = FloatToChar(imVec4.y, buf, end);
+        buf = FloatToChar(imVec4.z, buf, end);
+        buf = FloatToChar(imVec4.w, buf, end);
+
+        return buf;
+    }
+
     char* CharToFloat(float &f, char * buf) {
         f = *((float*)buf);
         return buf + sizeof(float);
+    }
+
+    char* CharToImVec2(ImVec2 &imVec2, char * buf) {
+        float _x, _y;
+	    buf = CharToFloat(_x, buf);
+        buf = CharToFloat(_y, buf);
+        imVec2.x = _x;
+        imVec2.y = _y;
+        return buf;
+    }
+
+    char* CharToImVec4(ImVec4 &imVec4, char * buf) {
+        float _x, _y, _z, _w;
+        buf = CharToFloat(_x, buf);
+        buf = CharToFloat(_y, buf);
+        buf = CharToFloat(_z, buf);
+        buf = CharToFloat(_w, buf);
+        imVec4.x = _x;
+        imVec4.y = _y;
+        imVec4.z = _z;
+        imVec4.w = _w;
+        return buf;
     }
 
 	char* BoolToChar(bool b, char* buf, char* end) {

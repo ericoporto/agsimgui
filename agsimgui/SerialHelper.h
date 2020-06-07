@@ -10,6 +10,8 @@
 #ifndef AGSBOX2D_SERIALHELPER_H
 #define AGSBOX2D_SERIALHELPER_H
 
+#include "imgui/imgui.h"
+
 namespace SerialHelper {
 	
 	union u_cf
@@ -31,6 +33,11 @@ namespace SerialHelper {
     char* CharToInt(int &i, char * buf);
     char* CharToFloat(float &f, char * buf);
 	char* CharToBool(bool &b, char* buf);
+
+    char* ImVec2ToChar(ImVec2 imVec2, char * buf, char* end);
+    char* ImVec4ToChar(ImVec4 imVec4, char * buf, char* end);
+    char* CharToImVec2(ImVec2 &imVec2, char * buf);
+    char* CharToImVec4(ImVec4 &imVec4, char * buf);
 }
 
 #endif /* AGSBOX2D_SERIALHELPER_H */
