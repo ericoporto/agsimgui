@@ -741,6 +741,382 @@ return true when activated. shortcuts are displayed for convenience but not proc
 
 ---
 
+### ImVec2
+
+This is a format used to describe either x,y points or zero origin rectangles and other things that can be described as 
+vectors. It's used more in the attributes of a `ImGuiStyle` object.
+
+#### `ImVec2.Create`
+
+`static ImVec2* ImVec2.Create(float x = 0, float y = 0)`
+
+Creates a new ImVec2 object. You can pass float variable for it's `X` and `Y` properties.
+
+#### `ImVec2.X`
+
+`attribute float ImVec2.X`
+
+It's the X attribute of a ImVec2 object. Usually represents the horizontal axis.
+
+#### `ImVec2.Y`
+
+`attribute float ImVec2.Y`
+
+It's the Y attribute of a ImVec2 object. Usually represents the vertical axis.
+
+#### `ImVec2.Scale`
+
+`ImVec2* ImVec2.Scale(float scale)`
+
+Multiplies x and y coordinates by a scalar and returns a new ImVec2 with the result.
+
+#### `ImVec2.Length`
+
+`float ImVec2.Length()`
+
+Returns length from ImVec2 (distance from 0,0 origin).
+
+#### `ImVec2.SquaredLength`
+
+`float ImVec2.SquaredLength()`
+
+Returns squared length from ImVec2 (distance from 0,0 origin). Faster than length.
+
+#### `ImVec2.Add`
+
+`ImVec2* ImVec2.Add(ImVec2* imVec2)`
+
+Returns a new ImVec2 with the sum of this with imVec2.
+
+#### `ImVec2.Sub`
+
+`ImVec2* ImVec2.Sub(ImVec2* imVec2)`
+
+Returns a new ImVec2 with the subtraction of imVec2 from this. 
+
+---
+
+### ImVec4
+
+This is a format used to describe either x,y,w,z points or any origin rectangles and other things that can be described 
+as vectors with 4 coordinates. It's the preferable format for ImGui Colors, and used a lot for this! It's used more in 
+the attributes of a `ImGuiStyle` object.
+
+#### `ImVec4.Create`
+
+`static ImVec4* ImVec4.Create(float x = 0, float y = 0, float z = 0, float w = 0)`
+
+Creates a new ImVec4 object. You can pass float variable for it's `X`, `Y`, `Z` and `W` properties.
+
+#### `ImVec4.X`
+
+`attribute float ImVec4.X`
+
+It's the X attribute of a ImVec4 object. Usually represents the horizontal axis. 
+When used for colors correspond to the color Red.
+
+#### `ImVec4.Y`
+
+`attribute float ImVec4.Y`
+
+It's the Y attribute of a ImVec4 object. Usually represents the vertical axis.
+When used for colors correspond to the color Green.
+
+#### `ImVec4.Z`
+
+`attribute float ImVec4.Z`
+
+It's the Z attribute of a ImVec4 object. Usually represents the length in the horizontal axis. 
+When used for colors correspond to the color Blue.
+
+#### `ImVec4.W`
+
+`attribute float ImVec4.W`
+
+It's the W attribute of a ImVec4 object. Usually represents the length in the vertical axis.
+When used for colors correspond to the alpha of the colors, where `1.0` is transparent and `0.0` is opaque.
+
+#### `ImVec4.Scale`
+
+`ImVec4* ImVec4.Scale(float scale)`
+
+Multiplies x, y, z and w coordinates by a scalar and returns a new ImVec4 with the result.
+
+#### `ImVec4.Length`
+
+`float ImVec4.Length()`
+
+Returns length from ImVec4 (distance from 0,0,0,0 origin).
+
+#### `ImVec4.SquaredLength`
+
+`float ImVec4.SquaredLength()`
+
+Returns squared length from ImVec4 (distance from 0,0,0,0 origin). Faster than length.
+
+#### `ImVec4.Add`
+
+`ImVec4* ImVec4.Add(ImVec4* imVec4)`
+
+Returns a new ImVec4 with the sum of this with imVec4.
+
+#### `ImVec4.Sub`
+
+`ImVec4* ImVec4.Sub(ImVec4* imVec4)`
+
+Returns a new ImVec4 with the subtraction of imVec4 from this. 
+
+---
+
+### ImGuiStyle
+
+#### `ImGuiStyle.Create`
+
+`static ImGuiStyle* ImGuiStyle.Create()`
+
+Creates a new empty ImGuiStyle object. Rarely used, it's usually more advised to use `ImGui.GetStyle()` instead, unless it's planned to 
+customize ***all*** elements of a ImGuiStyle object. 
+
+#### `ImGuiStyle.Alpha`
+
+`attribute float ImGuiStyle.Alpha`
+
+Global alpha applies to everything in Dear ImGui. 
+
+#### `ImGuiStyle.WindowPadding`
+
+`attribute ImVec2* ImGuiStyle.WindowPadding`
+
+Padding within a window. 
+
+#### `ImGuiStyle.WindowRounding`
+
+`attribute float ImGuiStyle.WindowRounding`
+
+Radius of window corners rounding. Set to 0.0f to have rectangular windows. 
+
+#### `ImGuiStyle.WindowBorderSize`
+
+`attribute float ImGuiStyle.WindowBorderSize`
+
+Thickness of border around windows. Generally set to 0.0f or 1.0f. 
+
+#### `ImGuiStyle.WindowMinSize`
+
+`attribute ImVec2* ImGuiStyle.WindowMinSize`
+
+Minimum window size. This is a global setting. For individual windows, use SetNextWindowSizeConstraints(). 
+
+#### `ImGuiStyle.WindowTitleAlign`
+
+`attribute ImVec2* ImGuiStyle.WindowTitleAlign`
+
+Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered. 
+
+#### `ImGuiStyle.WindowMenuButtonPosition`
+
+`attribute ImGuiDir ImGuiStyle.WindowMenuButtonPosition`
+
+Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left. 
+
+#### `ImGuiStyle.ChildRounding`
+
+`attribute float ImGuiStyle.ChildRounding`
+
+Radius of child window corners rounding. Set to 0.0f to have rectangular windows. 
+
+#### `ImGuiStyle.ChildBorderSize`
+
+`attribute float ImGuiStyle.ChildBorderSize`
+
+Thickness of border around child windows. Generally set to 0.0f or 1.0f. 
+
+#### `ImGuiStyle.PopupRounding`
+
+`attribute float ImGuiStyle.PopupRounding`
+
+Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding) 
+
+#### `ImGuiStyle.PopupBorderSize`
+
+`attribute float ImGuiStyle.PopupBorderSize`
+
+Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. 
+
+#### `ImGuiStyle.FramePadding`
+
+`attribute ImVec2* ImGuiStyle.FramePadding`
+
+Padding within a framed rectangle (used by most widgets). 
+
+#### `ImGuiStyle.FrameRounding`
+
+`attribute float ImGuiStyle.FrameRounding`
+
+Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets). 
+
+#### `ImGuiStyle.FrameBorderSize`
+
+`attribute float ImGuiStyle.FrameBorderSize`
+
+Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly). 
+
+#### `ImGuiStyle.ItemSpacing`
+
+`attribute ImVec2* ImGuiStyle.ItemSpacing`
+
+Horizontal and vertical spacing between widgets/lines. 
+
+#### `ImGuiStyle.ItemInnerSpacing`
+
+`attribute ImVec2* ImGuiStyle.ItemInnerSpacing`
+
+Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label). 
+
+#### `ImGuiStyle.TouchExtraPadding`
+
+`attribute ImVec2* ImGuiStyle.TouchExtraPadding`
+
+Expand reactive bounding box for touch-based system where touch position is not accurate enough. 
+Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. 
+Don't grow this too much! 
+
+#### `ImGuiStyle.IndentSpacing`
+
+`attribute float ImGuiStyle.IndentSpacing`
+
+Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2). 
+
+#### `ImGuiStyle.ColumnsMinSpacing`
+
+`attribute float ImGuiStyle.ColumnsMinSpacing`
+
+Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1). 
+
+#### `ImGuiStyle.ScrollbarSize`
+
+`attribute float ImGuiStyle.ScrollbarSize`
+
+Width of the vertical scrollbar, Height of the horizontal scrollbar. 
+
+#### `ImGuiStyle.ScrollbarRounding`
+
+`attribute float ImGuiStyle.ScrollbarRounding`
+
+Radius of grab corners for scrollbar. 
+
+#### `ImGuiStyle.GrabMinSize`
+
+`attribute float ImGuiStyle.GrabMinSize`
+
+Minimum width/height of a grab box for slider/scrollbar. 
+
+#### `ImGuiStyle.GrabRounding`
+
+`attribute float ImGuiStyle.GrabRounding`
+
+Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs. 
+
+#### `ImGuiStyle.TabRounding`
+
+`attribute float ImGuiStyle.TabRounding`
+
+Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs. 
+
+#### `ImGuiStyle.TabBorderSize`
+
+`attribute float ImGuiStyle.TabBorderSize`
+
+Thickness of border around tabs. 
+
+#### `ImGuiStyle.TabMinWidthForUnselectedCloseButton`
+
+`attribute float ImGuiStyle.TabMinWidthForUnselectedCloseButton`
+
+Minimum width for close button to appears on an unselected tab when hovered. 
+Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected. 
+
+#### `ImGuiStyle.ColorButtonPosition`
+
+`attribute ImGuiDir ImGuiStyle.ColorButtonPosition`
+
+Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right. 
+
+#### `ImGuiStyle.ButtonTextAlign`
+
+`attribute ImVec2* ImGuiStyle.ButtonTextAlign`
+
+Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered). 
+
+#### `ImGuiStyle.SelectableTextAlign`
+
+`attribute ImVec2* ImGuiStyle.SelectableTextAlign`
+
+Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). 
+It's generally important to keep this left-aligned if you want to lay multiple items on a same line. 
+
+#### `ImGuiStyle.DisplayWindowPadding`
+
+`attribute ImVec2* ImGuiStyle.DisplayWindowPadding`
+
+Window position are clamped to be visible within the display area by at least this amount. 
+Only applies to regular windows. 
+
+#### `ImGuiStyle.DisplaySafeAreaPadding`
+
+`attribute ImVec2* ImGuiStyle.DisplaySafeAreaPadding`
+
+If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. 
+Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly! 
+
+#### `ImGuiStyle.MouseCursorScale`
+
+`attribute float ImGuiStyle.MouseCursorScale`
+
+Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later. 
+
+#### `ImGuiStyle.AntiAliasedLines`
+
+`attribute bool ImGuiStyle.AntiAliasedLines`
+
+Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU. 
+
+#### `ImGuiStyle.AntiAliasedFill`
+
+`attribute bool ImGuiStyle.AntiAliasedFill`
+
+Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.) 
+
+#### `ImGuiStyle.CurveTessellationTol`
+
+`attribute float ImGuiStyle.CurveTessellationTol`
+
+Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. 
+Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality. 
+
+#### `ImGuiStyle.CircleSegmentMaxError`
+
+`attribute float ImGuiStyle.CircleSegmentMaxError`
+
+Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles 
+with no explicit segment count specified. Decrease for higher quality but more geometry. 
+
+#### `ImGuiStyle.Colors`
+
+`attribute ImVec4* ImGuiStyle.Colors[]`
+
+Use to configure the colors used in varied parts of the ImGui theme. Check the [`enum ImGuiCol_`](#enum-imguicol_) for
+all possible colors available in a ImGuiStyle object. An example usage would be:
+                                                      
+```AGS Script
+ImGuiStyle* style = ImGui.GetStyle();
+style.Colors[eImGuiCol_TextDisabled] = ImVec4.Create(0.5, 0.5, 0.5, 0.5);
+ImGui.SetStyle(style);
+```
+
+
+---
+
 ### Enums
 
 #### `ImGuiCond`
@@ -877,39 +1253,153 @@ The enums of this type can be combined with bitwise operators.
 
 Flags for AgsImGui.TreeNodeEx(), AgsImGui.CollapsingHeader().
 
--`ImGuiTreeNodeFlags_None`, (=0) default
+-`eImGuiTreeNodeFlags_None`, (=0) default
 
--`ImGuiTreeNodeFlags_Selected`, Draw as selected
+-`eImGuiTreeNodeFlags_Selected`, Draw as selected
 
--`ImGuiTreeNodeFlags_Framed`, Full colored frame (e.g. for CollapsingHeader)
+-`eImGuiTreeNodeFlags_Framed`, Full colored frame (e.g. for CollapsingHeader)
 
--`ImGuiTreeNodeFlags_AllowItemOverlap`, Hit testing to allow subsequent widgets to overlap this one
+-`eImGuiTreeNodeFlags_AllowItemOverlap`, Hit testing to allow subsequent widgets to overlap this one
 
--`ImGuiTreeNodeFlags_NoTreePushOnOpen`, Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
+-`eImGuiTreeNodeFlags_NoTreePushOnOpen`, Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
 
--`ImGuiTreeNodeFlags_NoAutoOpenOnLog`, Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
+-`eImGuiTreeNodeFlags_NoAutoOpenOnLog`, Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
 
--`ImGuiTreeNodeFlags_DefaultOpen`, Default node to be open
+-`eImGuiTreeNodeFlags_DefaultOpen`, Default node to be open
 
--`ImGuiTreeNodeFlags_OpenOnDoubleClick`, Need double-click to open node
+-`eImGuiTreeNodeFlags_OpenOnDoubleClick`, Need double-click to open node
 
--`ImGuiTreeNodeFlags_OpenOnArrow`, Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
+-`eImGuiTreeNodeFlags_OpenOnArrow`, Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
 
--`ImGuiTreeNodeFlags_Leaf`, No collapsing, no arrow (use as a convenience for leaf nodes).
+-`eImGuiTreeNodeFlags_Leaf`, No collapsing, no arrow (use as a convenience for leaf nodes).
 
--`ImGuiTreeNodeFlags_Bullet`, Display a bullet instead of arrow
+-`eImGuiTreeNodeFlags_Bullet`, Display a bullet instead of arrow
 
--`ImGuiTreeNodeFlags_FramePadding`, Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
+-`eImGuiTreeNodeFlags_FramePadding`, Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
 
--`ImGuiTreeNodeFlags_SpanAvailWidth`, Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
+-`eImGuiTreeNodeFlags_SpanAvailWidth`, Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
 
--`ImGuiTreeNodeFlags_SpanFullWidth`, Extend hit box to the left-most and right-most edges (bypass the indented area).
+-`eImGuiTreeNodeFlags_SpanFullWidth`, Extend hit box to the left-most and right-most edges (bypass the indented area).
 
--`ImGuiTreeNodeFlags_NavLeftJumpsBackHere`, (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
+-`eImGuiTreeNodeFlags_NavLeftJumpsBackHere`, (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
 
--`ImGuiTreeNodeFlags_NoScrollOnOpen`, FIXME: TODO: Disable automatic scroll on TreePop() if node got just open and contents is not visible
+-`eImGuiTreeNodeFlags_NoScrollOnOpen`, FIXME: TODO: Disable automatic scroll on TreePop() if node got just open and contents is not visible
 
--`ImGuiTreeNodeFlags_CollapsingHeader`, Framed, NoTreePushOpen and NoAutoOpenOnLog.
+-`eImGuiTreeNodeFlags_CollapsingHeader`, Framed, NoTreePushOpen and NoAutoOpenOnLog.
+
+
+#### `enum ImGuiCol_`
+
+Used for selecting a specific color from the `ImGuiStyle.Colors[]` property.
+
+An example usage would be:
+
+```AGS Script
+ImGuiStyle* style = ImGui.GetStyle();
+style.Colors[eImGuiCol_WindowBg] = ImVec4.Create(1.0, 0.0, 0.0, 0.0);
+ImGui.SetStyle(style);
+```
+
+This would use the enum `eImGuiCol_WindowBg` to access the desired color you want to modify, 
+which in the example sets to a red color.
+
+- `eImGuiCol_Text`, 
+
+- `eImGuiCol_TextDisabled`, 
+
+- `eImGuiCol_WindowBg`, Background of normal windows 
+
+- `eImGuiCol_ChildBg`, Background of child windows 
+
+- `eImGuiCol_PopupBg`, Background of popups, menus, tooltips windows 
+
+- `eImGuiCol_Border`,
+
+- `eImGuiCol_BorderShadow`,
+
+- `eImGuiCol_FrameBg`, Background of checkbox, radio button, plot, slider, text input
+
+- `eImGuiCol_FrameBgHovered`,
+
+- `eImGuiCol_FrameBgActive`, 
+
+- `eImGuiCol_TitleBg`,
+
+- `eImGuiCol_TitleBgActive`,
+
+- `eImGuiCol_TitleBgCollapsed`,
+
+- `eImGuiCol_MenuBarBg`,
+
+- `eImGuiCol_ScrollbarBg`,
+
+- `eImGuiCol_ScrollbarGrab`,
+
+- `eImGuiCol_ScrollbarGrabHovered`,
+
+- `eImGuiCol_ScrollbarGrabActive`,
+
+- `eImGuiCol_CheckMark`,
+
+- `eImGuiCol_SliderGrab`,
+
+- `eImGuiCol_SliderGrabActive`,
+
+- `eImGuiCol_Button`,
+
+- `eImGuiCol_ButtonHovered`, 
+
+- `eImGuiCol_ButtonActive`,
+
+- `eImGuiCol_Header`, Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
+
+- `eImGuiCol_HeaderHovered`,
+
+- `eImGuiCol_HeaderActive`,
+
+- `eImGuiCol_Separator`,
+
+- `eImGuiCol_SeparatorHovered`,
+
+- `eImGuiCol_SeparatorActive`,
+
+- `eImGuiCol_ResizeGrip`,
+
+- `eImGuiCol_ResizeGripHovered`,
+
+- `eImGuiCol_ResizeGripActive`,
+
+- `eImGuiCol_Tab`,
+
+- `eImGuiCol_TabHovered`, 
+
+- `eImGuiCol_TabActive`,
+
+- `eImGuiCol_TabUnfocused`, 
+
+- `eImGuiCol_TabUnfocusedActive`, 
+
+- `eImGuiCol_PlotLines`,
+
+- `eImGuiCol_PlotLinesHovered`,
+
+- `eImGuiCol_PlotHistogram`,
+
+- `eImGuiCol_PlotHistogramHovered`,
+
+- `eImGuiCol_TextSelectedBg`,
+
+- `eImGuiCol_DragDropTarget`, 
+
+- `eImGuiCol_NavHighlight`, Gamepad/keyboard: current highlighted item;
+
+- `eImGuiCol_NavWindowingHighlight`, Highlight window when using CTRL+TAB;
+
+- `eImGuiCol_NavWindowingDimBg`, Darken/colorize entire screen behind the CTRL+TAB window list, when active;
+
+- `eImGuiCol_ModalWindowDimBg`, Darken/colorize entire screen behind a modal window, when one is active;
+
+- `eImGuiCol_COUNT`, The total numbers of items in ImGuiStyle.Colors attribute array. Useful for iterating all colors. 
 
 ## FAQ
 
