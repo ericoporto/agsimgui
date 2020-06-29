@@ -714,6 +714,15 @@ const unsigned int SaveMagic = Magic + Version;
 " /// is any item focused? \r\n"
 " import static bool IsAnyItemFocused();  \r\n"
 "  \r\n"
+" /// get upper-left bounding rectangle of the last item (screen space) \r\n"
+" import static ImVec2* GetItemRectMin();  \r\n"
+"  \r\n"
+" /// get lower-right bounding rectangle of the last item (screen space) \r\n"
+" import static ImVec2* GetItemRectMax();  \r\n"
+"  \r\n"
+" /// get size of last item \r\n"
+" import static ImVec2* GetItemRectSize();  \r\n"
+"  \r\n"
 " // Windows Utilities \r\n"
 " // - 'current window' = the window we are appending into while inside a Begin()/End() block.  \r\n"
 " import static bool IsWindowAppearing(); \r\n"
@@ -726,6 +735,12 @@ const unsigned int SaveMagic = Magic + Version;
 "  \r\n"
 " /// is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. Use this between Begin and End of a window.\r\n"
 " import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
+"  \r\n"
+" /// return current window position in screen space. \r\n"
+" import static ImVec* GetWindowPos(); \r\n"
+"  \r\n"
+" /// get current window size. \r\n"
+" import static ImVec* GetWindowSize(); \r\n"
 "  \r\n"
 " // Layout \r\n"
 " // - By cursor we mean the current output position. \r\n"
@@ -1831,6 +1846,16 @@ int AgsImGui_IsWindowHovered(int flags){
     return ToAgsBool(ImGui::IsWindowHovered(flags));
 }
 
+AgsImVec2* AgsImGui_GetWindowPos() {
+    ImVec2 imVec2 = ImGui::GetWindowPos();
+    return  NewAgsImVec2(imVec2);
+}
+
+AgsImVec2* AgsImGui_GetWindowSize() {
+    ImVec2 imVec2 = ImGui::GetWindowSize();
+    return  NewAgsImVec2(imVec2);
+}
+
 int AgsImGui_IsItemHovered(int flags){
     return ToAgsBool(ImGui::IsItemHovered(flags));
 }
@@ -1877,6 +1902,21 @@ int AgsImGui_IsAnyItemActive(){
 
 int AgsImGui_IsAnyItemFocused(){
     return ToAgsBool(ImGui::IsAnyItemFocused());
+}
+
+AgsImVec2* AgsImGui_GetItemRectMin() {
+    ImVec2 imVec2 = ImGui::GetItemRectMin();
+    return NewAgsImVec2(imVec2);
+}
+
+AgsImVec2* AgsImGui_GetItemRectMax() {
+    ImVec2 imVec2 = ImGui::GetItemRectMax();
+    return  NewAgsImVec2(imVec2);
+}
+
+AgsImVec2* AgsImGui_GetItemRectSize() {
+    ImVec2 imVec2 = ImGui::GetItemRectSize();
+    return  NewAgsImVec2(imVec2);
 }
 
 void AgsImGui_SetKeyboardFocusHere(int offset){
@@ -2593,6 +2633,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsWindowCollapsed^0", (void*)AgsImGui_IsWindowCollapsed);
         engine->RegisterScriptFunction("AgsImGui::IsWindowFocused^1", (void*)AgsImGui_IsWindowFocused);
         engine->RegisterScriptFunction("AgsImGui::IsWindowHovered^1", (void*)AgsImGui_IsWindowHovered);
+        engine->RegisterScriptFunction("AgsImGui::GetWindowPos^0", (void*)AgsImGui_GetWindowPos);
+        engine->RegisterScriptFunction("AgsImGui::GetWindowSize^0", (void*)AgsImGui_GetWindowSize);
         engine->RegisterScriptFunction("AgsImGui::IsItemHovered^1", (void*)AgsImGui_IsItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsItemActive^0", (void*)AgsImGui_IsItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsItemFocused^0", (void*)AgsImGui_IsItemFocused);
@@ -2605,6 +2647,9 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemHovered^0", (void*)AgsImGui_IsAnyItemHovered);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemActive^0", (void*)AgsImGui_IsAnyItemActive);
         engine->RegisterScriptFunction("AgsImGui::IsAnyItemFocused^0", (void*)AgsImGui_IsAnyItemFocused);
+        engine->RegisterScriptFunction("AgsImGui::GetItemRectMin^0", (void*)AgsImGui_GetItemRectMin);
+        engine->RegisterScriptFunction("AgsImGui::GetItemRectMax^0", (void*)AgsImGui_GetItemRectMax);
+        engine->RegisterScriptFunction("AgsImGui::GetItemRectSize^0", (void*)AgsImGui_GetItemRectSize);
         engine->RegisterScriptFunction("AgsImGui::SetItemDefaultFocus^0", (void*)AgsImGui_SetItemDefaultFocus);
         engine->RegisterScriptFunction("AgsImGui::SetKeyboardFocusHere^1", (void*)AgsImGui_SetKeyboardFocusHere);
         engine->RegisterScriptFunction("AgsImGui::Separator^0", (void*)AgsImGui_Separator);
