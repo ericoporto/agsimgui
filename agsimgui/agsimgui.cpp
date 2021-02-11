@@ -563,6 +563,9 @@ const unsigned int SaveMagic = Magic + Version;
 "    /// Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label). \r\n"
 "    import attribute ImVec2* ItemInnerSpacing; \r\n"
 "     \r\n"
+"    /// Padding within a table cell. \r\n"
+"    import attribute ImVec2* CellPadding; \r\n"
+"     \r\n"
 "    /// Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. Don't grow this too much! \r\n"
 "    import attribute ImVec2* TouchExtraPadding; \r\n"
 "     \r\n"
@@ -584,6 +587,9 @@ const unsigned int SaveMagic = Magic + Version;
 "    /// Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs. \r\n"
 "    import attribute float GrabRounding; \r\n"
 "     \r\n"
+"    /// The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero. \r\n"
+"    import attribute float LogSliderDeadzone; \r\n"
+"     \r\n"
 "    /// Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs. \r\n"
 "    import attribute float TabRounding; \r\n"
 "     \r\n"
@@ -591,7 +597,7 @@ const unsigned int SaveMagic = Magic + Version;
 "    import attribute float TabBorderSize; \r\n"
 "     \r\n"
 "    /// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected. \r\n"
-"    import attribute float TabMinWidthForUnselectedCloseButton; \r\n"
+"    import attribute float TabMinWidthForCloseButton; \r\n"
 "     \r\n"
 "    /// Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right. \r\n"
 "    import attribute ImGuiDir ColorButtonPosition; \r\n"
@@ -613,6 +619,9 @@ const unsigned int SaveMagic = Magic + Version;
 "     \r\n"
 "    /// Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU. \r\n"
 "    import attribute bool AntiAliasedLines; \r\n"
+"     \r\n"
+"    /// Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering. Latched at the beginning of the frame (copied to ImDrawList). \r\n"
+"    import attribute bool AntiAliasedLinesUseTex; \r\n"
 "     \r\n"
 "    /// Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.) \r\n"
 "    import attribute bool AntiAliasedFill; \r\n"
@@ -1528,6 +1537,15 @@ AgsImVec2* AgsImGuiStyle_GetItemInnerSpacing(AgsImGuiStyle* self){
 }
 
 
+void AgsImGuiStyle_SetCellPadding(AgsImGuiStyle* self, AgsImVec2* cellPadding){
+    SetAgsImVec2(self->CellPadding, cellPadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetCellPadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->CellPadding);
+}
+
+
 void AgsImGuiStyle_SetTouchExtraPadding(AgsImGuiStyle* self, AgsImVec2* touchExtraPadding){
     SetAgsImVec2(self->TouchExtraPadding, touchExtraPadding);
 }
@@ -1597,6 +1615,16 @@ uint32_t AgsImGuiStyle_GetGrabRounding(AgsImGuiStyle* self){
 }
 
 
+void AgsImGuiStyle_SetLogSliderDeadzone(AgsImGuiStyle* self, uint32_t logSliderDeadzone){
+    float f_logSliderDeadzone= ToNormalFloat(logSliderDeadzone);
+    self->LogSliderDeadzone = f_logSliderDeadzone;
+}
+
+uint32_t AgsImGuiStyle_GetLogSliderDeadzone(AgsImGuiStyle* self){
+    return ToAgsFloat(self->LogSliderDeadzone);
+}
+
+
 void AgsImGuiStyle_SetTabRounding(AgsImGuiStyle* self, uint32_t tabRounding){
     float f_tabRounding = ToNormalFloat(tabRounding);
     self->TabRounding = f_tabRounding;
@@ -1617,13 +1645,13 @@ uint32_t AgsImGuiStyle_GetTabBorderSize(AgsImGuiStyle* self){
 }
 
 
-void AgsImGuiStyle_SetTabMinWidthForUnselectedCloseButton(AgsImGuiStyle* self, uint32_t tabMinWidthForUnselectedCloseButton){
-    float f_tabMinWidthForUnselectedCloseButton = ToNormalFloat(tabMinWidthForUnselectedCloseButton);
-    self->TabMinWidthForUnselectedCloseButton = f_tabMinWidthForUnselectedCloseButton;
+void AgsImGuiStyle_SetTabMinWidthForCloseButton(AgsImGuiStyle* self, uint32_t tabMinWidthForCloseButton){
+    float f_tabMinWidthForCloseButton = ToNormalFloat(tabMinWidthForCloseButton);
+    self->TabMinWidthForCloseButton = f_tabMinWidthForCloseButton;
 }
 
-uint32_t AgsImGuiStyle_GetTabMinWidthForUnselectedCloseButton(AgsImGuiStyle* self){
-    return ToAgsFloat(self->TabMinWidthForUnselectedCloseButton);
+uint32_t AgsImGuiStyle_GetTabMinWidthForCloseButton(AgsImGuiStyle* self){
+    return ToAgsFloat(self->TabMinWidthForCloseButton);
 }
 
 
@@ -1688,6 +1716,15 @@ void AgsImGuiStyle_SetAntiAliasedLines(AgsImGuiStyle* self, int antiAliasedLines
 
 int AgsImGuiStyle_GetAntiAliasedLines(AgsImGuiStyle* self){
     return ToAgsBool(self->AntiAliasedLines);
+}
+
+
+void AgsImGuiStyle_SetAntiAliasedLinesUseTex(AgsImGuiStyle* self, int antiAliasedLinesUseTex){
+    self->AntiAliasedLinesUseTex = ToNormalBool(antiAliasedLinesUseTex);
+}
+
+int AgsImGuiStyle_GetAntiAliasedLinesUseTex(AgsImGuiStyle* self){
+    return ToAgsBool(self->AntiAliasedLinesUseTex);
 }
 
 
@@ -2231,13 +2268,14 @@ void AgsImGui_SetNextItemOpen(int is_open, int cond) {
 }
 
 int AgsImGui_BeginListBox(const char* name, AgsImVec2* size){
+    bool retval;
     if(size == nullptr) {
-        ImGui::BeginListBox(name);
+        retval = ImGui::BeginListBox(name);
     } else {
-        ImGui::BeginListBox(name,size);
+        retval = ImGui::BeginListBox(name,ImVec2(size->x,size->y));
     }
     
-    return ToAgsBool();
+    return ToAgsBool(retval);
 }
 
 void AgsImGui_EndListBox(){
@@ -2601,6 +2639,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_ItemSpacing", (void*)AgsImGuiStyle_GetItemSpacing);
         engine->RegisterScriptFunction("ImGuiStyle::set_ItemInnerSpacing", (void*)AgsImGuiStyle_SetItemInnerSpacing);
         engine->RegisterScriptFunction("ImGuiStyle::get_ItemInnerSpacing", (void*)AgsImGuiStyle_GetItemInnerSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::set_CellPadding", (void*)AgsImGuiStyle_SetCellPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_CellPadding", (void*)AgsImGuiStyle_GetCellPadding);
         engine->RegisterScriptFunction("ImGuiStyle::set_TouchExtraPadding", (void*)AgsImGuiStyle_SetTouchExtraPadding);
         engine->RegisterScriptFunction("ImGuiStyle::get_TouchExtraPadding", (void*)AgsImGuiStyle_GetTouchExtraPadding);
         engine->RegisterScriptFunction("ImGuiStyle::set_IndentSpacing", (void*)AgsImGuiStyle_SetIndentSpacing);
@@ -2615,12 +2655,14 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_GrabMinSize", (void*)AgsImGuiStyle_GetGrabMinSize);
         engine->RegisterScriptFunction("ImGuiStyle::set_GrabRounding", (void*)AgsImGuiStyle_SetGrabRounding);
         engine->RegisterScriptFunction("ImGuiStyle::get_GrabRounding", (void*)AgsImGuiStyle_GetGrabRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_LogSliderDeadzone", (void*)AgsImGuiStyle_SetLogSliderDeadzone);
+        engine->RegisterScriptFunction("ImGuiStyle::get_LogSliderDeadzone", (void*)AgsImGuiStyle_GetLogSliderDeadzone);
         engine->RegisterScriptFunction("ImGuiStyle::set_TabRounding", (void*)AgsImGuiStyle_SetTabRounding);
         engine->RegisterScriptFunction("ImGuiStyle::get_TabRounding", (void*)AgsImGuiStyle_GetTabRounding);
         engine->RegisterScriptFunction("ImGuiStyle::set_TabBorderSize", (void*)AgsImGuiStyle_SetTabBorderSize);
         engine->RegisterScriptFunction("ImGuiStyle::get_TabBorderSize", (void*)AgsImGuiStyle_GetTabBorderSize);
-        engine->RegisterScriptFunction("ImGuiStyle::set_TabMinWidthForUnselectedCloseButton", (void*)AgsImGuiStyle_SetTabMinWidthForUnselectedCloseButton);
-        engine->RegisterScriptFunction("ImGuiStyle::get_TabMinWidthForUnselectedCloseButton", (void*)AgsImGuiStyle_GetTabMinWidthForUnselectedCloseButton);
+        engine->RegisterScriptFunction("ImGuiStyle::set_TabMinWidthForCloseButton", (void*)AgsImGuiStyle_SetTabMinWidthForCloseButton);
+        engine->RegisterScriptFunction("ImGuiStyle::get_TabMinWidthForCloseButton", (void*)AgsImGuiStyle_GetTabMinWidthForCloseButton);
         engine->RegisterScriptFunction("ImGuiStyle::set_ColorButtonPosition", (void*)AgsImGuiStyle_SetColorButtonPosition);
         engine->RegisterScriptFunction("ImGuiStyle::get_ColorButtonPosition", (void*)AgsImGuiStyle_GetColorButtonPosition);
         engine->RegisterScriptFunction("ImGuiStyle::set_ButtonTextAlign", (void*)AgsImGuiStyle_SetButtonTextAlign);
@@ -2635,6 +2677,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_MouseCursorScale", (void*)AgsImGuiStyle_GetMouseCursorScale);
         engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedLines", (void*)AgsImGuiStyle_SetAntiAliasedLines);
         engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedLines", (void*)AgsImGuiStyle_GetAntiAliasedLines);
+        engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedLinesUseTex", (void*)AgsImGuiStyle_SetAntiAliasedLinesUseTex);
+        engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedLinesUseTex", (void*)AgsImGuiStyle_GetAntiAliasedLinesUseTex);
         engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedFill", (void*)AgsImGuiStyle_SetAntiAliasedFill);
         engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedFill", (void*)AgsImGuiStyle_GetAntiAliasedFill);
         engine->RegisterScriptFunction("ImGuiStyle::set_CurveTessellationTol", (void*)AgsImGuiStyle_SetCurveTessellationTol);
@@ -2886,6 +2930,7 @@ void RestoreGame(long fileHandle)
     float _FrameBorderSize;
     ImVec2 _ItemSpacing;
     ImVec2 _ItemInnerSpacing;
+    ImVec2 _CellPadding;
     ImVec2 _TouchExtraPadding;
     float _IndentSpacing;
     float _ColumnsMinSpacing;
@@ -2893,9 +2938,10 @@ void RestoreGame(long fileHandle)
     float _ScrollbarRounding;
     float _GrabMinSize;
     float _GrabRounding;
+    float _LogSliderDeadzone;
     float _TabRounding;
     float _TabBorderSize;
-    float _TabMinWidthForUnselectedCloseButton;
+    float _TabMinWidthForCloseButton;
     int _ColorButtonPosition;
     ImVec2 _ButtonTextAlign;
     ImVec2 _SelectableTextAlign;
@@ -2903,6 +2949,7 @@ void RestoreGame(long fileHandle)
     ImVec2 _DisplaySafeAreaPadding;
     float _MouseCursorScale;
     bool _AntiAliasedLines;
+    bool _AntiAliasedLinesUseTex;
     bool _AntiAliasedFill;
     float _CurveTessellationTol;
     float _CircleSegmentMaxError;
@@ -2924,6 +2971,7 @@ void RestoreGame(long fileHandle)
     EngineReadFloat( _FrameBorderSize, fileHandle);
     EngineReadImVec2( _ItemSpacing, fileHandle);
     EngineReadImVec2( _ItemInnerSpacing, fileHandle);
+    EngineReadImVec2( _CellPadding, fileHandle);
     EngineReadImVec2( _TouchExtraPadding, fileHandle);
     EngineReadFloat( _IndentSpacing, fileHandle);
     EngineReadFloat( _ColumnsMinSpacing, fileHandle);
@@ -2931,9 +2979,10 @@ void RestoreGame(long fileHandle)
     EngineReadFloat( _ScrollbarRounding, fileHandle);
     EngineReadFloat( _GrabMinSize, fileHandle);
     EngineReadFloat( _GrabRounding, fileHandle);
+    EngineReadFloat( _LogSliderDeadzone, fileHandle);
     EngineReadFloat( _TabRounding, fileHandle);
     EngineReadFloat( _TabBorderSize, fileHandle);
-    EngineReadFloat( _TabMinWidthForUnselectedCloseButton, fileHandle);
+    EngineReadFloat( _TabMinWidthForCloseButton, fileHandle);
     EngineReadInt( _ColorButtonPosition, fileHandle);
     EngineReadImVec2( _ButtonTextAlign, fileHandle);
     EngineReadImVec2( _SelectableTextAlign, fileHandle);
@@ -2941,6 +2990,7 @@ void RestoreGame(long fileHandle)
     EngineReadImVec2( _DisplaySafeAreaPadding, fileHandle);
     EngineReadFloat( _MouseCursorScale, fileHandle);
     EngineReadBool(_AntiAliasedLines, fileHandle);
+    EngineReadBool(_AntiAliasedLinesUseTex, fileHandle);
     EngineReadBool(_AntiAliasedFill, fileHandle);
     EngineReadFloat( _CurveTessellationTol, fileHandle);
     EngineReadFloat( _CircleSegmentMaxError, fileHandle);
@@ -2965,6 +3015,7 @@ void RestoreGame(long fileHandle)
     imGuiStyle.FrameBorderSize = _FrameBorderSize;
     imGuiStyle.ItemSpacing = _ItemSpacing;
     imGuiStyle.ItemInnerSpacing = _ItemInnerSpacing;
+    imGuiStyle.CellPadding = _CellPadding;
     imGuiStyle.TouchExtraPadding = _TouchExtraPadding;
     imGuiStyle.IndentSpacing = _IndentSpacing;
     imGuiStyle.ColumnsMinSpacing = _ColumnsMinSpacing;
@@ -2972,9 +3023,10 @@ void RestoreGame(long fileHandle)
     imGuiStyle.ScrollbarRounding = _ScrollbarRounding;
     imGuiStyle.GrabMinSize = _GrabMinSize;
     imGuiStyle.GrabRounding = _GrabRounding;
+    imGuiStyle.LogSliderDeadzone = _LogSliderDeadzone;
     imGuiStyle.TabRounding = _TabRounding;
     imGuiStyle.TabBorderSize = _TabBorderSize;
-    imGuiStyle.TabMinWidthForUnselectedCloseButton = _TabMinWidthForUnselectedCloseButton;
+    imGuiStyle.TabMinWidthForCloseButton= _TabMinWidthForCloseButton;
     imGuiStyle.ColorButtonPosition = _ColorButtonPosition;
     imGuiStyle.ButtonTextAlign = _ButtonTextAlign;
     imGuiStyle.SelectableTextAlign = _SelectableTextAlign;
@@ -2982,6 +3034,7 @@ void RestoreGame(long fileHandle)
     imGuiStyle.DisplaySafeAreaPadding = _DisplaySafeAreaPadding;
     imGuiStyle.MouseCursorScale = _MouseCursorScale;
     imGuiStyle.AntiAliasedLines = _AntiAliasedLines;
+    imGuiStyle.AntiAliasedLinesUseTex = _AntiAliasedLinesUseTex;
     imGuiStyle.AntiAliasedFill = _AntiAliasedFill;
     imGuiStyle.CurveTessellationTol = _CurveTessellationTol;
     imGuiStyle.CircleSegmentMaxError = _CircleSegmentMaxError;
@@ -3013,6 +3066,7 @@ void SaveGame(long file)
     EngineWriteFloat(imGuiStyle.FrameBorderSize, file);
     EngineWriteImVec2(imGuiStyle.ItemSpacing, file);
     EngineWriteImVec2(imGuiStyle.ItemInnerSpacing, file);
+    EngineWriteImVec2(imGuiStyle.CellPadding, file);
     EngineWriteImVec2(imGuiStyle.TouchExtraPadding, file);
     EngineWriteFloat(imGuiStyle.IndentSpacing, file);
     EngineWriteFloat(imGuiStyle.ColumnsMinSpacing, file);
@@ -3020,9 +3074,10 @@ void SaveGame(long file)
     EngineWriteFloat(imGuiStyle.ScrollbarRounding, file);
     EngineWriteFloat(imGuiStyle.GrabMinSize, file);
     EngineWriteFloat(imGuiStyle.GrabRounding, file);
+    EngineWriteFloat(imGuiStyle.LogSliderDeadzone, file);
     EngineWriteFloat(imGuiStyle.TabRounding, file);
     EngineWriteFloat(imGuiStyle.TabBorderSize, file);
-    EngineWriteFloat(imGuiStyle.TabMinWidthForUnselectedCloseButton, file);
+    EngineWriteFloat(imGuiStyle.TabMinWidthForCloseButton, file);
     EngineWriteInt(imGuiStyle.ColorButtonPosition, file);
     EngineWriteImVec2(imGuiStyle.ButtonTextAlign, file);
     EngineWriteImVec2(imGuiStyle.SelectableTextAlign, file);
@@ -3030,6 +3085,7 @@ void SaveGame(long file)
     EngineWriteImVec2(imGuiStyle.DisplaySafeAreaPadding, file);
     EngineWriteFloat(imGuiStyle.MouseCursorScale, file);
     EngineWriteBool(imGuiStyle.AntiAliasedLines, file);
+    EngineWriteBool(imGuiStyle.AntiAliasedLinesUseTex, file);
     EngineWriteBool(imGuiStyle.AntiAliasedFill, file);
     EngineWriteFloat(imGuiStyle.CurveTessellationTol, file);
     EngineWriteFloat(imGuiStyle.CircleSegmentMaxError, file);

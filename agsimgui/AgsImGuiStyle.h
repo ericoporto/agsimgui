@@ -45,6 +45,7 @@ struct AgsImGuiStyle: ImGuiStyle {
         FrameBorderSize = imGuiStyle.FrameBorderSize;
         ItemSpacing = imGuiStyle.ItemSpacing;
         ItemInnerSpacing = imGuiStyle.ItemInnerSpacing;
+        CellPadding = imGuiStyle.CellPadding;
         TouchExtraPadding = imGuiStyle.TouchExtraPadding;
         IndentSpacing = imGuiStyle.IndentSpacing;
         ColumnsMinSpacing = imGuiStyle.ColumnsMinSpacing;
@@ -52,9 +53,10 @@ struct AgsImGuiStyle: ImGuiStyle {
         ScrollbarRounding = imGuiStyle.ScrollbarRounding;
         GrabMinSize = imGuiStyle.GrabMinSize;
         GrabRounding = imGuiStyle.GrabRounding;
+        LogSliderDeadzone = imGuiStyle.LogSliderDeadzone;
         TabRounding = imGuiStyle.TabRounding;
         TabBorderSize = imGuiStyle.TabBorderSize;
-        TabMinWidthForUnselectedCloseButton = imGuiStyle.TabMinWidthForUnselectedCloseButton;
+        TabMinWidthForCloseButton = imGuiStyle.TabMinWidthForCloseButton;
         ColorButtonPosition = imGuiStyle.ColorButtonPosition;
         ButtonTextAlign = imGuiStyle.ButtonTextAlign;
         SelectableTextAlign = imGuiStyle.SelectableTextAlign;
@@ -62,6 +64,7 @@ struct AgsImGuiStyle: ImGuiStyle {
         DisplaySafeAreaPadding = imGuiStyle.DisplaySafeAreaPadding;
         MouseCursorScale = imGuiStyle.MouseCursorScale;
         AntiAliasedLines = imGuiStyle.AntiAliasedLines;
+        AntiAliasedLinesUseTex = imGuiStyle.AntiAliasedLinesUseTex;
         AntiAliasedFill = imGuiStyle.AntiAliasedFill;
         CurveTessellationTol = imGuiStyle.CurveTessellationTol;
         CircleSegmentMaxError = imGuiStyle.CircleSegmentMaxError;
