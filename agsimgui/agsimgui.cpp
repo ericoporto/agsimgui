@@ -250,7 +250,7 @@ const unsigned int SaveMagic = Magic + Version;
 "   eImGuiCol_COUNT \r\n"
 " }; \r\n"
 "  \r\n"
-" enum ImGuiSliderFlags_ \r\n"
+" enum ImGuiSliderFlags \r\n"
 " { \r\n" 
 "   eImGuiSliderFlags_None             = 0, \r\n"
 "   eImGuiSliderFlags_AlwaysClamp      = 16, // Clamp value to min/max bounds when input manually with CTRL+Click. By default CTRL+Click allows going out of bounds.\r\n"
@@ -366,10 +366,10 @@ const unsigned int SaveMagic = Magic + Version;
 "   eImGuiTabItemFlags_SetSelected = 2,   // Trigger flag to programmatically make the tab selected when calling BeginTabItem() \r\n"
 "   eImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4,   // Disable behavior of closing tabs  \r\n"
 "   eImGuiTabItemFlags_NoPushId = 8,   // Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem() \r\n"
-"   eImGuiTabItemFlags_NoTooltip                     = 1 << 4,   // Disable tooltip for the given tab \r\n"
-"   eImGuiTabItemFlags_NoReorder                     = 1 << 5,   // Disable reordering this tab or having another tab cross over this tab \r\n"
-"   eImGuiTabItemFlags_Leading                       = 1 << 6,   // Enforce the tab position to the left of the tab bar (after the tab list popup button) \r\n"
-"   eImGuiTabItemFlags_Trailing                      = 1 << 7    // Enforce the tab position to the right of the tab bar (before the scrolling buttons) \r\n"
+"   eImGuiTabItemFlags_NoTooltip   = 16,   // Disable tooltip for the given tab \r\n"
+"   eImGuiTabItemFlags_NoReorder   = 32,   // Disable reordering this tab or having another tab cross over this tab \r\n"
+"   eImGuiTabItemFlags_Leading     = 64,   // Enforce the tab position to the left of the tab bar (after the tab list popup button) \r\n"
+"   eImGuiTabItemFlags_Trailing    = 128,  // Enforce the tab position to the right of the tab bar (before the scrolling buttons) \r\n"
 " }; \r\n"
 "  \r\n"
 " enum ImGuiFocusedFlags \r\n"
@@ -781,10 +781,10 @@ const unsigned int SaveMagic = Magic + Version;
 " import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
 "  \r\n"
 " /// return current window position in screen space. \r\n"
-" import static ImVec* GetWindowPos(); \r\n"
+" import static ImVec2* GetWindowPos(); \r\n"
 "  \r\n"
 " /// get current window size. \r\n"
-" import static ImVec* GetWindowSize(); \r\n"
+" import static ImVec2* GetWindowSize(); \r\n"
 "  \r\n"
 " // Layout \r\n"
 " // - By cursor we mean the current output position. \r\n"
@@ -951,7 +951,7 @@ const unsigned int SaveMagic = Magic + Version;
 " // Widgets: List Boxes \r\n"
 "  \r\n"
 " /// If the function return true, you can output elements then call EndListBox() afterwards. \r\n"
-" import static bool BeginListBox(String label, ImVec2 * size = 0); \r\n"
+" import static bool BeginListBox(String label, float size_x = 0, float size_y = 0); \r\n"
 "  \r\n"
 " /// Only call EndListBox() if BeginListBox() returns true! \r\n"
 " import static void EndListBox(); \r\n"\
@@ -2267,15 +2267,11 @@ void AgsImGui_SetNextItemOpen(int is_open, int cond) {
     ImGui::SetNextItemOpen(is_open != 0, cond);
 }
 
-int AgsImGui_BeginListBox(const char* name, AgsImVec2* size){
-    bool retval;
-    if(size == nullptr) {
-        retval = ImGui::BeginListBox(name);
-    } else {
-        retval = ImGui::BeginListBox(name,ImVec2(size->x,size->y));
-    }
-    
-    return ToAgsBool(retval);
+int AgsImGui_BeginListBox(const char* name, uint32_t size_x, uint32_t size_y){
+    float f_size_x = ToNormalFloat(size_x);
+    float f_size_y = ToNormalFloat(size_y);
+
+    return ToAgsBool(ImGui::BeginListBox(name, ImVec2(f_size_x, f_size_y)));
 }
 
 void AgsImGui_EndListBox(){
@@ -2781,7 +2777,7 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::GetTreeNodeToLabelSpacing^0", (void*)AgsImGui_GetTreeNodeToLabelSpacing);
         engine->RegisterScriptFunction("AgsImGui::CollapsingHeader^2", (void*)AgsImGui_CollapsingHeader);
         engine->RegisterScriptFunction("AgsImGui::SetNextItemOpen^2", (void*)AgsImGui_SetNextItemOpen);
-        engine->RegisterScriptFunction("AgsImGui::BeginListBox^2", (void*)AgsImGui_BeginListBox);
+        engine->RegisterScriptFunction("AgsImGui::BeginListBox^3", (void*)AgsImGui_BeginListBox);
         engine->RegisterScriptFunction("AgsImGui::EndListBox^0", (void*)AgsImGui_EndListBox);
         engine->RegisterScriptFunction("AgsImGui::BeginTooltip^0", (void*)AgsImGui_BeginTooltip);
         engine->RegisterScriptFunction("AgsImGui::EndTooltip^0", (void*)AgsImGui_EndTooltip);
