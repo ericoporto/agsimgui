@@ -366,10 +366,10 @@ const unsigned int SaveMagic = Magic + Version;
 "   eImGuiTabItemFlags_SetSelected = 2,   // Trigger flag to programmatically make the tab selected when calling BeginTabItem() \r\n"
 "   eImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4,   // Disable behavior of closing tabs  \r\n"
 "   eImGuiTabItemFlags_NoPushId = 8,   // Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem() \r\n"
-"   eImGuiTabItemFlags_NoTooltip                     = 1 << 4,   // Disable tooltip for the given tab
-"   eImGuiTabItemFlags_NoReorder                     = 1 << 5,   // Disable reordering this tab or having another tab cross over this tab
-"   eImGuiTabItemFlags_Leading                       = 1 << 6,   // Enforce the tab position to the left of the tab bar (after the tab list popup button)
-"   eImGuiTabItemFlags_Trailing                      = 1 << 7    // Enforce the tab position to the right of the tab bar (before the scrolling buttons)
+"   eImGuiTabItemFlags_NoTooltip                     = 1 << 4,   // Disable tooltip for the given tab \r\n"
+"   eImGuiTabItemFlags_NoReorder                     = 1 << 5,   // Disable reordering this tab or having another tab cross over this tab \r\n"
+"   eImGuiTabItemFlags_Leading                       = 1 << 6,   // Enforce the tab position to the left of the tab bar (after the tab list popup button) \r\n"
+"   eImGuiTabItemFlags_Trailing                      = 1 << 7    // Enforce the tab position to the right of the tab bar (before the scrolling buttons) \r\n"
 " }; \r\n"
 "  \r\n"
 " enum ImGuiFocusedFlags \r\n"

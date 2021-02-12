@@ -36,6 +36,7 @@ add_library(agsimgui SHARED
         agsimgui/imgui/imconfig.h
         agsimgui/imgui/imgui.h
         agsimgui/imgui/imgui.cpp
+        agsimgui/imgui/imgui_tables.cpp
         agsimgui/imgui/imgui_draw.cpp
         agsimgui/imgui/imgui_widgets.cpp
         agsimgui/imgui/imgui_demo.cpp

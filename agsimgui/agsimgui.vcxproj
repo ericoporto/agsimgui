@@ -171,6 +171,7 @@
     <ClCompile Include="AgsImGuiStyle.cpp" />
     <ClCompile Include="AgsImVec2.cpp" />
     <ClCompile Include="AgsImVec4.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="SerialHelper.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_dx9.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_softraster.cpp" />
