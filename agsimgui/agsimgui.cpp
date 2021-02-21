@@ -194,55 +194,182 @@ const unsigned int SaveMagic = Magic + Version;
 "  \r\n"
 " enum ImGuiCol_ \r\n"
 " { \r\n"
-"     eImGuiCol_Text, \r\n"
-"     eImGuiCol_TextDisabled, \r\n"
-"     eImGuiCol_WindowBg,              // Background of normal windows \r\n"
-"     eImGuiCol_ChildBg,               // Background of child windows \r\n"
-"     eImGuiCol_PopupBg,               // Background of popups, menus, tooltips windows \r\n"
-"     eImGuiCol_Border, \r\n"
-"     eImGuiCol_BorderShadow, \r\n"
-"     eImGuiCol_FrameBg,               // Background of checkbox, radio button, plot, slider, text input \r\n"
-"     eImGuiCol_FrameBgHovered, \r\n"
-"     eImGuiCol_FrameBgActive, \r\n"
-"     eImGuiCol_TitleBg, \r\n"
-"     eImGuiCol_TitleBgActive, \r\n"
-"     eImGuiCol_TitleBgCollapsed, \r\n"
-"     eImGuiCol_MenuBarBg, \r\n"
-"     eImGuiCol_ScrollbarBg, \r\n"
-"     eImGuiCol_ScrollbarGrab, \r\n"
-"     eImGuiCol_ScrollbarGrabHovered, \r\n"
-"     eImGuiCol_ScrollbarGrabActive, \r\n"
-"     eImGuiCol_CheckMark, \r\n"
-"     eImGuiCol_SliderGrab, \r\n"
-"     eImGuiCol_SliderGrabActive, \r\n"
-"     eImGuiCol_Button, \r\n"
-"     eImGuiCol_ButtonHovered, \r\n"
-"     eImGuiCol_ButtonActive, \r\n"
-"     eImGuiCol_Header,                // Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem \r\n"
-"     eImGuiCol_HeaderHovered, \r\n"
-"     eImGuiCol_HeaderActive, \r\n"
-"     eImGuiCol_Separator, \r\n"
-"     eImGuiCol_SeparatorHovered, \r\n"
-"     eImGuiCol_SeparatorActive, \r\n"
-"     eImGuiCol_ResizeGrip, \r\n"
-"     eImGuiCol_ResizeGripHovered, \r\n"
-"     eImGuiCol_ResizeGripActive, \r\n"
-"     eImGuiCol_Tab, \r\n"
-"     eImGuiCol_TabHovered, \r\n"
-"     eImGuiCol_TabActive, \r\n"
-"     eImGuiCol_TabUnfocused, \r\n"
-"     eImGuiCol_TabUnfocusedActive, \r\n"
-"     eImGuiCol_PlotLines, \r\n"
-"     eImGuiCol_PlotLinesHovered, \r\n"
-"     eImGuiCol_PlotHistogram, \r\n"
-"     eImGuiCol_PlotHistogramHovered, \r\n"
-"     eImGuiCol_TextSelectedBg, \r\n"
-"     eImGuiCol_DragDropTarget, \r\n"
-"     eImGuiCol_NavHighlight,          // Gamepad/keyboard: current highlighted item \r\n"
-"     eImGuiCol_NavWindowingHighlight, // Highlight window when using CTRL+TAB \r\n"
-"     eImGuiCol_NavWindowingDimBg,     // Darken/colorize entire screen behind the CTRL+TAB window list, when active \r\n"
-"     eImGuiCol_ModalWindowDimBg,      // Darken/colorize entire screen behind a modal window, when one is active \r\n"
-"     eImGuiCol_COUNT \r\n"
+"   eImGuiCol_Text, \r\n"
+"   eImGuiCol_TextDisabled, \r\n"
+"   eImGuiCol_WindowBg,              // Background of normal windows \r\n"
+"   eImGuiCol_ChildBg,               // Background of child windows \r\n"
+"   eImGuiCol_PopupBg,               // Background of popups, menus, tooltips windows \r\n"
+"   eImGuiCol_Border, \r\n"
+"   eImGuiCol_BorderShadow, \r\n"
+"   eImGuiCol_FrameBg,               // Background of checkbox, radio button, plot, slider, text input \r\n"
+"   eImGuiCol_FrameBgHovered, \r\n"
+"   eImGuiCol_FrameBgActive, \r\n"
+"   eImGuiCol_TitleBg, \r\n"
+"   eImGuiCol_TitleBgActive, \r\n"
+"   eImGuiCol_TitleBgCollapsed, \r\n"
+"   eImGuiCol_MenuBarBg, \r\n"
+"   eImGuiCol_ScrollbarBg, \r\n"
+"   eImGuiCol_ScrollbarGrab, \r\n"
+"   eImGuiCol_ScrollbarGrabHovered, \r\n"
+"   eImGuiCol_ScrollbarGrabActive, \r\n"
+"   eImGuiCol_CheckMark, \r\n"
+"   eImGuiCol_SliderGrab, \r\n"
+"   eImGuiCol_SliderGrabActive, \r\n"
+"   eImGuiCol_Button, \r\n"
+"   eImGuiCol_ButtonHovered, \r\n"
+"   eImGuiCol_ButtonActive, \r\n"
+"   eImGuiCol_Header,                // Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem \r\n"
+"   eImGuiCol_HeaderHovered, \r\n"
+"   eImGuiCol_HeaderActive, \r\n"
+"   eImGuiCol_Separator, \r\n"
+"   eImGuiCol_SeparatorHovered, \r\n"
+"   eImGuiCol_SeparatorActive, \r\n"
+"   eImGuiCol_ResizeGrip, \r\n"
+"   eImGuiCol_ResizeGripHovered, \r\n"
+"   eImGuiCol_ResizeGripActive, \r\n"
+"   eImGuiCol_Tab, \r\n"
+"   eImGuiCol_TabHovered, \r\n"
+"   eImGuiCol_TabActive, \r\n"
+"   eImGuiCol_TabUnfocused, \r\n"
+"   eImGuiCol_TabUnfocusedActive, \r\n"
+"   eImGuiCol_PlotLines, \r\n"
+"   eImGuiCol_PlotLinesHovered, \r\n"
+"   eImGuiCol_PlotHistogram, \r\n"
+"   eImGuiCol_PlotHistogramHovered, \r\n"
+"   eImGuiCol_TableHeaderBg,         // Table header background \r\n"
+"   eImGuiCol_TableBorderStrong,     // Table outer and header borders (prefer using Alpha=1.0 here) \r\n"
+"   eImGuiCol_TableBorderLight,      // Table inner borders (prefer using Alpha=1.0 here) \r\n"
+"   eImGuiCol_TableRowBg,            // Table row background (even rows) \r\n"
+"   eImGuiCol_TableRowBgAlt,         // Table row background (odd rows) \r\n"
+"   eImGuiCol_TextSelectedBg, \r\n"
+"   eImGuiCol_DragDropTarget, \r\n"
+"   eImGuiCol_NavHighlight,          // Gamepad/keyboard: current highlighted item \r\n"
+"   eImGuiCol_NavWindowingHighlight, // Highlight window when using CTRL+TAB \r\n"
+"   eImGuiCol_NavWindowingDimBg,     // Darken/colorize entire screen behind the CTRL+TAB window list, when active \r\n"
+"   eImGuiCol_ModalWindowDimBg,      // Darken/colorize entire screen behind a modal window, when one is active \r\n"
+"   eImGuiCol_COUNT \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiSliderFlags \r\n"
+" { \r\n" 
+"   eImGuiSliderFlags_None             = 0, \r\n"
+"   eImGuiSliderFlags_AlwaysClamp      = 16, // Clamp value to min/max bounds when input manually with CTRL+Click. By default CTRL+Click allows going out of bounds.\r\n"
+"   eImGuiSliderFlags_Logarithmic      = 32, // Make the widget logarithmic (linear otherwise). Consider using ImGuiSliderFlags_NoRoundToFormat with this if using a format-string with small amount of digits.\r\n"
+"   eImGuiSliderFlags_NoRoundToFormat  = 64, // Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits)\r\n"
+"   eImGuiSliderFlags_NoInput          = 128, // Disable CTRL+Click or Enter key allowing to input text directly into the widget \r\n"
+" }; \r\n"
+" \r\n"
+" enum ImGuiBeginWindow \r\n"
+" { \r\n"
+"   eImGuiBeginWindow_Fail = 0, \r\n"
+"   eImGuiBeginWindow_OK = 1, \r\n"
+"   eImGuiBeginWindow_Collapsed = 2, \r\n"
+"   eImGuiBeginWindow_OK_Closed = 3, \r\n"
+"   eImGuiBeginWindow_Collapsed_Closed = 4, \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiDir \r\n"
+" { \r\n"
+"   eImGuiDir_None = -1, \r\n"
+"   eImGuiDir_Left = 0, \r\n"
+"   eImGuiDir_Right = 1, \r\n"
+"   eImGuiDir_Up = 2, \r\n"
+"   eImGuiDir_Down = 3, \r\n"
+"   eImGuiDir_COUNT \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiWindowFlags \r\n"
+" { \r\n"
+"   eImGuiWindowFlags_None                   = 0, \r\n"
+"   eImGuiWindowFlags_NoTitleBar             = 1,   // Disable title-bar \r\n"
+"   eImGuiWindowFlags_NoResize               = 2,   // Disable user resizing with the lower-right grip \r\n"
+"   eImGuiWindowFlags_NoMove                 = 4,   // Disable user moving the window \r\n"
+"   eImGuiWindowFlags_NoScrollbar            = 8,   // Disable scrollbars (window can still scroll with mouse or programmatically) \r\n"
+"   eImGuiWindowFlags_NoScrollWithMouse      = 16,   // Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set. \r\n"
+"   eImGuiWindowFlags_NoCollapse             = 32,   // Disable user collapsing window by double-clicking on it \r\n"
+"   eImGuiWindowFlags_AlwaysAutoResize       = 64,   // Resize every window to its content every frame \r\n"
+"   eImGuiWindowFlags_NoBackground           = 128,   // Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f). \r\n"
+"   eImGuiWindowFlags_NoSavedSettings        = 256,   // Never load/save settings in .ini file \r\n"
+"   eImGuiWindowFlags_NoMouseInputs          = 512,   // Disable catching mouse, hovering test with pass through. \r\n"
+"   eImGuiWindowFlags_MenuBar                = 1024,  // Has a menu-bar \r\n"
+"   eImGuiWindowFlags_HorizontalScrollbar    = 2048,  // Allow horizontal scrollbar to appear (off by default). \r\n"
+"   eImGuiWindowFlags_NoFocusOnAppearing     = 4096,  // Disable taking focus when transitioning from hidden to visible state \r\n"
+"   eImGuiWindowFlags_NoBringToFrontOnFocus  = 8192,  // Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus) \r\n"
+"   eImGuiWindowFlags_AlwaysVerticalScrollbar= 16384,  // Always show vertical scrollbar (even if ContentSize.y < Size.y) \r\n"
+"   eImGuiWindowFlags_AlwaysHorizontalScrollbar= 32768,  // Always show horizontal scrollbar (even if ContentSize.x < Size.x) \r\n"
+"   eImGuiWindowFlags_AlwaysUseWindowPadding = 65536,  // Ensure child windows without border uses style.WindowPadding (ignored by default for non-bordered child windows, because more convenient) \r\n"
+"   eImGuiWindowFlags_NoNavInputs            = 262144,  // No gamepad/keyboard navigation within the window \r\n"
+"   eImGuiWindowFlags_NoNavFocus             = 524288,  // No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB) \r\n"
+"   eImGuiWindowFlags_UnsavedDocument        = 1048576,  // Append '*' to title without affecting the ID, as a convenience to avoid using the ### operator. \r\n"
+"   eImGuiWindowFlags_NoNav                  = 786432, \r\n"
+"   eImGuiWindowFlags_NoDecoration           = 43, \r\n"
+"   eImGuiWindowFlags_NoInputs               = 786944, \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiPopupFlags \r\n"
+" { \r\n"
+"   eImGuiPopupFlags_None                    = 0,  \r\n"
+"   eImGuiPopupFlags_MouseButtonLeft         = 0,   // For BeginPopupContext*(): open on Left Mouse release. Guaranteed to always be == 0 (same as ImGuiMouseButton_Left) \r\n"
+"   eImGuiPopupFlags_MouseButtonRight        = 1,   // For BeginPopupContext*(): open on Right Mouse release. Guaranteed to always be == 1 (same as ImGuiMouseButton_Right) \r\n"
+"   eImGuiPopupFlags_MouseButtonMiddle       = 2,   // For BeginPopupContext*(): open on Middle Mouse release. Guaranteed to always be == 2 (same as ImGuiMouseButton_Middle) \r\n"
+"   eImGuiPopupFlags_MouseButtonMask_        = 31, \r\n"
+"   eImGuiPopupFlags_MouseButtonDefault_     = 1, \r\n"
+"   eImGuiPopupFlags_NoOpenOverExistingPopup = 32,  // For OpenPopup*(), BeginPopupContext*(): don't open if there's already a popup at the same level of the popup stack \r\n"
+"   eImGuiPopupFlags_NoOpenOverItems         = 64,  // For BeginPopupContextWindow(): don't return true when hovering items, only when hovering empty space \r\n"
+"   eImGuiPopupFlags_AnyPopupId              = 128, // For IsPopupOpen(): ignore the ImGuiID parameter and test for any popup. \r\n"
+"   eImGuiPopupFlags_AnyPopupLevel           = 256, // For IsPopupOpen(): search/test at any level of the popup stack (default test in the current level) \r\n"
+"   eImGuiPopupFlags_AnyPopup                = 384, \r\n"
+" }; \r\n"
+" \r\n"
+" enum ImGuiSelectableFlags \r\n"
+" { \r\n"
+"   eImGuiSelectableFlags_None               = 0, \r\n"
+"   eImGuiSelectableFlags_DontClosePopups    = 1,  // Clicking this don't close parent popup window \r\n"
+"   eImGuiSelectableFlags_SpanAllColumns     = 2,  // Selectable frame can span all columns (text will still fit in current column) \r\n"
+"   eImGuiSelectableFlags_AllowDoubleClick   = 4,  // Generate press events on double clicks too \r\n"
+"   eImGuiSelectableFlags_Disabled           = 8,  // Cannot be selected, display grayed out text \r\n"
+"   eImGuiSelectableFlags_AllowItemOverlap   = 16  // (WIP) Hit testing to allow subsequent widgets to overlap this one \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiComboFlags \r\n"
+" { \r\n"
+"   eImGuiComboFlags_None = 0, \r\n"
+"   eImGuiComboFlags_PopupAlignLeft = 1,  // Align the popup toward the left by default \r\n"
+"   eImGuiComboFlags_HeightSmall    = 2,  // Max ~4 items visible.  \r\n"
+"   eImGuiComboFlags_HeightRegular  = 4,  // Max ~8 items visible (default) \r\n"
+"   eImGuiComboFlags_HeightLarge    = 8,  // Max ~20 items visible \r\n"
+"   eImGuiComboFlags_HeightLargest  = 16, // As many fitting items as possible \r\n"
+"   eImGuiComboFlags_NoArrowButton  = 32, // Display on the preview box without the square arrow button \r\n"
+"   eImGuiComboFlags_NoPreview      = 64, // Display only a square arrow button \r\n"
+"   eImGuiComboFlags_HeightMask_    = 30, \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiTabBarFlags \r\n"
+" { \r\n"
+"   eImGuiTabBarFlags_None                           = 0, \r\n"
+"   eImGuiTabBarFlags_Reorderable                    = 1,   // Allow manually dragging tabs to re-order them + New tabs are appended at the end of list \r\n"
+"   eImGuiTabBarFlags_AutoSelectNewTabs              = 2,   // Automatically select new tabs when they appear \r\n"
+"   eImGuiTabBarFlags_TabListPopupButton             = 4,   // Disable buttons to open the tab list popup \r\n"
+"   eImGuiTabBarFlags_NoCloseWithMiddleMouseButton   = 8,   // Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button.  \r\n"
+"   eImGuiTabBarFlags_NoTabListScrollingButtons      = 16,   // Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll) \r\n"
+"   eImGuiTabBarFlags_NoTooltip                      = 32,   // Disable tooltips when hovering a tab \r\n"
+"   eImGuiTabBarFlags_FittingPolicyResizeDown        = 64,   // Resize tabs when they don't fit \r\n"
+"   eImGuiTabBarFlags_FittingPolicyScroll            = 128,   // Add scroll buttons when tabs don't fit \r\n"
+"   eImGuiTabBarFlags_FittingPolicyMask_             = 192, \r\n"
+"   eImGuiTabBarFlags_FittingPolicyDefault_          = 64 \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiTabItemFlags \r\n"
+" { \r\n"
+"   eImGuiTabItemFlags_None = 0, \r\n"
+"   eImGuiTabItemFlags_UnsavedDocument = 1,   // Append '*' to title without affecting the ID. \r\n"
+"   eImGuiTabItemFlags_SetSelected = 2,   // Trigger flag to programmatically make the tab selected when calling BeginTabItem() \r\n"
+"   eImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4,   // Disable behavior of closing tabs  \r\n"
+"   eImGuiTabItemFlags_NoPushId = 8,   // Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem() \r\n"
+"   eImGuiTabItemFlags_NoTooltip   = 16,   // Disable tooltip for the given tab \r\n"
+"   eImGuiTabItemFlags_NoReorder   = 32,   // Disable reordering this tab or having another tab cross over this tab \r\n"
+"   eImGuiTabItemFlags_Leading     = 64,   // Enforce the tab position to the left of the tab bar (after the tab list popup button) \r\n"
+"   eImGuiTabItemFlags_Trailing    = 128,  // Enforce the tab position to the right of the tab bar (before the scrolling buttons) \r\n"
 " }; \r\n"
 "  \r\n"
 " enum ImGuiFocusedFlags \r\n"
@@ -268,129 +395,29 @@ const unsigned int SaveMagic = Magic + Version;
 "   eImGuiHoveredFlags_RootAndChildWindows           = 3 \r\n"
 " }; \r\n"
 "  \r\n"
-" enum ImGuiTabBarFlags \r\n"
-" { \r\n"
-"   eImGuiTabBarFlags_None                           = 0, \r\n"
-"   eImGuiTabBarFlags_Reorderable                    = 1,   // Allow manually dragging tabs to re-order them + New tabs are appended at the end of list \r\n"
-"   eImGuiTabBarFlags_AutoSelectNewTabs              = 2,   // Automatically select new tabs when they appear \r\n"
-"   eImGuiTabBarFlags_TabListPopupButton             = 4,   // Disable buttons to open the tab list popup \r\n"
-"   eImGuiTabBarFlags_NoCloseWithMiddleMouseButton   = 8,   // Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button.  \r\n"
-"   eImGuiTabBarFlags_NoTabListScrollingButtons      = 16,   // Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll) \r\n"
-"   eImGuiTabBarFlags_NoTooltip                      = 32,   // Disable tooltips when hovering a tab \r\n"
-"   eImGuiTabBarFlags_FittingPolicyResizeDown        = 64,   // Resize tabs when they don't fit \r\n"
-"   eImGuiTabBarFlags_FittingPolicyScroll            = 128,   // Add scroll buttons when tabs don't fit \r\n"
-"   eImGuiTabBarFlags_FittingPolicyMask_             = 192, \r\n"
-"   eImGuiTabBarFlags_FittingPolicyDefault_          = 64 \r\n"
-" }; \r\n"
-"  \r\n"
-" enum ImGuiTabItemFlags \r\n"
-" { \r\n"
-"   ImGuiTabItemFlags_None = 0, \r\n"
-"   ImGuiTabItemFlags_UnsavedDocument = 1,   // Append '*' to title without affecting the ID. \r\n"
-"   ImGuiTabItemFlags_SetSelected = 2,   // Trigger flag to programmatically make the tab selected when calling BeginTabItem() \r\n"
-"   ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4,   // Disable behavior of closing tabs  \r\n"
-"   ImGuiTabItemFlags_NoPushId = 8    // Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem() \r\n"
-" }; \r\n"
-"  \r\n"
-" enum ImGuiBeginWindow \r\n"
-" { \r\n"
-"    eImGuiBeginWindow_Fail = 0, \r\n"
-"    eImGuiBeginWindow_OK = 1, \r\n"
-"    eImGuiBeginWindow_Collapsed = 2, \r\n"
-"    eImGuiBeginWindow_OK_Closed = 3, \r\n"
-"    eImGuiBeginWindow_Collapsed_Closed = 4, \r\n"
-" }; \r\n"
-"  \r\n"
-" enum ImGuiSelectableFlags \r\n"
-" { \r\n"
-"    eImGuiSelectableFlags_None               = 0, \r\n"
-"    eImGuiSelectableFlags_DontClosePopups    = 1,  // Clicking this don't close parent popup window \r\n"
-"    eImGuiSelectableFlags_SpanAllColumns     = 2,  // Selectable frame can span all columns (text will still fit in current column) \r\n"
-"    eImGuiSelectableFlags_AllowDoubleClick   = 4,  // Generate press events on double clicks too \r\n"
-"    eImGuiSelectableFlags_Disabled           = 8,  // Cannot be selected, display grayed out text \r\n"
-"    eImGuiSelectableFlags_AllowItemOverlap   = 16  // (WIP) Hit testing to allow subsequent widgets to overlap this one \r\n"
-" }; \r\n"
-"  \r\n"
-" enum ImGuiComboFlags \r\n"
-" { \r\n"
-"   eImGuiComboFlags_None = 0, \r\n"
-"   eImGuiComboFlags_PopupAlignLeft = 1,  // Align the popup toward the left by default \r\n"
-"   eImGuiComboFlags_HeightSmall    = 2,  // Max ~4 items visible.  \r\n"
-"   eImGuiComboFlags_HeightRegular  = 4,  // Max ~8 items visible (default) \r\n"
-"   eImGuiComboFlags_HeightLarge    = 8,  // Max ~20 items visible \r\n"
-"   eImGuiComboFlags_HeightLargest  = 16, // As many fitting items as possible \r\n"
-"   eImGuiComboFlags_NoArrowButton  = 32, // Display on the preview box without the square arrow button \r\n"
-"   eImGuiComboFlags_NoPreview      = 64, // Display only a square arrow button \r\n"
-"   eImGuiComboFlags_HeightMask_    = 30, \r\n"
-" }; \r\n"
-" enum ImGuiDir \r\n"
-" { \r\n"
-" eImGuiDir_None = -1, \r\n"
-" eImGuiDir_Left = 0, \r\n"
-" eImGuiDir_Right = 1, \r\n"
-" eImGuiDir_Up = 2, \r\n"
-" eImGuiDir_Down = 3, \r\n"
-" eImGuiDir_COUNT \r\n"
-" }; \r\n"
-"  \r\n"
-" enum ImGuiWindowFlags \r\n"
-" { \r\n"
-" eImGuiWindowFlags_None                   = 0, \r\n"
-" eImGuiWindowFlags_NoTitleBar             = 1,   // Disable title-bar \r\n"
-" eImGuiWindowFlags_NoResize               = 2,   // Disable user resizing with the lower-right grip \r\n"
-" eImGuiWindowFlags_NoMove                 = 4,   // Disable user moving the window \r\n"
-" eImGuiWindowFlags_NoScrollbar            = 8,   // Disable scrollbars (window can still scroll with mouse or programmatically) \r\n"
-" eImGuiWindowFlags_NoScrollWithMouse      = 16,   // Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set. \r\n"
-" eImGuiWindowFlags_NoCollapse             = 32,   // Disable user collapsing window by double-clicking on it \r\n"
-" eImGuiWindowFlags_AlwaysAutoResize       = 64,   // Resize every window to its content every frame \r\n"
-" eImGuiWindowFlags_NoBackground           = 128,   // Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f). \r\n"
-" eImGuiWindowFlags_NoSavedSettings        = 256,   // Never load/save settings in .ini file \r\n"
-" eImGuiWindowFlags_NoMouseInputs          = 512,   // Disable catching mouse, hovering test with pass through. \r\n"
-" eImGuiWindowFlags_MenuBar                = 1024,  // Has a menu-bar \r\n"
-" eImGuiWindowFlags_HorizontalScrollbar    = 2048,  // Allow horizontal scrollbar to appear (off by default). \r\n"
-" eImGuiWindowFlags_NoFocusOnAppearing     = 4096,  // Disable taking focus when transitioning from hidden to visible state \r\n"
-" eImGuiWindowFlags_NoBringToFrontOnFocus  = 8192,  // Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus) \r\n"
-" eImGuiWindowFlags_AlwaysVerticalScrollbar= 16384,  // Always show vertical scrollbar (even if ContentSize.y < Size.y) \r\n"
-" eImGuiWindowFlags_AlwaysHorizontalScrollbar= 32768,  // Always show horizontal scrollbar (even if ContentSize.x < Size.x) \r\n"
-" eImGuiWindowFlags_AlwaysUseWindowPadding = 65536,  // Ensure child windows without border uses style.WindowPadding (ignored by default for non-bordered child windows, because more convenient) \r\n"
-" eImGuiWindowFlags_NoNavInputs            = 262144,  // No gamepad/keyboard navigation within the window \r\n"
-" eImGuiWindowFlags_NoNavFocus             = 524288,  // No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB) \r\n"
-" eImGuiWindowFlags_UnsavedDocument        = 1048576,  // Append '*' to title without affecting the ID, as a convenience to avoid using the ### operator. \r\n"
-" eImGuiWindowFlags_NoNav                  = 786432, \r\n"
-" eImGuiWindowFlags_NoDecoration           = 43, \r\n"
-" eImGuiWindowFlags_NoInputs               = 786944, \r\n"
-" }; \r\n"
-"  \r\n"
 " enum ImGuiInputTextFlags \r\n"
 " { \r\n"
-" eImGuiInputTextFlags_None                = 0, \r\n"
-" eImGuiInputTextFlags_CharsDecimal        = 1,   // Allow 0123456789.+-*/ \r\n"
-" eImGuiInputTextFlags_CharsHexadecimal    = 2,   // Allow 0123456789ABCDEFabcdef \r\n"
-" eImGuiInputTextFlags_CharsUppercase      = 4,   // Turn a..z into A..Z \r\n"
-" eImGuiInputTextFlags_CharsNoBlank        = 8,   // Filter out spaces, tabs \r\n"
-" eImGuiInputTextFlags_AutoSelectAll       = 16,   // Select entire text when first taking mouse focus \r\n"
-" eImGuiInputTextFlags_EnterReturnsTrue    = 32,   // Return 'true' when Enter is pressed (as opposed to every time the value was modified). \r\n"
-" eImGuiInputTextFlags_CallbackCompletion  = 64,   // Callback on pressing TAB (for completion handling) \r\n"
-" eImGuiInputTextFlags_CallbackHistory     = 128,   // Callback on pressing Up/Down arrows (for history handling) \r\n"
-" eImGuiInputTextFlags_CallbackAlways      = 256,   // Callback on each iteration. User code may query cursor position, modify text buffer. \r\n"
-" eImGuiInputTextFlags_CallbackCharFilter  = 512,   // Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard. \r\n"
-" eImGuiInputTextFlags_AllowTabInput       = 1024,  // Pressing TAB input a 't' character into the text field \r\n"
-" eImGuiInputTextFlags_CtrlEnterForNewLine = 2048,  // In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter). \r\n"
-" eImGuiInputTextFlags_NoHorizontalScroll  = 4096,  // Disable following the cursor horizontally \r\n"
-" eImGuiInputTextFlags_AlwaysInsertMode    = 8192,  // Insert mode \r\n"
-" eImGuiInputTextFlags_ReadOnly            = 16384,  // Read-only mode \r\n"
-" eImGuiInputTextFlags_Password            = 32768,  // Password mode, display all characters as '*' \r\n"
-" eImGuiInputTextFlags_NoUndoRedo          = 65536,  // Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID(). \r\n"
-" eImGuiInputTextFlags_CharsScientific     = 131072,  // Allow 0123456789.+-*/eE (Scientific notation input) \r\n"
-" eImGuiInputTextFlags_CallbackResize      = 262144,  // Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. \r\n"
-" }; \r\n"
-"  \r\n"
-" enum ImGuiCond \r\n"
-" { \r\n"
-"   eImGuiCond_Always       = 1, // Set the variable \r\n"
-"   eImGuiCond_Once         = 2, // Set the variable once per runtime session (only the first call with succeed) \r\n"
-"   eImGuiCond_FirstUseEver = 4, // Set the variable if the object/window has no persistently saved data (no entry in .ini file) \r\n"
-"   eImGuiCond_Appearing    = 8, // Set the variable if the object/window is appearing after being hidden/inactive (or the first time) \r\n"
+"   eImGuiInputTextFlags_None                = 0, \r\n"
+"   eImGuiInputTextFlags_CharsDecimal        = 1,   // Allow 0123456789.+-*/ \r\n"
+"   eImGuiInputTextFlags_CharsHexadecimal    = 2,   // Allow 0123456789ABCDEFabcdef \r\n"
+"   eImGuiInputTextFlags_CharsUppercase      = 4,   // Turn a..z into A..Z \r\n"
+"   eImGuiInputTextFlags_CharsNoBlank        = 8,   // Filter out spaces, tabs \r\n"
+"   eImGuiInputTextFlags_AutoSelectAll       = 16,   // Select entire text when first taking mouse focus \r\n"
+"   eImGuiInputTextFlags_EnterReturnsTrue    = 32,   // Return 'true' when Enter is pressed (as opposed to every time the value was modified). \r\n"
+"   eImGuiInputTextFlags_CallbackCompletion  = 64,   // Callback on pressing TAB (for completion handling) \r\n"
+"   eImGuiInputTextFlags_CallbackHistory     = 128,   // Callback on pressing Up/Down arrows (for history handling) \r\n"
+"   eImGuiInputTextFlags_CallbackAlways      = 256,   // Callback on each iteration. User code may query cursor position, modify text buffer. \r\n"
+"   eImGuiInputTextFlags_CallbackCharFilter  = 512,   // Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard. \r\n"
+"   eImGuiInputTextFlags_AllowTabInput       = 1024,  // Pressing TAB input a 't' character into the text field \r\n"
+"   eImGuiInputTextFlags_CtrlEnterForNewLine = 2048,  // In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter). \r\n"
+"   eImGuiInputTextFlags_NoHorizontalScroll  = 4096,  // Disable following the cursor horizontally \r\n"
+"   eImGuiInputTextFlags_AlwaysInsertMode    = 8192,  // Insert mode \r\n"
+"   eImGuiInputTextFlags_ReadOnly            = 16384,  // Read-only mode \r\n"
+"   eImGuiInputTextFlags_Password            = 32768,  // Password mode, display all characters as '*' \r\n"
+"   eImGuiInputTextFlags_NoUndoRedo          = 65536,  // Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID(). \r\n"
+"   eImGuiInputTextFlags_CharsScientific     = 131072,  // Allow 0123456789.+-*/eE (Scientific notation input) \r\n"
+"   eImGuiInputTextFlags_CallbackResize      = 262144,  // Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. \r\n"
+"   eImGuiInputTextFlags_CallbackEdit        = 524288,  // Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active) \r\n"
 " }; \r\n"
 "  \r\n"
 " enum ImGuiTreeNodeFlags \r\n"
@@ -411,6 +438,14 @@ const unsigned int SaveMagic = Magic + Version;
 "   eImGuiTreeNodeFlags_SpanFullWidth      = 4096,  // Extend hit box to the left-most and right-most edges (bypass the indented area). \r\n"
 "   eImGuiTreeNodeFlags_NavLeftJumpsBackHere = 8192,  // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop) \r\n"
 "   eImGuiTreeNodeFlags_CollapsingHeader   = 26, \r\n"
+" }; \r\n"
+"  \r\n"
+" enum ImGuiCond \r\n"
+" { \r\n"
+"   eImGuiCond_Always       = 1, // Set the variable \r\n"
+"   eImGuiCond_Once         = 2, // Set the variable once per runtime session (only the first call with succeed) \r\n"
+"   eImGuiCond_FirstUseEver = 4, // Set the variable if the object/window has no persistently saved data (no entry in .ini file) \r\n"
+"   eImGuiCond_Appearing    = 8, // Set the variable if the object/window is appearing after being hidden/inactive (or the first time) \r\n"
 " }; \r\n"
 " \r\n"
 "builtin managed struct ImVec4 { \r\n"
@@ -528,6 +563,9 @@ const unsigned int SaveMagic = Magic + Version;
 "    /// Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label). \r\n"
 "    import attribute ImVec2* ItemInnerSpacing; \r\n"
 "     \r\n"
+"    /// Padding within a table cell. \r\n"
+"    import attribute ImVec2* CellPadding; \r\n"
+"     \r\n"
 "    /// Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. Don't grow this too much! \r\n"
 "    import attribute ImVec2* TouchExtraPadding; \r\n"
 "     \r\n"
@@ -549,6 +587,9 @@ const unsigned int SaveMagic = Magic + Version;
 "    /// Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs. \r\n"
 "    import attribute float GrabRounding; \r\n"
 "     \r\n"
+"    /// The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero. \r\n"
+"    import attribute float LogSliderDeadzone; \r\n"
+"     \r\n"
 "    /// Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs. \r\n"
 "    import attribute float TabRounding; \r\n"
 "     \r\n"
@@ -556,7 +597,7 @@ const unsigned int SaveMagic = Magic + Version;
 "    import attribute float TabBorderSize; \r\n"
 "     \r\n"
 "    /// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected. \r\n"
-"    import attribute float TabMinWidthForUnselectedCloseButton; \r\n"
+"    import attribute float TabMinWidthForCloseButton; \r\n"
 "     \r\n"
 "    /// Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right. \r\n"
 "    import attribute ImGuiDir ColorButtonPosition; \r\n"
@@ -578,6 +619,9 @@ const unsigned int SaveMagic = Magic + Version;
 "     \r\n"
 "    /// Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU. \r\n"
 "    import attribute bool AntiAliasedLines; \r\n"
+"     \r\n"
+"    /// Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering. Latched at the beginning of the frame (copied to ImDrawList). \r\n"
+"    import attribute bool AntiAliasedLinesUseTex; \r\n"
 "     \r\n"
 "    /// Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.) \r\n"
 "    import attribute bool AntiAliasedFill; \r\n"
@@ -737,10 +781,10 @@ const unsigned int SaveMagic = Magic + Version;
 " import static bool IsWindowHovered(ImGuiHoveredFlags flags=0); \r\n"
 "  \r\n"
 " /// return current window position in screen space. \r\n"
-" import static ImVec* GetWindowPos(); \r\n"
+" import static ImVec2* GetWindowPos(); \r\n"
 "  \r\n"
 " /// get current window size. \r\n"
-" import static ImVec* GetWindowSize(); \r\n"
+" import static ImVec2* GetWindowSize(); \r\n"
 "  \r\n"
 " // Layout \r\n"
 " // - By cursor we mean the current output position. \r\n"
@@ -850,7 +894,7 @@ const unsigned int SaveMagic = Magic + Version;
 " import static float SliderFloat(String label, float value, float min_value = 0, float max_value = 0, String format = 0); \r\n"
 "  \r\n"
 " /// CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped and can go off-bounds. \r\n"
-" import static int SliderInt(String label, int value, int min_value = 0, int max_value = 0, String format = 0); \r\n"
+" import static int SliderInt(String label, int value, int min_value = 0, int max_value = 0, String format = 0, ImGuiSliderFlags flags = 0); \r\n"
 "  \r\n"
 " // Widgets: Input with Keyboard \r\n"
 "  \r\n"
@@ -907,7 +951,7 @@ const unsigned int SaveMagic = Magic + Version;
 " // Widgets: List Boxes \r\n"
 "  \r\n"
 " /// If the function return true, you can output elements then call EndListBox() afterwards. \r\n"
-" import static bool BeginListBox(String label, int items_count, int height_in_items = -1); \r\n"
+" import static bool BeginListBox(String label, float size_x = 0, float size_y = 0); \r\n"
 "  \r\n"
 " /// Only call EndListBox() if BeginListBox() returns true! \r\n"
 " import static void EndListBox(); \r\n"\
@@ -929,10 +973,10 @@ const unsigned int SaveMagic = Magic + Version;
 " import static void OpenPopup(String str_id); \r\n"
 "  \r\n"
 " /// return true if the popup is open, and you can start outputting to it. only call EndPopup() if BeginPopup() returns true! \r\n"
-" import static bool BeginPopup(String str_id, ImGuiWindowFlags flags = 0);  \r\n"
+" import static bool BeginPopup(String str_id, ImGuiPopupFlags flags = 0);  \r\n"
 "  \r\n"
 " /// modal dialog (regular window with title bar, block interactions behind the modal window, can't close the modal window by clicking outside) \r\n"
-" import static bool BeginPopupModal(String name, bool has_close_button = 0, ImGuiWindowFlags flags = 0); \r\n"
+" import static bool BeginPopupModal(String name, bool has_close_button = 0, ImGuiPopupFlags flags = 0); \r\n"
 "  \r\n"
 " /// only call EndPopup() if BeginPopupXXX() returns true! \r\n"
 " import static void EndPopup(); \r\n"
@@ -1493,6 +1537,15 @@ AgsImVec2* AgsImGuiStyle_GetItemInnerSpacing(AgsImGuiStyle* self){
 }
 
 
+void AgsImGuiStyle_SetCellPadding(AgsImGuiStyle* self, AgsImVec2* cellPadding){
+    SetAgsImVec2(self->CellPadding, cellPadding);
+}
+
+AgsImVec2* AgsImGuiStyle_GetCellPadding(AgsImGuiStyle* self){
+    return NewAgsImVec2(self->CellPadding);
+}
+
+
 void AgsImGuiStyle_SetTouchExtraPadding(AgsImGuiStyle* self, AgsImVec2* touchExtraPadding){
     SetAgsImVec2(self->TouchExtraPadding, touchExtraPadding);
 }
@@ -1562,6 +1615,16 @@ uint32_t AgsImGuiStyle_GetGrabRounding(AgsImGuiStyle* self){
 }
 
 
+void AgsImGuiStyle_SetLogSliderDeadzone(AgsImGuiStyle* self, uint32_t logSliderDeadzone){
+    float f_logSliderDeadzone= ToNormalFloat(logSliderDeadzone);
+    self->LogSliderDeadzone = f_logSliderDeadzone;
+}
+
+uint32_t AgsImGuiStyle_GetLogSliderDeadzone(AgsImGuiStyle* self){
+    return ToAgsFloat(self->LogSliderDeadzone);
+}
+
+
 void AgsImGuiStyle_SetTabRounding(AgsImGuiStyle* self, uint32_t tabRounding){
     float f_tabRounding = ToNormalFloat(tabRounding);
     self->TabRounding = f_tabRounding;
@@ -1582,13 +1645,13 @@ uint32_t AgsImGuiStyle_GetTabBorderSize(AgsImGuiStyle* self){
 }
 
 
-void AgsImGuiStyle_SetTabMinWidthForUnselectedCloseButton(AgsImGuiStyle* self, uint32_t tabMinWidthForUnselectedCloseButton){
-    float f_tabMinWidthForUnselectedCloseButton = ToNormalFloat(tabMinWidthForUnselectedCloseButton);
-    self->TabMinWidthForUnselectedCloseButton = f_tabMinWidthForUnselectedCloseButton;
+void AgsImGuiStyle_SetTabMinWidthForCloseButton(AgsImGuiStyle* self, uint32_t tabMinWidthForCloseButton){
+    float f_tabMinWidthForCloseButton = ToNormalFloat(tabMinWidthForCloseButton);
+    self->TabMinWidthForCloseButton = f_tabMinWidthForCloseButton;
 }
 
-uint32_t AgsImGuiStyle_GetTabMinWidthForUnselectedCloseButton(AgsImGuiStyle* self){
-    return ToAgsFloat(self->TabMinWidthForUnselectedCloseButton);
+uint32_t AgsImGuiStyle_GetTabMinWidthForCloseButton(AgsImGuiStyle* self){
+    return ToAgsFloat(self->TabMinWidthForCloseButton);
 }
 
 
@@ -1653,6 +1716,15 @@ void AgsImGuiStyle_SetAntiAliasedLines(AgsImGuiStyle* self, int antiAliasedLines
 
 int AgsImGuiStyle_GetAntiAliasedLines(AgsImGuiStyle* self){
     return ToAgsBool(self->AntiAliasedLines);
+}
+
+
+void AgsImGuiStyle_SetAntiAliasedLinesUseTex(AgsImGuiStyle* self, int antiAliasedLinesUseTex){
+    self->AntiAliasedLinesUseTex = ToNormalBool(antiAliasedLinesUseTex);
+}
+
+int AgsImGuiStyle_GetAntiAliasedLinesUseTex(AgsImGuiStyle* self){
+    return ToAgsBool(self->AntiAliasedLinesUseTex);
 }
 
 
@@ -2098,14 +2170,14 @@ uint32_t AgsImGui_SliderFloat(const char* label, uint32_t value, uint32_t v_min,
     return ToAgsFloat(f_value);
 }
 
-int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const char* format){
+int AgsImgui_SliderInt(const char* label, int value, int v_min, int v_max, const char* format, int flags){
     std::string format_string =  "%d";
     std::string empty_string =  "";
     if(format == nullptr) format = format_string.c_str();
     if(label == nullptr) label = empty_string.c_str();
 
     int ret_value = value;
-    ImGui::SliderInt(label, &ret_value, v_min, v_max, format);
+    ImGui::SliderInt(label, &ret_value, v_min, v_max, format, flags);
     return ret_value;
 }
 
@@ -2195,8 +2267,11 @@ void AgsImGui_SetNextItemOpen(int is_open, int cond) {
     ImGui::SetNextItemOpen(is_open != 0, cond);
 }
 
-int AgsImGui_BeginListBox(const char* name, int items_count, int height_in_items = -1){
-    return ToAgsBool(ImGui::ListBoxHeader(name,items_count,height_in_items));
+int AgsImGui_BeginListBox(const char* name, uint32_t size_x, uint32_t size_y){
+    float f_size_x = ToNormalFloat(size_x);
+    float f_size_y = ToNormalFloat(size_y);
+
+    return ToAgsBool(ImGui::BeginListBox(name, ImVec2(f_size_x, f_size_y)));
 }
 
 void AgsImGui_EndListBox(){
@@ -2560,6 +2635,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_ItemSpacing", (void*)AgsImGuiStyle_GetItemSpacing);
         engine->RegisterScriptFunction("ImGuiStyle::set_ItemInnerSpacing", (void*)AgsImGuiStyle_SetItemInnerSpacing);
         engine->RegisterScriptFunction("ImGuiStyle::get_ItemInnerSpacing", (void*)AgsImGuiStyle_GetItemInnerSpacing);
+        engine->RegisterScriptFunction("ImGuiStyle::set_CellPadding", (void*)AgsImGuiStyle_SetCellPadding);
+        engine->RegisterScriptFunction("ImGuiStyle::get_CellPadding", (void*)AgsImGuiStyle_GetCellPadding);
         engine->RegisterScriptFunction("ImGuiStyle::set_TouchExtraPadding", (void*)AgsImGuiStyle_SetTouchExtraPadding);
         engine->RegisterScriptFunction("ImGuiStyle::get_TouchExtraPadding", (void*)AgsImGuiStyle_GetTouchExtraPadding);
         engine->RegisterScriptFunction("ImGuiStyle::set_IndentSpacing", (void*)AgsImGuiStyle_SetIndentSpacing);
@@ -2574,12 +2651,14 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_GrabMinSize", (void*)AgsImGuiStyle_GetGrabMinSize);
         engine->RegisterScriptFunction("ImGuiStyle::set_GrabRounding", (void*)AgsImGuiStyle_SetGrabRounding);
         engine->RegisterScriptFunction("ImGuiStyle::get_GrabRounding", (void*)AgsImGuiStyle_GetGrabRounding);
+        engine->RegisterScriptFunction("ImGuiStyle::set_LogSliderDeadzone", (void*)AgsImGuiStyle_SetLogSliderDeadzone);
+        engine->RegisterScriptFunction("ImGuiStyle::get_LogSliderDeadzone", (void*)AgsImGuiStyle_GetLogSliderDeadzone);
         engine->RegisterScriptFunction("ImGuiStyle::set_TabRounding", (void*)AgsImGuiStyle_SetTabRounding);
         engine->RegisterScriptFunction("ImGuiStyle::get_TabRounding", (void*)AgsImGuiStyle_GetTabRounding);
         engine->RegisterScriptFunction("ImGuiStyle::set_TabBorderSize", (void*)AgsImGuiStyle_SetTabBorderSize);
         engine->RegisterScriptFunction("ImGuiStyle::get_TabBorderSize", (void*)AgsImGuiStyle_GetTabBorderSize);
-        engine->RegisterScriptFunction("ImGuiStyle::set_TabMinWidthForUnselectedCloseButton", (void*)AgsImGuiStyle_SetTabMinWidthForUnselectedCloseButton);
-        engine->RegisterScriptFunction("ImGuiStyle::get_TabMinWidthForUnselectedCloseButton", (void*)AgsImGuiStyle_GetTabMinWidthForUnselectedCloseButton);
+        engine->RegisterScriptFunction("ImGuiStyle::set_TabMinWidthForCloseButton", (void*)AgsImGuiStyle_SetTabMinWidthForCloseButton);
+        engine->RegisterScriptFunction("ImGuiStyle::get_TabMinWidthForCloseButton", (void*)AgsImGuiStyle_GetTabMinWidthForCloseButton);
         engine->RegisterScriptFunction("ImGuiStyle::set_ColorButtonPosition", (void*)AgsImGuiStyle_SetColorButtonPosition);
         engine->RegisterScriptFunction("ImGuiStyle::get_ColorButtonPosition", (void*)AgsImGuiStyle_GetColorButtonPosition);
         engine->RegisterScriptFunction("ImGuiStyle::set_ButtonTextAlign", (void*)AgsImGuiStyle_SetButtonTextAlign);
@@ -2594,6 +2673,8 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("ImGuiStyle::get_MouseCursorScale", (void*)AgsImGuiStyle_GetMouseCursorScale);
         engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedLines", (void*)AgsImGuiStyle_SetAntiAliasedLines);
         engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedLines", (void*)AgsImGuiStyle_GetAntiAliasedLines);
+        engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedLinesUseTex", (void*)AgsImGuiStyle_SetAntiAliasedLinesUseTex);
+        engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedLinesUseTex", (void*)AgsImGuiStyle_GetAntiAliasedLinesUseTex);
         engine->RegisterScriptFunction("ImGuiStyle::set_AntiAliasedFill", (void*)AgsImGuiStyle_SetAntiAliasedFill);
         engine->RegisterScriptFunction("ImGuiStyle::get_AntiAliasedFill", (void*)AgsImGuiStyle_GetAntiAliasedFill);
         engine->RegisterScriptFunction("ImGuiStyle::set_CurveTessellationTol", (void*)AgsImGuiStyle_SetCurveTessellationTol);
@@ -2679,7 +2760,7 @@ int AgsImGuiHelper_GetClipboarImage() {
         engine->RegisterScriptFunction("AgsImGui::DragFloat^6", (void*)AgsImGui_DragFloat);
         engine->RegisterScriptFunction("AgsImGui::DragInt^6", (void*)AgsImgui_DragInt);
         engine->RegisterScriptFunction("AgsImGui::SliderFloat^5", (void*)AgsImGui_SliderFloat);
-        engine->RegisterScriptFunction("AgsImGui::SliderInt^5", (void*)AgsImgui_SliderInt);
+        engine->RegisterScriptFunction("AgsImGui::SliderInt^6", (void*)AgsImgui_SliderInt);
         engine->RegisterScriptFunction("AgsImGui::InputText^4", (void*)AgsImgui_InputText);
         engine->RegisterScriptFunction("AgsImGui::InputTextMultiline^6", (void*)AgsImgui_InputTextMultiline);
         engine->RegisterScriptFunction("AgsImGui::InputTextWithHint^5", (void*)AgsImgui_InputTextWithHint);
@@ -2845,6 +2926,7 @@ void RestoreGame(long fileHandle)
     float _FrameBorderSize;
     ImVec2 _ItemSpacing;
     ImVec2 _ItemInnerSpacing;
+    ImVec2 _CellPadding;
     ImVec2 _TouchExtraPadding;
     float _IndentSpacing;
     float _ColumnsMinSpacing;
@@ -2852,9 +2934,10 @@ void RestoreGame(long fileHandle)
     float _ScrollbarRounding;
     float _GrabMinSize;
     float _GrabRounding;
+    float _LogSliderDeadzone;
     float _TabRounding;
     float _TabBorderSize;
-    float _TabMinWidthForUnselectedCloseButton;
+    float _TabMinWidthForCloseButton;
     int _ColorButtonPosition;
     ImVec2 _ButtonTextAlign;
     ImVec2 _SelectableTextAlign;
@@ -2862,6 +2945,7 @@ void RestoreGame(long fileHandle)
     ImVec2 _DisplaySafeAreaPadding;
     float _MouseCursorScale;
     bool _AntiAliasedLines;
+    bool _AntiAliasedLinesUseTex;
     bool _AntiAliasedFill;
     float _CurveTessellationTol;
     float _CircleSegmentMaxError;
@@ -2883,6 +2967,7 @@ void RestoreGame(long fileHandle)
     EngineReadFloat( _FrameBorderSize, fileHandle);
     EngineReadImVec2( _ItemSpacing, fileHandle);
     EngineReadImVec2( _ItemInnerSpacing, fileHandle);
+    EngineReadImVec2( _CellPadding, fileHandle);
     EngineReadImVec2( _TouchExtraPadding, fileHandle);
     EngineReadFloat( _IndentSpacing, fileHandle);
     EngineReadFloat( _ColumnsMinSpacing, fileHandle);
@@ -2890,9 +2975,10 @@ void RestoreGame(long fileHandle)
     EngineReadFloat( _ScrollbarRounding, fileHandle);
     EngineReadFloat( _GrabMinSize, fileHandle);
     EngineReadFloat( _GrabRounding, fileHandle);
+    EngineReadFloat( _LogSliderDeadzone, fileHandle);
     EngineReadFloat( _TabRounding, fileHandle);
     EngineReadFloat( _TabBorderSize, fileHandle);
-    EngineReadFloat( _TabMinWidthForUnselectedCloseButton, fileHandle);
+    EngineReadFloat( _TabMinWidthForCloseButton, fileHandle);
     EngineReadInt( _ColorButtonPosition, fileHandle);
     EngineReadImVec2( _ButtonTextAlign, fileHandle);
     EngineReadImVec2( _SelectableTextAlign, fileHandle);
@@ -2900,6 +2986,7 @@ void RestoreGame(long fileHandle)
     EngineReadImVec2( _DisplaySafeAreaPadding, fileHandle);
     EngineReadFloat( _MouseCursorScale, fileHandle);
     EngineReadBool(_AntiAliasedLines, fileHandle);
+    EngineReadBool(_AntiAliasedLinesUseTex, fileHandle);
     EngineReadBool(_AntiAliasedFill, fileHandle);
     EngineReadFloat( _CurveTessellationTol, fileHandle);
     EngineReadFloat( _CircleSegmentMaxError, fileHandle);
@@ -2924,6 +3011,7 @@ void RestoreGame(long fileHandle)
     imGuiStyle.FrameBorderSize = _FrameBorderSize;
     imGuiStyle.ItemSpacing = _ItemSpacing;
     imGuiStyle.ItemInnerSpacing = _ItemInnerSpacing;
+    imGuiStyle.CellPadding = _CellPadding;
     imGuiStyle.TouchExtraPadding = _TouchExtraPadding;
     imGuiStyle.IndentSpacing = _IndentSpacing;
     imGuiStyle.ColumnsMinSpacing = _ColumnsMinSpacing;
@@ -2931,9 +3019,10 @@ void RestoreGame(long fileHandle)
     imGuiStyle.ScrollbarRounding = _ScrollbarRounding;
     imGuiStyle.GrabMinSize = _GrabMinSize;
     imGuiStyle.GrabRounding = _GrabRounding;
+    imGuiStyle.LogSliderDeadzone = _LogSliderDeadzone;
     imGuiStyle.TabRounding = _TabRounding;
     imGuiStyle.TabBorderSize = _TabBorderSize;
-    imGuiStyle.TabMinWidthForUnselectedCloseButton = _TabMinWidthForUnselectedCloseButton;
+    imGuiStyle.TabMinWidthForCloseButton= _TabMinWidthForCloseButton;
     imGuiStyle.ColorButtonPosition = _ColorButtonPosition;
     imGuiStyle.ButtonTextAlign = _ButtonTextAlign;
     imGuiStyle.SelectableTextAlign = _SelectableTextAlign;
@@ -2941,6 +3030,7 @@ void RestoreGame(long fileHandle)
     imGuiStyle.DisplaySafeAreaPadding = _DisplaySafeAreaPadding;
     imGuiStyle.MouseCursorScale = _MouseCursorScale;
     imGuiStyle.AntiAliasedLines = _AntiAliasedLines;
+    imGuiStyle.AntiAliasedLinesUseTex = _AntiAliasedLinesUseTex;
     imGuiStyle.AntiAliasedFill = _AntiAliasedFill;
     imGuiStyle.CurveTessellationTol = _CurveTessellationTol;
     imGuiStyle.CircleSegmentMaxError = _CircleSegmentMaxError;
@@ -2972,6 +3062,7 @@ void SaveGame(long file)
     EngineWriteFloat(imGuiStyle.FrameBorderSize, file);
     EngineWriteImVec2(imGuiStyle.ItemSpacing, file);
     EngineWriteImVec2(imGuiStyle.ItemInnerSpacing, file);
+    EngineWriteImVec2(imGuiStyle.CellPadding, file);
     EngineWriteImVec2(imGuiStyle.TouchExtraPadding, file);
     EngineWriteFloat(imGuiStyle.IndentSpacing, file);
     EngineWriteFloat(imGuiStyle.ColumnsMinSpacing, file);
@@ -2979,9 +3070,10 @@ void SaveGame(long file)
     EngineWriteFloat(imGuiStyle.ScrollbarRounding, file);
     EngineWriteFloat(imGuiStyle.GrabMinSize, file);
     EngineWriteFloat(imGuiStyle.GrabRounding, file);
+    EngineWriteFloat(imGuiStyle.LogSliderDeadzone, file);
     EngineWriteFloat(imGuiStyle.TabRounding, file);
     EngineWriteFloat(imGuiStyle.TabBorderSize, file);
-    EngineWriteFloat(imGuiStyle.TabMinWidthForUnselectedCloseButton, file);
+    EngineWriteFloat(imGuiStyle.TabMinWidthForCloseButton, file);
     EngineWriteInt(imGuiStyle.ColorButtonPosition, file);
     EngineWriteImVec2(imGuiStyle.ButtonTextAlign, file);
     EngineWriteImVec2(imGuiStyle.SelectableTextAlign, file);
@@ -2989,6 +3081,7 @@ void SaveGame(long file)
     EngineWriteImVec2(imGuiStyle.DisplaySafeAreaPadding, file);
     EngineWriteFloat(imGuiStyle.MouseCursorScale, file);
     EngineWriteBool(imGuiStyle.AntiAliasedLines, file);
+    EngineWriteBool(imGuiStyle.AntiAliasedLinesUseTex, file);
     EngineWriteBool(imGuiStyle.AntiAliasedFill, file);
     EngineWriteFloat(imGuiStyle.CurveTessellationTol, file);
     EngineWriteFloat(imGuiStyle.CircleSegmentMaxError, file);

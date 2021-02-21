@@ -75,6 +75,9 @@
     <ClCompile Include="libs\clip\image.cpp">
       <Filter>Source Files\clip</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="agsimgui.h">

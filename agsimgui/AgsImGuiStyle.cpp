@@ -25,6 +25,7 @@ void AgsImGuiStyle::SetAgsImGuiStyle(ImGuiStyle &imGuiStyle, AgsImGuiStyle* agsI
     imGuiStyle.FrameBorderSize = agsImGuiStyle->FrameBorderSize;
     imGuiStyle.ItemSpacing = agsImGuiStyle->ItemSpacing;
     imGuiStyle.ItemInnerSpacing = agsImGuiStyle->ItemInnerSpacing;
+    imGuiStyle.CellPadding = agsImGuiStyle->CellPadding;
     imGuiStyle.TouchExtraPadding = agsImGuiStyle->TouchExtraPadding;
     imGuiStyle.IndentSpacing = agsImGuiStyle->IndentSpacing;
     imGuiStyle.ColumnsMinSpacing = agsImGuiStyle->ColumnsMinSpacing;
@@ -32,9 +33,10 @@ void AgsImGuiStyle::SetAgsImGuiStyle(ImGuiStyle &imGuiStyle, AgsImGuiStyle* agsI
     imGuiStyle.ScrollbarRounding = agsImGuiStyle->ScrollbarRounding;
     imGuiStyle.GrabMinSize = agsImGuiStyle->GrabMinSize;
     imGuiStyle.GrabRounding = agsImGuiStyle->GrabRounding;
+    imGuiStyle.LogSliderDeadzone = agsImGuiStyle->LogSliderDeadzone;
     imGuiStyle.TabRounding = agsImGuiStyle->TabRounding;
     imGuiStyle.TabBorderSize = agsImGuiStyle->TabBorderSize;
-    imGuiStyle.TabMinWidthForUnselectedCloseButton = agsImGuiStyle->TabMinWidthForUnselectedCloseButton;
+    imGuiStyle.TabMinWidthForCloseButton = agsImGuiStyle->TabMinWidthForCloseButton;
     imGuiStyle.ColorButtonPosition = agsImGuiStyle->ColorButtonPosition;
     imGuiStyle.ButtonTextAlign = agsImGuiStyle->ButtonTextAlign;
     imGuiStyle.SelectableTextAlign = agsImGuiStyle->SelectableTextAlign;
@@ -42,6 +44,7 @@ void AgsImGuiStyle::SetAgsImGuiStyle(ImGuiStyle &imGuiStyle, AgsImGuiStyle* agsI
     imGuiStyle.DisplaySafeAreaPadding = agsImGuiStyle->DisplaySafeAreaPadding;
     imGuiStyle.MouseCursorScale = agsImGuiStyle->MouseCursorScale;
     imGuiStyle.AntiAliasedLines = agsImGuiStyle->AntiAliasedLines;
+    imGuiStyle.AntiAliasedLinesUseTex = agsImGuiStyle->AntiAliasedLinesUseTex;
     imGuiStyle.AntiAliasedFill = agsImGuiStyle->AntiAliasedFill;
     imGuiStyle.CurveTessellationTol = agsImGuiStyle->CurveTessellationTol;
     imGuiStyle.CircleSegmentMaxError = agsImGuiStyle->CircleSegmentMaxError;
@@ -93,6 +96,7 @@ int AgsImGuiStyleInterface::Serialize(const char* address, char* buffer, int buf
     ptr = FloatToChar(agsImGuiStyle->FrameBorderSize, ptr, end);
     ptr = ImVec2ToChar(agsImGuiStyle->ItemSpacing, ptr, end);
     ptr = ImVec2ToChar(agsImGuiStyle->ItemInnerSpacing, ptr, end);
+    ptr = ImVec2ToChar(agsImGuiStyle->CellPadding, ptr, end);
     ptr = ImVec2ToChar(agsImGuiStyle->TouchExtraPadding, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->IndentSpacing, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->ColumnsMinSpacing, ptr, end);
@@ -100,9 +104,10 @@ int AgsImGuiStyleInterface::Serialize(const char* address, char* buffer, int buf
     ptr = FloatToChar(agsImGuiStyle->ScrollbarRounding, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->GrabMinSize, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->GrabRounding, ptr, end);
+    ptr = FloatToChar(agsImGuiStyle->LogSliderDeadzone, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->TabRounding, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->TabBorderSize, ptr, end);
-    ptr = FloatToChar(agsImGuiStyle->TabMinWidthForUnselectedCloseButton, ptr, end);
+    ptr = FloatToChar(agsImGuiStyle->TabMinWidthForCloseButton, ptr, end);
     ptr = IntToChar(agsImGuiStyle->ColorButtonPosition, ptr, end);
     ptr = ImVec2ToChar(agsImGuiStyle->ButtonTextAlign, ptr, end);
     ptr = ImVec2ToChar(agsImGuiStyle->SelectableTextAlign, ptr, end);
@@ -110,6 +115,7 @@ int AgsImGuiStyleInterface::Serialize(const char* address, char* buffer, int buf
     ptr = ImVec2ToChar(agsImGuiStyle->DisplaySafeAreaPadding, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->MouseCursorScale, ptr, end);
     ptr = BoolToChar(agsImGuiStyle->AntiAliasedLines, ptr, end);
+    ptr = BoolToChar(agsImGuiStyle->AntiAliasedLinesUseTex, ptr, end);
     ptr = BoolToChar(agsImGuiStyle->AntiAliasedFill, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->CurveTessellationTol, ptr, end);
     ptr = FloatToChar(agsImGuiStyle->CircleSegmentMaxError, ptr, end);
@@ -143,6 +149,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     float _FrameBorderSize;
     ImVec2 _ItemSpacing;
     ImVec2 _ItemInnerSpacing;
+    ImVec2 _CellPadding;
     ImVec2 _TouchExtraPadding;
     float _IndentSpacing;
     float _ColumnsMinSpacing;
@@ -150,9 +157,10 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     float _ScrollbarRounding;
     float _GrabMinSize;
     float _GrabRounding;
+    float _LogSliderDeadzone;
     float _TabRounding;
     float _TabBorderSize;
-    float _TabMinWidthForUnselectedCloseButton;
+    float _TabMinWidthForCloseButton;
     int _ColorButtonPosition;
     ImVec2 _ButtonTextAlign;
     ImVec2 _SelectableTextAlign;
@@ -160,6 +168,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     ImVec2 _DisplaySafeAreaPadding;
     float _MouseCursorScale;
     bool _AntiAliasedLines;
+    bool _AntiAliasedLinesUseTex;
     bool _AntiAliasedFill;
     float _CurveTessellationTol;
     float _CircleSegmentMaxError;
@@ -181,6 +190,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     ptr = CharToFloat( _FrameBorderSize, ptr);
     ptr = CharToImVec2( _ItemSpacing, ptr);
     ptr = CharToImVec2( _ItemInnerSpacing, ptr);
+    ptr = CharToImVec2( _CellPadding, ptr);
     ptr = CharToImVec2( _TouchExtraPadding, ptr);
     ptr = CharToFloat( _IndentSpacing, ptr);
     ptr = CharToFloat( _ColumnsMinSpacing, ptr);
@@ -188,9 +198,10 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     ptr = CharToFloat( _ScrollbarRounding, ptr);
     ptr = CharToFloat( _GrabMinSize, ptr);
     ptr = CharToFloat( _GrabRounding, ptr);
+    ptr = CharToFloat( _LogSliderDeadzone, ptr);
     ptr = CharToFloat( _TabRounding, ptr);
     ptr = CharToFloat( _TabBorderSize, ptr);
-    ptr = CharToFloat( _TabMinWidthForUnselectedCloseButton, ptr);
+    ptr = CharToFloat( _TabMinWidthForCloseButton, ptr);
     ptr = CharToInt( _ColorButtonPosition, ptr);
     ptr = CharToImVec2( _ButtonTextAlign, ptr);
     ptr = CharToImVec2( _SelectableTextAlign, ptr);
@@ -198,6 +209,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     ptr = CharToImVec2( _DisplaySafeAreaPadding, ptr);
     ptr = CharToFloat( _MouseCursorScale, ptr);
     ptr = CharToBool(_AntiAliasedLines, ptr);
+    ptr = CharToBool(_AntiAliasedLinesUseTex, ptr);
     ptr = CharToBool(_AntiAliasedFill, ptr);
     ptr = CharToFloat( _CurveTessellationTol, ptr);
     ptr = CharToFloat( _CircleSegmentMaxError, ptr);
@@ -223,6 +235,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     agsImGuiStyle->FrameBorderSize = _FrameBorderSize;
     agsImGuiStyle->ItemSpacing = _ItemSpacing;
     agsImGuiStyle->ItemInnerSpacing = _ItemInnerSpacing;
+    agsImGuiStyle->CellPadding = _CellPadding;
     agsImGuiStyle->TouchExtraPadding = _TouchExtraPadding;
     agsImGuiStyle->IndentSpacing = _IndentSpacing;
     agsImGuiStyle->ColumnsMinSpacing = _ColumnsMinSpacing;
@@ -230,9 +243,10 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     agsImGuiStyle->ScrollbarRounding = _ScrollbarRounding;
     agsImGuiStyle->GrabMinSize = _GrabMinSize;
     agsImGuiStyle->GrabRounding = _GrabRounding;
+    agsImGuiStyle->LogSliderDeadzone = _LogSliderDeadzone;
     agsImGuiStyle->TabRounding = _TabRounding;
     agsImGuiStyle->TabBorderSize = _TabBorderSize;
-    agsImGuiStyle->TabMinWidthForUnselectedCloseButton = _TabMinWidthForUnselectedCloseButton;
+    agsImGuiStyle->TabMinWidthForCloseButton = _TabMinWidthForCloseButton;
     agsImGuiStyle->ColorButtonPosition = _ColorButtonPosition;
     agsImGuiStyle->ButtonTextAlign = _ButtonTextAlign;
     agsImGuiStyle->SelectableTextAlign = _SelectableTextAlign;
@@ -240,6 +254,7 @@ void AgsImGuiStyleReader::Unserialize(int key, const char* serializedData, int d
     agsImGuiStyle->DisplaySafeAreaPadding = _DisplaySafeAreaPadding;
     agsImGuiStyle->MouseCursorScale = _MouseCursorScale;
     agsImGuiStyle->AntiAliasedLines = _AntiAliasedLines;
+    agsImGuiStyle->AntiAliasedLinesUseTex = _AntiAliasedLinesUseTex;
     agsImGuiStyle->AntiAliasedFill = _AntiAliasedFill;
     agsImGuiStyle->CurveTessellationTol = _CurveTessellationTol;
     agsImGuiStyle->CircleSegmentMaxError = _CircleSegmentMaxError;
